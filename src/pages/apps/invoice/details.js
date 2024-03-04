@@ -48,7 +48,7 @@ const Details = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    dispatch(getInvoiceSingleList(Number(id))).then(() => setLoading(false));
+    //dispatch(getInvoiceSingleList(Number(id))).then(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 

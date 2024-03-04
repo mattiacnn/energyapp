@@ -25,28 +25,6 @@ const applications = {
   type: 'group',
   children: [
     {
-      id: 'chat',
-      title: <FormattedMessage id="chat" />,
-      type: 'item',
-      url: '/apps/chat',
-      icon: icons.chat,
-      breadcrumbs: false
-    },
-    {
-      id: 'calendar',
-      title: <FormattedMessage id="calendar" />,
-      type: 'item',
-      url: '/apps/calendar',
-      icon: icons.calendar
-    },
-    {
-      id: 'kanban',
-      title: <FormattedMessage id="kanban" />,
-      type: 'item',
-      icon: icons.kanban,
-      url: '/apps/kanban/board'
-    },
-    {
       id: 'customer',
       title: <FormattedMessage id="customer" />,
       type: 'collapse',
@@ -121,47 +99,6 @@ const applications = {
         }
       ]
     },
-
-    {
-      id: 'e-commerce',
-      title: <FormattedMessage id="e-commerce" />,
-      type: 'collapse',
-      icon: icons.ecommerce,
-      children: [
-        {
-          id: 'products',
-          title: <FormattedMessage id="products" />,
-          type: 'item',
-          url: '/apps/e-commerce/products'
-        },
-        {
-          id: 'product-details',
-          title: <FormattedMessage id="product-details" />,
-          type: 'item',
-          url: '/apps/e-commerce/product-details/1',
-          breadcrumbs: false
-        },
-        {
-          id: 'product-list',
-          title: <FormattedMessage id="product-list" />,
-          type: 'item',
-          url: '/apps/e-commerce/product-list',
-          breadcrumbs: false
-        },
-        {
-          id: 'add-new-product',
-          title: <FormattedMessage id="add-new-product" />,
-          type: 'item',
-          url: '/apps/e-commerce/add-new-product'
-        },
-        {
-          id: 'checkout',
-          title: <FormattedMessage id="checkout" />,
-          type: 'item',
-          url: '/apps/e-commerce/checkout'
-        }
-      ]
-    }
   ]
 };
 

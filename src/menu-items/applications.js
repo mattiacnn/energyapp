@@ -26,19 +26,19 @@ const applications = {
   children: [
     {
       id: 'customer',
-      title: <FormattedMessage id="customer" />,
+      title: <FormattedMessage id="Anagrafica" />,
       type: 'collapse',
       icon: icons.customer,
       children: [
         {
           id: 'customer-list',
-          title: <FormattedMessage id="list" />,
+          title: <FormattedMessage id="Agenti" />,
           type: 'item',
           url: '/apps/customer/customer-list'
         },
         {
           id: 'customer-card',
-          title: <FormattedMessage id="cards" />,
+          title: <FormattedMessage id="Clienti" />,
           type: 'item',
           url: '/apps/customer/customer-card'
         }
@@ -46,7 +46,7 @@ const applications = {
     },
     {
       id: 'invoice',
-      title: <FormattedMessage id="invoice" />,
+      title: <FormattedMessage id="Contratti" />,
       url: '/apps/invoice/dashboard',
       type: 'collapse',
       icon: icons.invoice,
@@ -54,28 +54,22 @@ const applications = {
       children: [
         {
           id: 'create',
-          title: <FormattedMessage id="create" />,
+          title: <FormattedMessage id="Energia" />,
           type: 'item',
           url: '/apps/invoice/create'
         },
         {
           id: 'details',
-          title: <FormattedMessage id="details" />,
+          title: <FormattedMessage id="Telefonia" />,
           type: 'item',
           url: '/apps/invoice/details/1'
         },
         {
           id: 'list',
-          title: <FormattedMessage id="list" />,
+          title: <FormattedMessage id="Altro" />,
           type: 'item',
           url: '/apps/invoice/list'
         },
-        {
-          id: 'edit',
-          title: <FormattedMessage id="edit" />,
-          type: 'item',
-          url: '/apps/invoice/edit/1'
-        }
       ]
     },
     {

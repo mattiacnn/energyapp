@@ -340,25 +340,6 @@ const TabPersonal = () => {
                     )}
                   </Stack>
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Stack spacing={1.25}>
-                    <InputLabel htmlFor="personal-designation">Designation</InputLabel>
-                    <TextField
-                      fullWidth
-                      id="personal-designation"
-                      value={values.designation}
-                      name="designation"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      placeholder="Designation"
-                    />
-                    {touched.designation && errors.designation && (
-                      <FormHelperText error id="personal-designation-helper">
-                        {errors.designation}
-                      </FormHelperText>
-                    )}
-                  </Stack>
-                </Grid>
               </Grid>
             </Box>
             <CardHeader title="Address" />
@@ -472,52 +453,8 @@ const TabPersonal = () => {
                 </Grid>
               </Grid>
             </Box>
-            <CardHeader title="Skills" />
             <Divider />
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', listStyle: 'none', p: 2.5, m: 0 }} component="ul">
-              <Autocomplete
-                multiple
-                fullWidth
-                id="tags-outlined"
-                options={skills}
-                value={values.skill}
-                onBlur={handleBlur}
-                getOptionLabel={(label) => label}
-                onChange={(event, newValue) => {
-                  setFieldValue('skill', newValue);
-                }}
-                renderInput={(params) => <TextField {...params} name="skill" placeholder="Add Skills" />}
-                renderTags={(value, getTagProps) =>
-                  value.map((option, index) => (
-                    <Chip
-                      key={option}
-                      {...getTagProps({ index })}
-                      variant="combined"
-                      label={option}
-                      deleteIcon={<Add style={{ fontSize: '0.75rem', transform: 'rotate(45deg)' }} />}
-                      sx={{ color: 'text.primary' }}
-                    />
-                  ))
-                }
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    p: 0,
-                    '& .MuiAutocomplete-tag': {
-                      m: 1
-                    },
-                    '& fieldset': {
-                      display: 'none'
-                    },
-                    '& .MuiAutocomplete-endAdornment': {
-                      display: 'none'
-                    },
-                    '& .MuiAutocomplete-popupIndicator': {
-                      display: 'none'
-                    }
-                  }
-                }}
-              />
-            </Box>
+    
             <CardHeader title="Note" />
             <Divider />
             <Box sx={{ p: 2.5 }}>

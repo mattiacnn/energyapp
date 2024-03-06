@@ -37,7 +37,15 @@ const allColumns = [
   },
   {
     id: 2,
-    header: 'Customer Name'
+    header: 'Nome'
+  },
+  {
+    id: 8,
+    header: 'Agente Associato'
+  },
+  {
+    id: 9,
+    header: 'Tipo di Contratto'
   },
   {
     id: 3,
@@ -45,20 +53,20 @@ const allColumns = [
   },
   {
     id: 4,
-    header: 'Contact'
+    header: 'Contatto'
   },
   {
     id: 5,
-    header: 'Age'
+    header: 'Età'
   },
   {
     id: 6,
-    header: 'Country'
+    header: 'Paese'
   },
   {
     id: 7,
     header: 'Status'
-  }
+  },
 ];
 
 // ==============================|| CUSTOMER - CARD ||============================== //
@@ -141,7 +149,7 @@ const CustomerCardPage = () => {
                 </Select>
               </FormControl>
               <Button variant="contained" startIcon={<Add />} onClick={handleAdd} size="large">
-                Add Customer
+                Aggiungi cliente
               </Button>
             </Stack>
           </Stack>

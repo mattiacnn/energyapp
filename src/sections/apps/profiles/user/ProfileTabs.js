@@ -134,35 +134,12 @@ const ProfileTabs = ({ focusInput }) => {
               onChange={(e) => setSelectedImage(e.target.files?.[0])}
             />
             <Stack spacing={0.5} alignItems="center">
-              <Typography variant="h5">Stebin Ben</Typography>
-              <Typography color="secondary">Full Stack Developer</Typography>
-            </Stack>
-            <Stack direction="row" spacing={3} sx={{ '& svg': { fontSize: '1.15rem', cursor: 'pointer' } }}>
-              <Google variant="Bold" color={theme.palette.error.main} />
-              <Facebook variant="Bold" color={facebookColor} />
-              <Apple variant="Bold" color={linkedInColor} />
+              <Typography variant="h5">Mario rossi</Typography>
+              <Typography color="secondary">Agente associato: Luca bianchi</Typography>
             </Stack>
           </Stack>
         </Grid>
         <Grid item sm={3} sx={{ display: { sm: 'block', md: 'none' } }} />
-        <Grid item xs={12} sm={6} md={12}>
-          <Stack direction="row" justifyContent="space-around" alignItems="center">
-            <Stack spacing={0.5} alignItems="center">
-              <Typography variant="h5">86</Typography>
-              <Typography color="secondary">Post</Typography>
-            </Stack>
-            <Divider orientation="vertical" flexItem />
-            <Stack spacing={0.5} alignItems="center">
-              <Typography variant="h5">40</Typography>
-              <Typography color="secondary">Project</Typography>
-            </Stack>
-            <Divider orientation="vertical" flexItem />
-            <Stack spacing={0.5} alignItems="center">
-              <Typography variant="h5">4.5K</Typography>
-              <Typography color="secondary">Members</Typography>
-            </Stack>
-          </Stack>
-        </Grid>
         <Grid item xs={12}>
           <ProfileTab />
         </Grid>

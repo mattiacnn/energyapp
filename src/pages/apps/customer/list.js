@@ -211,7 +211,7 @@ const CustomerListPage = () => {
         className: 'cell-center'
       },
       {
-        Header: 'Customer Name',
+        Header: 'Nome',
         accessor: 'fatherName',
         Cell: ({ row }) => {
           const { values } = row;
@@ -227,6 +227,16 @@ const CustomerListPage = () => {
         }
       },
       {
+        Header: 'Agente associato',
+        accessor: 'agent',
+        className: 'cell-right'
+      },
+      {
+        Header: 'Tipo di contratto',
+        accessor: 'contract',
+        className: 'cell-right'
+      },
+      {
         Header: 'Avatar',
         accessor: 'avatar',
         disableSortBy: true
@@ -236,18 +246,14 @@ const CustomerListPage = () => {
         accessor: 'email'
       },
       {
-        Header: 'Contact',
+        Header: 'Contatto',
         accessor: 'contact',
         Cell: ({ value }) => <PatternFormat displayType="text" format="+1 (###) ###-####" mask="_" defaultValue={value} />
       },
       {
-        Header: 'Age',
+        Header: 'Età',
         accessor: 'age',
         className: 'cell-right'
-      },
-      {
-        Header: 'Country',
-        accessor: 'country'
       },
       {
         Header: 'Status',

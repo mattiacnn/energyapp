@@ -447,16 +447,16 @@ export const SortingSelect = ({ sortBy, setSortBy, allColumns }) => {
         displayEmpty
         value={sort}
         onChange={handleChange}
-        input={<OutlinedInput id="select-column-hiding" placeholder="Sort by" />}
+        input={<OutlinedInput id="select-column-hiding" placeholder="Ordine per" />}
         renderValue={(selected) => {
           const selectedColumn = allColumns.filter((column) => column.id === selected)[0];
           if (!selected) {
-            return <Typography variant="subtitle1">Sort By</Typography>;
+            return <Typography variant="subtitle1">Ordine per</Typography>;
           }
 
           return (
             <Typography variant="subtitle2">
-              Sort by ({typeof selectedColumn.Header === 'string' ? selectedColumn.Header : selectedColumn?.title})
+              Ordine per ({typeof selectedColumn.Header === 'string' ? selectedColumn.Header : selectedColumn?.title})
             </Typography>
           );
         }}

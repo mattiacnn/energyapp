@@ -33,7 +33,7 @@ export function GlobalFilter({ preGlobalFilteredRows, globalFilter, setGlobalFil
         setValue(e.target.value);
         onChange(e.target.value);
       }}
-      placeholder={`Search ${count} records...`}
+      placeholder={`Cerca...`}
       id="start-adornment-email"
       startAdornment={<SearchNormal1 size={18} />}
       {...other}

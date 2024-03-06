@@ -26,6 +26,9 @@ const AppKanbanBoard = Loadable(lazy(() => import('sections/apps/kanban/Board'))
 const AppCustomerList = Loadable(lazy(() => import('pages/apps/customer/list')));
 const AppCustomerCard = Loadable(lazy(() => import('pages/apps/customer/card')));
 
+
+const AppAgentsList = Loadable(lazy(() => import('pages/apps/agents/list')));
+
 const AppInvoiceCreate = Loadable(lazy(() => import('pages/apps/invoice/create')));
 const AppInvoiceDashboard = Loadable(lazy(() => import('pages/apps/invoice/dashboard')));
 const AppInvoiceList = Loadable(lazy(() => import('pages/apps/invoice/list')));
@@ -147,29 +150,8 @@ const MainRoutes = {
           path: 'dashboard',
           children: [
             {
-              path: 'default',
-              element: <DashboardDefault />
-            },
-            {
               path: 'analytics',
               element: <DashboardAnalytics />
-            }
-          ]
-        },
-        {
-          path: 'widget',
-          children: [
-            {
-              path: 'statistics',
-              element: <WidgetStatistics />
-            },
-            {
-              path: 'data',
-              element: <WidgetData />
-            },
-            {
-              path: 'chart',
-              element: <WidgetChart />
             }
           ]
         },
@@ -207,7 +189,7 @@ const MainRoutes = {
                 },
                 {
                   path: 'agents-list',
-                  element: <AppCustomerList />
+                  element: <AppAgentsList />
                 }
               ]
             },

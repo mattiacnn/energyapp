@@ -30,24 +30,24 @@ export default function AlertCustomerDelete({ title, open, handleClose }) {
           </Avatar>
           <Stack spacing={2}>
             <Typography variant="h4" align="center">
-              Are you sure you want to delete?
+              Sei sicuro di voler cancellare questo agente?
             </Typography>
             <Typography align="center">
-              By deleting
+              Cancellando
               <Typography variant="subtitle1" component="span">
                 {' '}
                 &quot;{title}&quot;{' '}
               </Typography>
-              user, all task assigned to that user will also be deleted.
+              perderai tutti i dati relativi ad esso.
             </Typography>
           </Stack>
 
           <Stack direction="row" spacing={2} sx={{ width: 1 }}>
             <Button fullWidth onClick={() => handleClose(false)} color="secondary" variant="outlined">
-              Cancel
+              Annulla
             </Button>
             <Button fullWidth color="error" variant="contained" onClick={() => handleClose(true)} autoFocus>
-              Delete
+              Cancella
             </Button>
           </Stack>
         </Stack>

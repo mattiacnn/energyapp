@@ -26,7 +26,6 @@ const DrawerContent = () => {
     >
       <>
         <Navigation />
-        {drawerOpen && !matchDownMD && <NavCard />}
       </>
     </SimpleBar>
   );

@@ -152,7 +152,7 @@ const AddCustomer = ({ customer, onCancel }) => {
       <FormikProvider value={formik}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
-            <DialogTitle>{customer ? 'Edit Customer' : 'New Customer'}</DialogTitle>
+            <DialogTitle>{customer ? 'Modifica' : 'Nuovo'}</DialogTitle>
             <Divider />
             <DialogContent sx={{ p: 2.5 }}>
               <Grid container spacing={3}>
@@ -203,11 +203,37 @@ const AddCustomer = ({ customer, onCancel }) => {
                   <Grid container spacing={3}>
                     <Grid item xs={12}>
                       <Stack spacing={1.25}>
-                        <InputLabel htmlFor="customer-name">Name</InputLabel>
+                        <InputLabel htmlFor="customer-name">Nome</InputLabel>
                         <TextField
                           fullWidth
                           id="customer-name"
-                          placeholder="Enter Customer Name"
+                          placeholder="Inserisci nome"
+                          {...getFieldProps('name')}
+                          error={Boolean(touched.name && errors.name)}
+                          helperText={touched.name && errors.name}
+                        />
+                      </Stack>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Stack spacing={1.25}>
+                        <InputLabel htmlFor="customer-name">Cognome</InputLabel>
+                        <TextField
+                          fullWidth
+                          id="customer-name"
+                          placeholder="Inserisci cognome"
+                          {...getFieldProps('name')}
+                          error={Boolean(touched.name && errors.name)}
+                          helperText={touched.name && errors.name}
+                        />
+                      </Stack>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Stack spacing={1.25}>
+                        <InputLabel htmlFor="customer-name">Numero di telefono</InputLabel>
+                        <TextField
+                          fullWidth
+                          id="customer-name"
+                          placeholder="Inserisci numero di telefono"
                           {...getFieldProps('name')}
                           error={Boolean(touched.name && errors.name)}
                           helperText={touched.name && errors.name}
@@ -220,61 +246,32 @@ const AddCustomer = ({ customer, onCancel }) => {
                         <TextField
                           fullWidth
                           id="customer-email"
-                          placeholder="Enter Customer Email"
+                          placeholder="Inserisci email"
                           {...getFieldProps('email')}
                           error={Boolean(touched.email && errors.email)}
                           helperText={touched.email && errors.email}
                         />
                       </Stack>
                     </Grid>
-                    <Grid item xs={12}>
-                      <Stack spacing={1.25}>
-                        <InputLabel htmlFor="customer-orderStatus">Status</InputLabel>
-                        <FormControl fullWidth>
-                          <Select
-                            id="column-hiding"
-                            displayEmpty
-                            {...getFieldProps('orderStatus')}
-                            onChange={(event) => setFieldValue('orderStatus', event.target.value)}
-                            input={<OutlinedInput id="select-column-hiding" placeholder="Sort by" />}
-                            renderValue={(selected) => {
-                              if (!selected) {
-                                return <Typography variant="subtitle1">Select Status</Typography>;
-                              }
 
-                              return <Typography variant="subtitle2">{selected}</Typography>;
-                            }}
-                          >
-                            {allStatus.map((column) => (
-                              <MenuItem key={column} value={column}>
-                                <ListItemText primary={column} />
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                        {touched.orderStatus && errors.orderStatus && (
-                          <FormHelperText error id="standard-weight-helper-text-email-login" sx={{ pl: 1.75 }}>
-                            {errors.orderStatus}
-                          </FormHelperText>
-                        )}
-                      </Stack>
-                    </Grid>
                     <Grid item xs={12}>
                       <Stack spacing={1.25}>
-                        <InputLabel htmlFor="customer-location">Location</InputLabel>
+                        <InputLabel htmlFor="customer-location">Note</InputLabel>
                         <TextField
                           fullWidth
                           id="customer-location"
                           multiline
                           rows={2}
-                          placeholder="Enter Location"
+                          placeholder="Inserisci note"
                           {...getFieldProps('location')}
                           error={Boolean(touched.location && errors.location)}
                           helperText={touched.location && errors.location}
                         />
                       </Stack>
                     </Grid>
-                    <Grid item xs={12}>
+                    {
+                      /*
+                       <Grid item xs={12}>
                       <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
                         <Stack spacing={0.5}>
                           <Typography variant="subtitle1">Make Contact Info Public</Typography>
@@ -295,6 +292,8 @@ const AddCustomer = ({ customer, onCancel }) => {
                         <FormControlLabel control={<Switch sx={{ mt: 0 }} />} label="" labelPlacement="start" />
                       </Stack>
                     </Grid>
+                       */
+                    }
                   </Grid>
                 </Grid>
               </Grid>
@@ -314,10 +313,10 @@ const AddCustomer = ({ customer, onCancel }) => {
                 <Grid item>
                   <Stack direction="row" spacing={2} alignItems="center">
                     <Button color="error" onClick={onCancel}>
-                      Cancel
+                      Chiudi
                     </Button>
                     <Button type="submit" variant="contained" disabled={isSubmitting}>
-                      {customer ? 'Edit' : 'Add'}
+                      {customer ? 'Modifica' : 'Aggiungi'}
                     </Button>
                   </Stack>
                 </Grid>

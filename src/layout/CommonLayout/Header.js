@@ -110,15 +110,6 @@ const Header = ({ handleDrawerOpen, layout = 'landing', ...others }) => {
               </Link>
               <Link
                 className="header-link"
-                color={handleDrawerOpen ? 'primary' : 'secondary.main'}
-                component={RouterLink}
-                to="/components-overview/buttons"
-                underline="none"
-              >
-                Components
-              </Link>
-              <Link
-                className="header-link"
                 color="secondary.main"
                 href="https://phoenixcoded.gitbook.io/able-pro/v/react/"
                 target="_blank"

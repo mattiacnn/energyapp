@@ -71,27 +71,6 @@ const ExpandingUserDetail = ({ data }) => {
                   <Divider />
                 </Grid>
                 <Grid item xs={12}>
-                  <Stack direction="row" justifyContent="space-around" alignItems="center">
-                    <Stack spacing={0.5} alignItems="center">
-                      <Typography variant="h5">{data.age}</Typography>
-                      <Typography color="secondary">Age</Typography>
-                    </Stack>
-                    <Divider orientation="vertical" flexItem />
-                    <Stack spacing={0.5} alignItems="center">
-                      <Typography variant="h5">{data.progress}%</Typography>
-                      <Typography color="secondary">Progress</Typography>
-                    </Stack>
-                    <Divider orientation="vertical" flexItem />
-                    <Stack spacing={0.5} alignItems="center">
-                      <Typography variant="h5">{data.visits}</Typography>
-                      <Typography color="secondary">Visits</Typography>
-                    </Stack>
-                  </Stack>
-                </Grid>
-                <Grid item xs={12}>
-                  <Divider />
-                </Grid>
-                <Grid item xs={12}>
                   <List
                     component="nav"
                     aria-label="main mailbox folders"
@@ -110,7 +89,7 @@ const ExpandingUserDetail = ({ data }) => {
                       <ListItemIcon>
                         <CallCalling size={18} />
                       </ListItemIcon>
-                      <ListItemText primary={<Typography color="secondary">Phone</Typography>} />
+                      <ListItemText primary={<Typography color="secondary">Telefono</Typography>} />
                       <ListItemSecondaryAction>
                         <Typography align="right">
                           <PatternFormat displayType="text" format="+1 (###) ###-####" mask="_" defaultValue={data.contact} />
@@ -144,22 +123,22 @@ const ExpandingUserDetail = ({ data }) => {
           </Grid>
           <Grid item xs={12} sm={7} md={8} lg={9}>
             <Stack spacing={2.5}>
-              <MainCard title="Personal Details">
+              <MainCard title="Informazioni personali">
                 <List sx={{ py: 0 }}>
                   <ListItem divider={!matchDownMD}>
                     <Grid container spacing={3}>
                       <Grid item xs={12} md={6}>
                         <Stack spacing={0.5}>
-                          <Typography color="secondary">Full Name</Typography>
+                          <Typography color="secondary">Nome</Typography>
                           <Typography>
-                            {data.firstName} {data.lastName}
+                            {data.firstName}
                           </Typography>
                         </Stack>
                       </Grid>
                       <Grid item xs={12} md={6}>
                         <Stack spacing={0.5}>
-                          <Typography color="secondary">Father Name</Typography>
-                          <Typography>Mr. {data.fatherName}</Typography>
+                          <Typography color="secondary">Cognome</Typography>
+                          <Typography>{data.lastName}</Typography>
                         </Stack>
                       </Grid>
                     </Grid>
@@ -168,13 +147,13 @@ const ExpandingUserDetail = ({ data }) => {
                     <Grid container spacing={3}>
                       <Grid item xs={12} md={6}>
                         <Stack spacing={0.5}>
-                          <Typography color="secondary">Country</Typography>
+                          <Typography color="secondary">Città</Typography>
                           <Typography>{data.country}</Typography>
                         </Stack>
                       </Grid>
                       <Grid item xs={12} md={6}>
                         <Stack spacing={0.5}>
-                          <Typography color="secondary">Zip Code</Typography>
+                          <Typography color="secondary">Codice postale</Typography>
                           <Typography>
                             <PatternFormat displayType="text" format="### ###" mask="_" defaultValue={data.contact} />
                           </Typography>
@@ -184,15 +163,15 @@ const ExpandingUserDetail = ({ data }) => {
                   </ListItem>
                   <ListItem>
                     <Stack spacing={0.5}>
-                      <Typography color="secondary">Address</Typography>
+                      <Typography color="secondary">Indirizzo</Typography>
                       <Typography>{data.address}</Typography>
                     </Stack>
                   </ListItem>
                 </List>
               </MainCard>
-              <MainCard title="About me">
+              <MainCard title="Note">
                 <Typography color="secondary">
-                  Hello, I’m {data.firstName} {data.lastName} {data.role} based in international company, {data.about}
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. In et euismod mi
                 </Typography>
               </MainCard>
             </Stack>

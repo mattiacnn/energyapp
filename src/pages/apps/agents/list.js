@@ -115,7 +115,7 @@ function ReactTable({ columns, data, renderRowSubComponent, handleAdd }) {
           <Stack direction={matchDownSM ? 'column' : 'row'} alignItems="center" spacing={2}>
             <SortingSelect sortBy={sortBy.id} setSortBy={setSortBy} allColumns={allColumns} />
             <Button variant="contained" startIcon={<Add />} onClick={handleAdd} size="small">
-              Aggiungi cliente
+              Aggiungi agente
             </Button>
           </Stack>
         </Stack>
@@ -177,7 +177,7 @@ ReactTable.propTypes = {
 
 // ==============================|| CUSTOMER - LIST ||============================== //
 
-const CustomerListPage = () => {
+const AgentsListPage = () => {
   const theme = useTheme();
   const mode = theme.palette.mode;
   const data = useMemo(() => makeData(200), []);
@@ -226,16 +226,6 @@ const CustomerListPage = () => {
         }
       },
       {
-        Header: 'Agente associato',
-        accessor: 'agent',
-        className: 'cell-right'
-      },
-      {
-        Header: 'Tipo di contratto',
-        accessor: 'contract',
-        className: 'cell-right'
-      },
-      {
         Header: 'Avatar',
         accessor: 'avatar',
         disableSortBy: true
@@ -249,6 +239,22 @@ const CustomerListPage = () => {
         accessor: 'contact',
         Cell: ({ value }) => <PatternFormat displayType="text" format="+1 (###) ###-####" mask="_" defaultValue={value} />
       },
+
+      /*{
+        Header: 'Status',
+        accessor: 'status',
+        Cell: ({ value }) => {
+          switch (value) {
+            case 'Complicated':
+              return <Chip color="error" label="Complicated" size="small" variant="light" />;
+            case 'Relationship':
+              return <Chip color="success" label="Relationship" size="small" variant="light" />;
+            case 'Single':
+            default:
+              return <Chip color="info" label="Single" size="small" variant="light" />;
+          }
+        }
+      },*/
       {
         Header: 'Azioni',
         className: 'cell-center',
@@ -356,7 +362,7 @@ const CustomerListPage = () => {
   );
 };
 
-CustomerListPage.propTypes = {
+AgentsListPage.propTypes = {
   row: PropTypes.object,
   values: PropTypes.object,
   avatar: PropTypes.object,
@@ -370,4 +376,4 @@ CustomerListPage.propTypes = {
   id: PropTypes.number
 };
 
-export default CustomerListPage;
+export default AgentsListPage;

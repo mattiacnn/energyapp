@@ -206,8 +206,8 @@ const MainRoutes = {
                   element: <AppCustomerList />
                 },
                 {
-                  path: 'customer-card',
-                  element: <AppCustomerCard />
+                  path: 'agents-list',
+                  element: <AppCustomerList />
                 }
               ]
             },

@@ -34,13 +34,13 @@ const applications = {
           id: 'customer-list',
           title: <FormattedMessage id="Agenti" />,
           type: 'item',
-          url: '/apps/customer/customer-list'
+          url: '/apps/customer/agents-list'
         },
         {
           id: 'customer-card',
           title: <FormattedMessage id="Clienti" />,
           type: 'item',
-          url: '/apps/customer/customer-card'
+          url: '/apps/customer/customer-list'
         }
       ]
     },

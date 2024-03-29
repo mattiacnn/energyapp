@@ -8,10 +8,14 @@ import jwtDecode from 'jwt-decode';
 // reducer - state management
 import { LOGIN, LOGOUT } from 'store/reducers/actions';
 import authReducer from 'store/reducers/auth';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 // project-imports
 import Loader from 'components/Loader';
 import axios from 'utils/axios';
+import { selectCurrentToken, selectIsInitialized, selectIsLoggedIn, setCredentials } from 'features/auth/authSlice';
+import { useSelector } from 'store';
+import { useDispatch } from 'store';
 
 const chance = new Chance();
 
@@ -35,9 +39,11 @@ const verifyToken = (serviceToken) => {
 };
 
 const setSession = (serviceToken) => {
+  console.log("setSession", serviceToken)
+  console.log(serviceToken)
   if (serviceToken) {
     localStorage.setItem('serviceToken', serviceToken);
-    axios.defaults.headers.common.Authorization = `Bearer ${serviceToken}`;
+    axios.defaults.headers.common.Authorization = `${serviceToken}`;
   } else {
     localStorage.removeItem('serviceToken');
     delete axios.defaults.headers.common.Authorization;
@@ -49,10 +55,22 @@ const setSession = (serviceToken) => {
 const JWTContext = createContext(null);
 
 export const JWTProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(authReducer, initialState);
+  const dispatch = useDispatch();
+  const isLoggedIn = useSelector(selectIsLoggedIn);
+  const serviceToken = useSelector(selectCurrentToken);
+  const isInitialized = useSelector(selectIsInitialized);
 
+  const navigate = useNavigate();
+
+  const state = {
+    isLoggedIn,
+    serviceToken,
+    isInitialized
+  };
+  
   useEffect(() => {
     const init = async () => {
+      console.log("init")
       try {
         const serviceToken = localStorage.getItem('serviceToken');
         if (serviceToken && verifyToken(serviceToken)) {
@@ -60,23 +78,13 @@ export const JWTProvider = ({ children }) => {
           const response = await axios.get('/api/account/me');
           const { user } = response.data;
 
-          dispatch({
-            type: LOGIN,
-            payload: {
-              isLoggedIn: true,
-              user
-            }
-          });
+          dispatch(setCredentials({ token: serviceToken, user, isLoggedIn: true, isInitialized: true }));
         } else {
-          dispatch({
-            type: LOGOUT
-          });
+          dispatch(setCredentials({ token: null, isLoggedIn: false, isInitialized: true }));
         }
       } catch (err) {
         console.error(err);
-        dispatch({
-          type: LOGOUT
-        });
+        dispatch(setCredentials({ token: null, isLoggedIn: false, isInitialized: true }));
       }
     };
 
@@ -84,16 +92,18 @@ export const JWTProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    const response = await axios.post('/api/account/login', { email, password });
-    const { serviceToken, user } = response.data;
-    setSession(serviceToken);
-    dispatch({
-      type: LOGIN,
-      payload: {
-        isLoggedIn: true,
-        user
-      }
-    });
+    try {
+      const response = await axios.post('/auth/login/admin', { email, password });
+      const { token, user } = response.data;
+      setSession(token);
+      dispatch(setCredentials({ token: serviceToken, user, isLoggedIn: true }));
+      navigate('/', { replace: true });
+      console.log('login');
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+
   };
 
   const register = async (email, password, firstName, lastName) => {
@@ -129,11 +139,11 @@ export const JWTProvider = ({ children }) => {
     dispatch({ type: LOGOUT });
   };
 
-  const resetPassword = async () => {};
+  const resetPassword = async () => { };
 
-  const updateProfile = () => {};
+  const updateProfile = () => { };
 
-  if (state.isInitialized !== undefined && !state.isInitialized) {
+  if (isInitialized !== undefined && !isInitialized) {
     return <Loader />;
   }
 

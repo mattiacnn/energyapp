@@ -12,6 +12,8 @@ import productReducer from './product';
 import cartReducer from './cart';
 import kanban from './kanban';
 import invoice from './invoice';
+import { apiSlice } from "../api/apiSlice";
+import auth from '../../features/auth/authSlice';
 
 // ==============================|| COMBINE REDUCERS ||============================== //
 
@@ -30,7 +32,9 @@ const reducers = combineReducers({
   ),
   product: productReducer,
   kanban,
-  invoice
+  invoice,
+  [apiSlice.reducerPath]: apiSlice.reducer,
+  auth,
 });
 
 export default reducers;

@@ -29,7 +29,7 @@ import {
 import { LocalizationProvider } from '@mui/x-date-pickers';
 
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-
+import axios from 'utils/axios';
 // third-party
 import _ from 'lodash';
 import * as Yup from 'yup';
@@ -84,10 +84,10 @@ const AddCustomer = ({ customer, onCancel }) => {
   }, [selectedImage]);
 
   const CustomerSchema = Yup.object().shape({
-    name: Yup.string().max(255).required('Name is required'),
-    orderStatus: Yup.string().required('Status is required'),
-    email: Yup.string().max(255).required('Email is required').email('Must be a valid email'),
-    location: Yup.string().max(500)
+    first_name: Yup.string().max(255).required('Nome è un campo obbligatorio'),
+    last_name: Yup.string().max(255).required('Cognome è un campo obbligatorio'),
+    email: Yup.string().max(255).required('Email è un campo obbligatorio').email('Inserisci una email valida'),
+    password: Yup.string().max(255).required('Password è un campo obbligatorio'),
   });
 
   const [openAlert, setOpenAlert] = useState(false);
@@ -100,7 +100,7 @@ const AddCustomer = ({ customer, onCancel }) => {
   const formik = useFormik({
     initialValues: getInitialValues(customer),
     validationSchema: CustomerSchema,
-    onSubmit: (values, { setSubmitting }) => {
+    onSubmit: async (values, { setSubmitting }) => {
       try {
         // const newCustomer = {
         //   name: values.name,
@@ -109,12 +109,20 @@ const AddCustomer = ({ customer, onCancel }) => {
         //   orderStatus: values.orderStatus
         // };
 
-        if (customer) {
-          // dispatch(updateCustomer(customer.id, newCustomer)); - update
+        const new_agent = {
+          first_name: values.first_name,
+          last_name: values.last_name,
+          email: values.email,
+          password: values.password,
+        }
+        const response = await axios.post('/agent/create', new_agent);
+        const { agent } = response.data;
+        if (agent) {
+          // dispatch(openSnackbar('Customer Added Successfully'));
           dispatch(
             openSnackbar({
               open: true,
-              message: 'Customer update successfully.',
+              message: 'Cliente aggiunto con successo!',
               variant: 'alert',
               alert: {
                 color: 'success'
@@ -122,24 +130,34 @@ const AddCustomer = ({ customer, onCancel }) => {
               close: false
             })
           );
-        } else {
-          // dispatch(createCustomer(newCustomer)); - add
+          onCancel();
+          setSubmitting(false);
+        }
+        else if (response.message) {
           dispatch(
             openSnackbar({
               open: true,
-              message: 'Customer added successfully.',
+              message: "Questa email è già stata utilizzata. Inserisci un'altra email.",
               variant: 'alert',
               alert: {
-                color: 'success'
+                color: 'error'
               },
               close: false
             })
           );
         }
-
-        setSubmitting(false);
-        onCancel();
       } catch (error) {
+        dispatch(
+          openSnackbar({
+            open: true,
+            message: 'Errore durante l\'aggiunta del cliente. Riprova più tardi.',
+            variant: 'alert',
+            alert: {
+              color: 'error'
+            },
+            close: false
+          })
+        );
         console.error(error);
       }
     }
@@ -156,87 +174,31 @@ const AddCustomer = ({ customer, onCancel }) => {
             <Divider />
             <DialogContent sx={{ p: 2.5 }}>
               <Grid container spacing={3}>
-                <Grid item xs={12} md={3}>
-                  <Stack direction="row" justifyContent="center" sx={{ mt: 3 }}>
-                    <FormLabel
-                      htmlFor="change-avtar"
-                      sx={{
-                        position: 'relative',
-                        borderRadius: '50%',
-                        overflow: 'hidden',
-                        '&:hover .MuiBox-root': { opacity: 1 },
-                        cursor: 'pointer'
-                      }}
-                    >
-                      <Avatar alt="Avatar 1" src={avatar} sx={{ width: 72, height: 72, border: '1px dashed' }} />
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                          backgroundColor: theme.palette.mode === ThemeMode.DARK ? 'rgba(255, 255, 255, .75)' : 'rgba(0,0,0,.65)',
-                          width: '100%',
-                          height: '100%',
-                          opacity: 0,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center'
-                        }}
-                      >
-                        <Stack spacing={0.5} alignItems="center">
-                          <Camera style={{ color: theme.palette.secondary.lighter, fontSize: '2rem' }} />
-                          <Typography sx={{ color: 'secondary.lighter' }}>Upload</Typography>
-                        </Stack>
-                      </Box>
-                    </FormLabel>
-                    <TextField
-                      type="file"
-                      id="change-avtar"
-                      placeholder="Outlined"
-                      variant="outlined"
-                      sx={{ display: 'none' }}
-                      onChange={(e) => setSelectedImage(e.target.files?.[0])}
-                    />
-                  </Stack>
-                </Grid>
                 <Grid item xs={12} md={8}>
                   <Grid container spacing={3}>
                     <Grid item xs={12}>
                       <Stack spacing={1.25}>
-                        <InputLabel htmlFor="customer-name">Nome</InputLabel>
+                        <InputLabel htmlFor="first_name">Nome</InputLabel>
                         <TextField
                           fullWidth
-                          id="customer-name"
+                          id="first_name"
                           placeholder="Inserisci nome"
-                          {...getFieldProps('name')}
-                          error={Boolean(touched.name && errors.name)}
-                          helperText={touched.name && errors.name}
+                          {...getFieldProps('first_name')}
+                          error={Boolean(touched.first_name && errors.first_name)}
+                          helperText={touched.first_name && errors.first_name}
                         />
                       </Stack>
                     </Grid>
                     <Grid item xs={12}>
                       <Stack spacing={1.25}>
-                        <InputLabel htmlFor="customer-name">Cognome</InputLabel>
+                        <InputLabel htmlFor="last_name">Cognome</InputLabel>
                         <TextField
                           fullWidth
-                          id="customer-name"
+                          id="last_name"
                           placeholder="Inserisci cognome"
-                          {...getFieldProps('name')}
-                          error={Boolean(touched.name && errors.name)}
-                          helperText={touched.name && errors.name}
-                        />
-                      </Stack>
-                    </Grid>
-                    <Grid item xs={12}>
-                      <Stack spacing={1.25}>
-                        <InputLabel htmlFor="customer-name">Numero di telefono</InputLabel>
-                        <TextField
-                          fullWidth
-                          id="customer-name"
-                          placeholder="Inserisci numero di telefono"
-                          {...getFieldProps('name')}
-                          error={Boolean(touched.name && errors.name)}
-                          helperText={touched.name && errors.name}
+                          {...getFieldProps('last_name')}
+                          error={Boolean(touched.last_name && errors.last_name)}
+                          helperText={touched.last_name && errors.last_name}
                         />
                       </Stack>
                     </Grid>
@@ -253,7 +215,19 @@ const AddCustomer = ({ customer, onCancel }) => {
                         />
                       </Stack>
                     </Grid>
-
+                    <Grid item xs={12}>
+                      <Stack spacing={1.25}>
+                        <InputLabel htmlFor="password">Password</InputLabel>
+                        <TextField
+                          fullWidth
+                          id="Password"
+                          placeholder="Inserisci password"
+                          {...getFieldProps('password')}
+                          error={Boolean(touched.password && errors.password)}
+                          helperText={touched.password && errors.password}
+                        />
+                      </Stack>
+                    </Grid>
                     <Grid item xs={12}>
                       <Stack spacing={1.25}>
                         <InputLabel htmlFor="customer-location">Note</InputLabel>

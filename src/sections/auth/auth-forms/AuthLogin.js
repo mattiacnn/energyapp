@@ -51,8 +51,8 @@ const AuthLogin = ({ forgot }) => {
     <>
       <Formik
         initialValues={{
-          email: 'info@phoenixcoded.co',
-          password: '123456',
+          email: '',
+          password: '',
           submit: null
         }}
         validationSchema={Yup.object().shape({
@@ -81,7 +81,7 @@ const AuthLogin = ({ forgot }) => {
             <Grid container spacing={3}>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="email-login">Email Address</InputLabel>
+                  <InputLabel htmlFor="email-login">Indirizzo email</InputLabel>
                   <OutlinedInput
                     id="email-login"
                     type="email"
@@ -89,7 +89,7 @@ const AuthLogin = ({ forgot }) => {
                     name="email"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="Enter email address"
+                    placeholder="Inserisci l'indirizzo email"
                     fullWidth
                     error={Boolean(touched.email && errors.email)}
                   />
@@ -125,7 +125,7 @@ const AuthLogin = ({ forgot }) => {
                         </IconButton>
                       </InputAdornment>
                     }
-                    placeholder="Enter password"
+                    placeholder="Inserisci la password"
                   />
                   {touched.password && errors.password && (
                     <FormHelperText error id="standard-weight-helper-text-password-login">
@@ -147,12 +147,8 @@ const AuthLogin = ({ forgot }) => {
                         size="small"
                       />
                     }
-                    label={<Typography variant="h6">Keep me sign in</Typography>}
+                    label={<Typography variant="h6">Ricordami</Typography>}
                   />
-
-                  <Link variant="h6" component={RouterLink} to={isLoggedIn && forgot ? forgot : '/forgot-password'} color="text.primary">
-                    Forgot Password?
-                  </Link>
                 </Stack>
               </Grid>
               {errors.submit && (
@@ -163,7 +159,7 @@ const AuthLogin = ({ forgot }) => {
               <Grid item xs={12}>
                 <AnimateButton>
                   <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
-                    Login
+                    Accedi
                   </Button>
                 </AnimateButton>
               </Grid>

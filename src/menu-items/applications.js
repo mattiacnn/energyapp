@@ -2,7 +2,7 @@
 import { FormattedMessage } from 'react-intl';
 
 // assets
-import { KyberNetwork, Messages2, Calendar1, Kanban, Profile2User, Bill, UserSquare, ShoppingBag } from 'iconsax-react';
+import { KyberNetwork, Messages2, Calendar1, Kanban, Profile2User, Bill, UserSquare, ShoppingBag, Star } from 'iconsax-react';
 
 // icons
 const icons = {
@@ -13,7 +13,8 @@ const icons = {
   customer: Profile2User,
   invoice: Bill,
   profile: UserSquare,
-  ecommerce: ShoppingBag
+  ecommerce: ShoppingBag,
+  star: Star
 };
 
 // ==============================|| MENU ITEMS - APPLICATIONS ||============================== //
@@ -47,16 +48,16 @@ const applications = {
     {
       id: 'invoice',
       title: <FormattedMessage id="Contratti" />,
-      url: '/apps/invoice/dashboard',
+      url: '/apps/contratti/list',
       type: 'collapse',
       icon: icons.invoice,
       breadcrumbs: true,
       children: [
         {
-          id: 'create',
+          id: 'list',
           title: <FormattedMessage id="Energia" />,
           type: 'item',
-          url: '/apps/invoice/create'
+          url: '/apps/contratti/list'
         },
         {
           id: 'details',
@@ -71,6 +72,14 @@ const applications = {
           url: '/apps/invoice/list'
         },
       ]
+    },
+    {
+      id: 'rates',
+      title: <FormattedMessage id="Tariffe" />,
+      url: '/apps/rates/rates-list',
+      type: 'collapse',
+      icon: icons.star,
+      breadcrumbs: true,
     },
     {
       id: 'profile',

@@ -6,6 +6,7 @@ import { alpha, useTheme } from '@mui/material/styles';
 import {
   Button,
   Chip,
+  CircularProgress,
   Dialog,
   Stack,
   Table,
@@ -37,16 +38,19 @@ import {
   TableRowSelection
 } from 'components/third-party/ReactTable';
 
-import AddCustomer from 'sections/apps/customer/AddCustomer';
-import CustomerView from 'sections/apps/customer/CustomerView';
-import AlertCustomerDelete from 'sections/apps/customer/AlertCustomerDelete';
 
-import makeData from 'data/react-table';
 import { renderFilterTypes, GlobalFilter } from 'utils/react-table';
 
 // assets
 import { Add, Edit, Eye, Trash } from 'iconsax-react';
 import { ThemeMode } from 'config';
+import axios from 'utils/axios';
+import AddAgent from './AddAgent';
+import EditAgent from './EdiAgent';
+import AgentView from './AgentView';
+import AlertAgentDelete from './AlertAgentDelete';
+import snackbar, { openSnackbar } from 'store/reducers/snackbar';
+import { dispatch } from 'store';
 
 const avatarImage = require.context('assets/images/users', true);
 
@@ -57,7 +61,7 @@ function ReactTable({ columns, data, renderRowSubComponent, handleAdd }) {
   const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
 
   const filterTypes = useMemo(() => renderFilterTypes, []);
-  const sortBy = { id: 'fatherName', desc: false };
+  const sortBy = { id: 'id', desc: false };
 
   const {
     getTableProps,
@@ -81,7 +85,7 @@ function ReactTable({ columns, data, renderRowSubComponent, handleAdd }) {
       columns,
       data,
       filterTypes,
-      initialState: { pageIndex: 0, pageSize: 10, hiddenColumns: ['avatar', 'email'], sortBy: [sortBy] }
+      initialState: { pageIndex: 0, pageSize: 10, sortBy: [sortBy] }
     },
     useGlobalFilter,
     useFilters,
@@ -93,9 +97,9 @@ function ReactTable({ columns, data, renderRowSubComponent, handleAdd }) {
 
   useEffect(() => {
     if (matchDownSM) {
-      setHiddenColumns(['age', 'contact', 'visits', 'email', 'status', 'avatar']);
+      setHiddenColumns(['age', 'visits', 'email', 'status', 'avatar', 'phone', "notes"]);
     } else {
-      setHiddenColumns(['avatar', 'email']);
+      setHiddenColumns(['avatar', "notes"]);
     }
     // eslint-disable-next-line
   }, [matchDownSM]);
@@ -135,7 +139,6 @@ function ReactTable({ columns, data, renderRowSubComponent, handleAdd }) {
             {page.map((row, i) => {
               prepareRow(row);
               const rowProps = row.getRowProps();
-
               return (
                 <Fragment key={i}>
                   <TableRow
@@ -180,20 +183,71 @@ ReactTable.propTypes = {
 const AgentsListPage = () => {
   const theme = useTheme();
   const mode = theme.palette.mode;
-  const data = useMemo(() => makeData(200), []);
+  const [agents, setAgents] = useState([{}]);
   const [open, setOpen] = useState(false);
   const [customer, setCustomer] = useState(null);
-  const [customerDeleteId, setCustomerDeleteId] = useState('');
+  const [customerDeleteId, setCustomerDeleteId] = useState();
   const [add, setAdd] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleAdd = () => {
     setAdd(!add);
-    if (customer && !add) setCustomer(null);
+    if (customer && !add) {
+      setCustomer(null);
+    }
   };
 
   const handleClose = () => {
     setOpen(!open);
   };
+
+  const fetchAgents = async () => {
+    setLoading(true);
+    const agents = await axios.get('/agent/list');
+    setAgents(agents.data.agents);
+    // after 500ms setloading to false
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+  }
+
+  const handleDelete = async () => {
+    try {
+      const deleteAgent = await axios.delete(`/agent/${customerDeleteId.id}`);
+      setOpen(false);
+      dispatch(
+        openSnackbar({
+          open: true,
+          message: 'Agente cancellato con successo!',
+          variant: 'alert',
+          alert: {
+            color: 'success'
+          },
+          close: false
+        })
+      );
+      if (deleteAgent.status === 200) {
+        fetchAgents();
+      }
+    } catch (err) {
+      dispatch(
+        openSnackbar({
+          open: true,
+          message: 'Errore durante la cancellazione dell\'agente!',
+          variant: 'alert',
+          alert: {
+            color: 'error'
+          },
+          close: false
+        })
+      );
+    }
+  }
+
+  useEffect(() => {
+    fetchAgents();
+  }, [])
+
 
   const columns = useMemo(
     () => [
@@ -211,15 +265,53 @@ const AgentsListPage = () => {
       },
       {
         Header: 'Nome',
-        accessor: 'fatherName',
+        accessor: 'first_name',
         Cell: ({ row }) => {
           const { values } = row;
           return (
             <Stack direction="row" spacing={1.5} alignItems="center">
-              <Avatar alt="Avatar 1" size="sm" src={avatarImage(`./avatar-${!values.avatar ? 1 : values.avatar}.png`)} />
               <Stack spacing={0}>
-                <Typography variant="subtitle1">{values.fatherName}</Typography>
-                <Typography color="text.secondary">{values.email}</Typography>
+                <Typography variant="subtitle1">{values.first_name}</Typography>
+              </Stack>
+            </Stack>
+          );
+        }
+      },
+      {
+        Header: 'Cognome',
+        accessor: 'last_name',
+        Cell: ({ row }) => {
+          const { values } = row;
+          return (
+            <Stack spacing={0}>
+              <Typography variant="subtitle1">{values.last_name}</Typography>
+            </Stack>
+          );
+        }
+      },
+      {
+        Header: 'Email',
+        accessor: 'email',
+        Cell: ({ row }) => {
+          const { values } = row;
+          return (
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <Stack spacing={0}>
+                <Typography variant="subtitle1">{values.email}</Typography>
+              </Stack>
+            </Stack>
+          );
+        }
+      },
+      {
+        Header: 'Telefono',
+        accessor: 'phone',
+        Cell: ({ row }) => {
+          const { values } = row;
+          return (
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <Stack spacing={0}>
+                <Typography variant="subtitle1">{values.phone}</Typography>
               </Stack>
             </Stack>
           );
@@ -231,15 +323,20 @@ const AgentsListPage = () => {
         disableSortBy: true
       },
       {
-        Header: 'Email',
-        accessor: 'email'
+        Header: 'Indirizzo',
+        accessor: 'address',
+        disableSortBy: true
       },
       {
-        Header: 'Contatto',
-        accessor: 'contact',
-        Cell: ({ value }) => <PatternFormat displayType="text" format="+1 (###) ###-####" mask="_" defaultValue={value} />
+        Header: 'Zip',
+        accessor: 'zip',
+        disableSortBy: true
       },
-
+      {
+        Header: 'Città',
+        accessor: 'city',
+        disableSortBy: true
+      },
       /*{
         Header: 'Status',
         accessor: 'status',
@@ -322,7 +419,7 @@ const AgentsListPage = () => {
                   onClick={(e) => {
                     e.stopPropagation();
                     handleClose();
-                    setCustomerDeleteId(row.values.id);
+                    setCustomerDeleteId(row.values);
                   }}
                 >
                   <Trash />
@@ -331,20 +428,33 @@ const AgentsListPage = () => {
             </Stack>
           );
         }
-      }
+      },
+      {
+        Header: 'Note',
+        accessor: 'notes',
+        disableSortBy: true,
+      },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [theme]
   );
 
-  const renderRowSubComponent = useCallback(({ row }) => <CustomerView data={data[Number(row.id)]} />, [data]);
+  const renderRowSubComponent = useCallback(({ row }) => <AgentView data={agents[Number(row.id)]} />, [agents]);
 
   return (
     <MainCard content={false}>
-      <ScrollX>
-        <ReactTable columns={columns} data={data} handleAdd={handleAdd} renderRowSubComponent={renderRowSubComponent} />
-      </ScrollX>
-      <AlertCustomerDelete title={customerDeleteId} open={open} handleClose={handleClose} />
+      {
+        loading ?
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: 20 }} >
+            <CircularProgress />
+          </div>
+          :
+          <ScrollX>
+            <ReactTable columns={columns} data={agents} handleAdd={handleAdd} renderRowSubComponent={renderRowSubComponent} />
+          </ScrollX>
+
+      }
+      <AlertAgentDelete title={customerDeleteId} open={open} handleClose={handleClose} handleDelete={handleDelete} />
       {/* add customer dialog */}
       <Dialog
         maxWidth="sm"
@@ -356,7 +466,20 @@ const AgentsListPage = () => {
         sx={{ '& .MuiDialog-paper': { p: 0 }, transition: 'transform 225ms' }}
         aria-describedby="alert-dialog-slide-description"
       >
-        <AddCustomer customer={customer} onCancel={handleAdd} />
+        {
+          customer ?
+            <EditAgent
+              customer={customer}
+              onCancel={handleAdd}
+              fetchAgents={fetchAgents}
+            />
+            : <AddAgent
+              customer={customer}
+              onCancel={handleAdd}
+              fetchAgents={fetchAgents}
+            />
+
+        }
       </Dialog>
     </MainCard>
   );

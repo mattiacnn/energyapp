@@ -36,7 +36,7 @@ import * as Yup from 'yup';
 import { useFormik, Form, FormikProvider } from 'formik';
 
 // project-imports
-import AlertCustomerDelete from './AlertCustomerDelete';
+
 import Avatar from 'components/@extended/Avatar';
 import IconButton from 'components/@extended/IconButton';
 import { dispatch } from 'store';
@@ -45,6 +45,7 @@ import { ThemeMode } from 'config';
 
 // assets
 import { Camera, Trash } from 'iconsax-react';
+import AlertAgentDelete from './AlertAgentDelete';
 
 
 // constant
@@ -71,20 +72,22 @@ const allStatus = ['Complicated', 'Single', 'Relationship'];
 
 // ==============================|| CUSTOMER - ADD / EDIT ||============================== //
 
-const AddCustomer = ({ customer, onCancel, fetchCustomers }) => {
+const AddAgent = ({ customer, onCancel, fetchAgents }) => {
   const theme = useTheme();
   const isCreating = !customer;
 
-  const [agentList, setAgentList] = useState([]);
+  const [selectedImage, setSelectedImage] = useState(undefined);
+
   const CustomerSchema = Yup.object().shape({
     first_name: Yup.string().max(255).required('Nome è un campo obbligatorio'),
     last_name: Yup.string().max(255).required('Cognome è un campo obbligatorio'),
+    phone: Yup.string().max(15),
     email: Yup.string().max(255).required('Email è un campo obbligatorio').email('Inserisci una email valida'),
-    phone: Yup.string().max(255).required('Telefono è un campo obbligatorio'),
-    address: Yup.string().max(255).required('Indirizzo è un campo obbligatorio'),
-    city: Yup.string().max(255).required('Città è un campo obbligatorio'),
-    zip: Yup.string().max(255).required('CAP è un campo obbligatorio'),
-    notes: Yup.string().max(255)
+    password: Yup.string().max(255).required('Password è un campo obbligatorio'),
+    notes: Yup.string().max(500),
+    address: Yup.string().max(255),
+    city: Yup.string().max(255),
+    zip: Yup.string().max(255),
   });
 
   const [openAlert, setOpenAlert] = useState(false);
@@ -94,40 +97,32 @@ const AddCustomer = ({ customer, onCancel, fetchCustomers }) => {
     onCancel();
   };
 
-  const fetchAgents = async () => {
-    try {
-      const response = await axios.get('/agent/list');
-      const { agents } = response.data;
-      setAgentList(agents);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    fetchAgents();
-  }, []);
-
-
   const formik = useFormik({
     initialValues: getInitialValues(customer),
     validationSchema: CustomerSchema,
     onSubmit: async (values, { setSubmitting }) => {
       try {
-        const new_client = {
+        // const newCustomer = {
+        //   name: values.name,
+        //   email: values.email,
+        //   location: values.location,
+        //   orderStatus: values.orderStatus
+        // };
+
+        const new_agent = {
           first_name: values.first_name,
           last_name: values.last_name,
           email: values.email,
-          city: values.city,
-          agent: values.agent,
-          address: values.address,
-          zip: values.zip,
           phone: values.phone,
-          notes: values.notes
+          notes: values.notes,
+          city: values.city,
+          zip: values.zip,
+          address: values.address,
+          password: values.password,
         }
-        const response = await axios.post('/client/create', new_client);
-        const { client } = response.data;
-        if (client) {
+        const response = await axios.post('/agent/create', new_agent);
+        const { agent } = response.data;
+        if (agent) {
           // dispatch(openSnackbar('Customer Added Successfully'));
           dispatch(
             openSnackbar({
@@ -142,7 +137,7 @@ const AddCustomer = ({ customer, onCancel, fetchCustomers }) => {
           );
           onCancel();
           setSubmitting(false);
-          fetchCustomers();
+          fetchAgents();
         }
         else if (response.message) {
           dispatch(
@@ -227,7 +222,7 @@ const AddCustomer = ({ customer, onCancel, fetchCustomers }) => {
                     </Grid>
                     <Grid item xs={12}>
                       <Stack spacing={1.25}>
-                        <InputLabel htmlFor="customer-email">Telefono</InputLabel>
+                        <InputLabel htmlFor="customer-phone">Telefono</InputLabel>
                         <TextField
                           fullWidth
                           id="customer-phone"
@@ -240,11 +235,11 @@ const AddCustomer = ({ customer, onCancel, fetchCustomers }) => {
                     </Grid>
                     <Grid item xs={12}>
                       <Stack spacing={1.25}>
-                        <InputLabel htmlFor="customer-email">Indirizzo</InputLabel>
+                        <InputLabel htmlFor="customer-address">Indirizzo</InputLabel>
                         <TextField
                           fullWidth
                           id="customer-address"
-                          placeholder="Inserisci Indirizzo"
+                          placeholder="Inserisci indirizzo"
                           {...getFieldProps('address')}
                           error={Boolean(touched.address && errors.address)}
                           helperText={touched.address && errors.address}
@@ -253,11 +248,11 @@ const AddCustomer = ({ customer, onCancel, fetchCustomers }) => {
                     </Grid>
                     <Grid item xs={12}>
                       <Stack spacing={1.25}>
-                        <InputLabel htmlFor="customer-email">Città</InputLabel>
+                        <InputLabel htmlFor="customer-city">Città</InputLabel>
                         <TextField
                           fullWidth
                           id="customer-city"
-                          placeholder="Inserisci Città"
+                          placeholder="Inserisci città"
                           {...getFieldProps('city')}
                           error={Boolean(touched.city && errors.city)}
                           helperText={touched.city && errors.city}
@@ -266,11 +261,11 @@ const AddCustomer = ({ customer, onCancel, fetchCustomers }) => {
                     </Grid>
                     <Grid item xs={12}>
                       <Stack spacing={1.25}>
-                        <InputLabel htmlFor="customer-zip">Cap</InputLabel>
+                        <InputLabel htmlFor="customer-city">Codice postale</InputLabel>
                         <TextField
                           fullWidth
-                          id="customer-zip"
-                          placeholder="Inserisci Cap"
+                          id="customer-zip>"
+                          placeholder="Inserisci cap"
                           {...getFieldProps('zip')}
                           error={Boolean(touched.zip && errors.zip)}
                           helperText={touched.zip && errors.zip}
@@ -279,22 +274,15 @@ const AddCustomer = ({ customer, onCancel, fetchCustomers }) => {
                     </Grid>
                     <Grid item xs={12}>
                       <Stack spacing={1.25}>
-                        <InputLabel htmlFor="customer-zip">Agente associato</InputLabel>
-                        <Select
-                          displayEmpty
-                          name="agent"
-                          {...getFieldProps('agent')}
-                          error={Boolean(errors.agent && touched.agent)}
-                        >
-                          <MenuItem disabled value="">
-                            Seleziona un agente
-                          </MenuItem>
-                          {agentList?.map((agent) => (
-                            <MenuItem key={agent.id} value={agent.id}>
-                              {agent.first_name} {agent.last_name}
-                            </MenuItem>
-                          ))}
-                        </Select>
+                        <InputLabel htmlFor="password">Password</InputLabel>
+                        <TextField
+                          fullWidth
+                          id="Password"
+                          placeholder="Inserisci password"
+                          {...getFieldProps('password')}
+                          error={Boolean(touched.password && errors.password)}
+                          helperText={touched.password && errors.password}
+                        />
                       </Stack>
                     </Grid>
                     <Grid item xs={12}>
@@ -302,16 +290,41 @@ const AddCustomer = ({ customer, onCancel, fetchCustomers }) => {
                         <InputLabel htmlFor="customer-location">Note</InputLabel>
                         <TextField
                           fullWidth
-                          id="customer-location"
+                          id="customer-notes"
                           multiline
                           rows={2}
-                          placeholder="Inserisci note"
-                          {...getFieldProps('location')}
-                          error={Boolean(touched.location && errors.location)}
-                          helperText={touched.location && errors.location}
+                          placeholder="Inserisci notes"
+                          {...getFieldProps('notes')}
+                          error={Boolean(touched.notes && errors.notes)}
+                          helperText={touched.notes && errors.notes}
                         />
                       </Stack>
                     </Grid>
+                    {
+                      /*
+                       <Grid item xs={12}>
+                      <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
+                        <Stack spacing={0.5}>
+                          <Typography variant="subtitle1">Make Contact Info Public</Typography>
+                          <Typography variant="caption" color="textSecondary">
+                            Means that anyone viewing your profile will be able to see your contacts details
+                          </Typography>
+                        </Stack>
+                        <FormControlLabel control={<Switch defaultChecked sx={{ mt: 0 }} />} label="" labelPlacement="start" />
+                      </Stack>
+                      <Divider sx={{ my: 2 }} />
+                      <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
+                        <Stack spacing={0.5}>
+                          <Typography variant="subtitle1">Available to hire</Typography>
+                          <Typography variant="caption" color="textSecondary">
+                            Toggling this will let your teammates know that you are available for acquiring new projects
+                          </Typography>
+                        </Stack>
+                        <FormControlLabel control={<Switch sx={{ mt: 0 }} />} label="" labelPlacement="start" />
+                      </Stack>
+                    </Grid>
+                       */
+                    }
                   </Grid>
                 </Grid>
               </Grid>
@@ -343,15 +356,14 @@ const AddCustomer = ({ customer, onCancel, fetchCustomers }) => {
           </Form>
         </LocalizationProvider>
       </FormikProvider>
-      {!isCreating && <AlertCustomerDelete title={customer.fatherName} open={openAlert} handleClose={handleAlertClose} />}
+      {!isCreating && <AlertAgentDelete title={customer.fatherName} open={openAlert} handleClose={handleAlertClose} />}
     </>
   );
 };
 
-AddCustomer.propTypes = {
+AddAgent.propTypes = {
   customer: PropTypes.any,
-  onCancel: PropTypes.func,
-  fetchCustomers: PropTypes.func
+  onCancel: PropTypes.func
 };
 
-export default AddCustomer;
+export default AddAgent;

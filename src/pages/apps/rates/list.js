@@ -6,6 +6,7 @@ import { alpha, useTheme } from '@mui/material/styles';
 import {
   Button,
   Chip,
+  CircularProgress,
   Dialog,
   Stack,
   Table,
@@ -37,18 +38,19 @@ import {
   TableRowSelection
 } from 'components/third-party/ReactTable';
 
-import AddCustomer from 'sections/apps/customer/AddCustomer';
-import CustomerView from 'sections/apps/customer/CustomerView';
-import AlertCustomerDelete from 'sections/apps/customer/AlertCustomerDelete';
 
-import makeData from 'data/react-table';
 import { renderFilterTypes, GlobalFilter } from 'utils/react-table';
 
 // assets
-import { Add, Edit, ElementPlus, Eye, Trash } from 'iconsax-react';
+import { Add, Edit, Eye, Trash } from 'iconsax-react';
 import { ThemeMode } from 'config';
 import axios from 'utils/axios';
-import { useNavigate } from 'react-router';
+import AddAgent from './AddAgent';
+import EditAgent from './EdiAgent';
+import AgentView from './AgentView';
+import AlertAgentDelete from './AlertAgentDelete';
+import snackbar, { openSnackbar } from 'store/reducers/snackbar';
+import { dispatch } from 'store';
 
 const avatarImage = require.context('assets/images/users', true);
 
@@ -59,7 +61,7 @@ function ReactTable({ columns, data, renderRowSubComponent, handleAdd }) {
   const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
 
   const filterTypes = useMemo(() => renderFilterTypes, []);
-  const sortBy = { id: 'fatherName', desc: false };
+  const sortBy = { id: 'id', desc: false };
 
   const {
     getTableProps,
@@ -83,7 +85,7 @@ function ReactTable({ columns, data, renderRowSubComponent, handleAdd }) {
       columns,
       data,
       filterTypes,
-      initialState: { pageIndex: 0, pageSize: 10, hiddenColumns: ['avatar', 'email'], sortBy: [sortBy] }
+      initialState: { pageIndex: 0, pageSize: 10, sortBy: [sortBy] }
     },
     useGlobalFilter,
     useFilters,
@@ -95,9 +97,9 @@ function ReactTable({ columns, data, renderRowSubComponent, handleAdd }) {
 
   useEffect(() => {
     if (matchDownSM) {
-      setHiddenColumns(['age', 'contact', 'visits', 'email', 'status', 'avatar']);
+      setHiddenColumns(['agent_bonus_2', 'agent_monthly_fee_2']);
     } else {
-      setHiddenColumns(['avatar', 'email']);
+      setHiddenColumns(['agent_bonus_2', 'agent_monthly_fee_2']);
     }
     // eslint-disable-next-line
   }, [matchDownSM]);
@@ -117,7 +119,7 @@ function ReactTable({ columns, data, renderRowSubComponent, handleAdd }) {
           <Stack direction={matchDownSM ? 'column' : 'row'} alignItems="center" spacing={2}>
             <SortingSelect sortBy={sortBy.id} setSortBy={setSortBy} allColumns={allColumns} />
             <Button variant="contained" startIcon={<Add />} onClick={handleAdd} size="small">
-              Aggiungi cliente
+              Aggiungi tariffa
             </Button>
           </Stack>
         </Stack>
@@ -137,7 +139,6 @@ function ReactTable({ columns, data, renderRowSubComponent, handleAdd }) {
             {page.map((row, i) => {
               prepareRow(row);
               const rowProps = row.getRowProps();
-
               return (
                 <Fragment key={i}>
                   <TableRow
@@ -179,25 +180,73 @@ ReactTable.propTypes = {
 
 // ==============================|| CUSTOMER - LIST ||============================== //
 
-const CustomerListPage = () => {
+const RatesListPage = () => {
   const theme = useTheme();
   const mode = theme.palette.mode;
+  const [agents, setAgents] = useState([{}]);
   const [open, setOpen] = useState(false);
   const [customer, setCustomer] = useState(null);
-  const [customerDeleteId, setCustomerDeleteId] = useState('');
+  const [customerDeleteId, setCustomerDeleteId] = useState();
   const [add, setAdd] = useState(false);
-  const [customers, setCustomers] = useState([{}]);
   const [loading, setLoading] = useState(false);
-  const navigation = useNavigate();
 
   const handleAdd = () => {
     setAdd(!add);
-    if (customer && !add) setCustomer(null);
+    if (customer && !add) {
+      setCustomer(null);
+    }
   };
 
   const handleClose = () => {
     setOpen(!open);
   };
+
+  const fetchAgents = async () => {
+    setLoading(true);
+    const agents = await axios.get('/rate/list');
+    setAgents(agents.data.rates);
+    // after 500ms setloading to false
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+  }
+
+  const handleDelete = async () => {
+    try {
+      const deleteAgent = await axios.delete(`/rate/${customerDeleteId.id}`);
+      setOpen(false);
+      dispatch(
+        openSnackbar({
+          open: true,
+          message: 'Agente cancellato con successo!',
+          variant: 'Tariffa',
+          alert: {
+            color: 'success'
+          },
+          close: false
+        })
+      );
+      if (deleteAgent.status === 200) {
+        fetchAgents();
+      }
+    } catch (err) {
+      dispatch(
+        openSnackbar({
+          open: true,
+          message: 'Errore durante la cancellazione della tariffa!',
+          variant: 'alert',
+          alert: {
+            color: 'error'
+          },
+          close: false
+        })
+      );
+    }
+  }
+
+  useEffect(() => {
+    fetchAgents();
+  }, [])
 
 
   const columns = useMemo(
@@ -216,43 +265,54 @@ const CustomerListPage = () => {
       },
       {
         Header: 'Nome',
-        accessor: 'fatherName',
+        accessor: 'name',
         Cell: ({ row }) => {
           const { values } = row;
           return (
             <Stack direction="row" spacing={1.5} alignItems="center">
-              <Avatar alt="Avatar 1" size="sm" src={avatarImage(`./avatar-${!values.avatar ? 1 : values.avatar}.png`)} />
               <Stack spacing={0}>
-                <Typography variant="subtitle1">{values.fatherName}</Typography>
-                <Typography color="text.secondary">{values.email}</Typography>
+                <Typography variant="subtitle1">{values.name}</Typography>
               </Stack>
             </Stack>
           );
         }
       },
       {
-        Header: 'Agente associato',
-        accessor: 'agent',
-        className: 'cell-right'
+        Header: 'Gettone',
+        accessor: 'agent_bonus',
+        Cell: ({ row }) => {
+          const { values } = row;
+          return (
+            <Stack spacing={0}>
+              <Typography variant="subtitle1">{values.agent_bonus}</Typography>
+            </Stack>
+          );
+        }
       },
       {
-        Header: 'Tipo di contratto',
-        accessor: 'contract',
-        className: 'cell-right'
+        Header: 'Ricorrenza',
+        accessor: 'agent_monthly_fee',
+        Cell: ({ row }) => {
+          const { values } = row;
+          return (
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <Stack spacing={0}>
+                <Typography variant="subtitle1">{values.agent_monthly_fee}</Typography>
+              </Stack>
+            </Stack>
+          );
+        }
       },
+
       {
-        Header: 'Avatar',
-        accessor: 'avatar',
+        Header: 'Ricorrenza 13 mese',
+        accessor: 'agent_monthly_fee_2',
         disableSortBy: true
       },
       {
-        Header: 'Email',
-        accessor: 'email'
-      },
-      {
-        Header: 'Contatto',
-        accessor: 'contact',
-        Cell: ({ value }) => <PatternFormat displayType="text" format="+1 (###) ###-####" mask="_" defaultValue={value} />
+        Header: 'Gettone 13 mese',
+        accessor: 'agent_bonus_2',
+        disableSortBy: true
       },
       {
         Header: 'Azioni',
@@ -262,26 +322,6 @@ const CustomerListPage = () => {
           const collapseIcon = row.isExpanded ? <Add style={{ color: theme.palette.error.main, transform: 'rotate(45deg)' }} /> : <Eye />;
           return (
             <Stack direction="row" alignItems="center" justifyContent="center" spacing={0}>
-              <Tooltip
-                componentsProps={{
-                  tooltip: {
-                    sx: {
-                      backgroundColor: mode === ThemeMode.DARK ? theme.palette.grey[50] : theme.palette.grey[700],
-                      opacity: 0.9
-                    }
-                  }
-                }}
-                title="Crea contratto"
-              >
-                <IconButton
-                  color="primary"
-                  onClick={(e) => {
-                    navigation('/apps/contratti/create/' + row.values.id);
-                  }}
-                >
-                  <Add />
-                </IconButton>
-              </Tooltip>
               <Tooltip
                 componentsProps={{
                   tooltip: {
@@ -341,7 +381,7 @@ const CustomerListPage = () => {
                   onClick={(e) => {
                     e.stopPropagation();
                     handleClose();
-                    setCustomerDeleteId(row.values.id);
+                    setCustomerDeleteId(row.values);
                   }}
                 >
                   <Trash />
@@ -350,35 +390,28 @@ const CustomerListPage = () => {
             </Stack>
           );
         }
-      }
+      },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [theme]
   );
 
-  const fetchCustomers = async () => {
-    setLoading(true);
-    const customers = await axios.get('/client/list');
-    setCustomers(customers.data.clients);
-    // after 500ms setloading to false
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
-  }
-
-  useEffect(() => {
-    fetchCustomers();
-  }, [])
-
-
-  const renderRowSubComponent = useCallback(({ row }) => <CustomerView data={customers[Number(row.id)]} />, [customers]);
+  const renderRowSubComponent = useCallback(({ row }) => <AgentView data={agents[Number(row.id)]} />, [agents]);
 
   return (
     <MainCard content={false}>
-      <ScrollX>
-        <ReactTable columns={columns} data={customers} handleAdd={handleAdd} renderRowSubComponent={renderRowSubComponent} />
-      </ScrollX>
-      <AlertCustomerDelete title={customerDeleteId} open={open} handleClose={handleClose} />
+      {
+        loading ?
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: 20 }} >
+            <CircularProgress />
+          </div>
+          :
+          <ScrollX>
+            <ReactTable columns={columns} data={agents} handleAdd={handleAdd} renderRowSubComponent={renderRowSubComponent} />
+          </ScrollX>
+
+      }
+      <AlertAgentDelete title={customerDeleteId} open={open} handleClose={handleClose} handleDelete={handleDelete} />
       {/* add customer dialog */}
       <Dialog
         maxWidth="sm"
@@ -390,13 +423,26 @@ const CustomerListPage = () => {
         sx={{ '& .MuiDialog-paper': { p: 0 }, transition: 'transform 225ms' }}
         aria-describedby="alert-dialog-slide-description"
       >
-        <AddCustomer customer={customer} onCancel={handleAdd} fetchCustomers={fetchCustomers} />
+        {
+          customer ?
+            <EditAgent
+              customer={customer}
+              onCancel={handleAdd}
+              fetchAgents={fetchAgents}
+            />
+            : <AddAgent
+              customer={customer}
+              onCancel={handleAdd}
+              fetchAgents={fetchAgents}
+            />
+
+        }
       </Dialog>
     </MainCard>
   );
 };
 
-CustomerListPage.propTypes = {
+RatesListPage.propTypes = {
   row: PropTypes.object,
   values: PropTypes.object,
   avatar: PropTypes.object,
@@ -410,4 +456,4 @@ CustomerListPage.propTypes = {
   id: PropTypes.number
 };
 
-export default CustomerListPage;
+export default RatesListPage;

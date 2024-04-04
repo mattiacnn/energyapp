@@ -28,6 +28,7 @@ const AppCustomerCard = Loadable(lazy(() => import('pages/apps/customer/card')))
 
 
 const AppAgentsList = Loadable(lazy(() => import('pages/apps/agents/list')));
+const RatesList = Loadable(lazy(() => import('pages/apps/rates/list')));
 
 const AppInvoiceCreate = Loadable(lazy(() => import('pages/apps/invoice/create')));
 const AppInvoiceDashboard = Loadable(lazy(() => import('pages/apps/invoice/dashboard')));
@@ -194,14 +195,23 @@ const MainRoutes = {
               ]
             },
             {
-              path: 'invoice',
+              path: 'rates',
+              children: [
+                {
+                  path: 'rates-list',
+                  element: <RatesList />
+                }
+              ]
+            },
+            {
+              path: 'contratti',
               children: [
                 {
                   path: 'dashboard',
                   element: <AppInvoiceDashboard />
                 },
                 {
-                  path: 'create',
+                  path: 'create/:client_id',
                   element: <AppInvoiceCreate />
                 },
                 {

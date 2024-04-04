@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const axiosServices = axios.create({ baseURL: process.env.REACT_APP_API_URL || 'https://energyapp-4k239xmu6-mattiacnn.vercel.app/api/' });
+const axiosServices = axios.create({ baseURL: process.env.REACT_APP_API_URL || 'https://energyapp-api.vercel.app/api/' });
 
 // ==============================|| AXIOS - FOR MOCK SERVICES ||============================== //
 

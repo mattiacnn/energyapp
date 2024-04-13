@@ -51,12 +51,14 @@ import AgentView from './AgentView';
 import AlertAgentDelete from './AlertAgentDelete';
 import snackbar, { openSnackbar } from 'store/reducers/snackbar';
 import { dispatch } from 'store';
+import { useNavigate } from 'react-router';
+import { updateAgent } from 'store/reducers/agent';
 
 const avatarImage = require.context('assets/images/users', true);
 
 // ==============================|| REACT TABLE ||============================== //
 
-function ReactTable({ columns, data, renderRowSubComponent, handleAdd }) {
+function ReactTable({ columns, data, renderRowSubComponent, handleAdd, handleUpdate}) {
   const theme = useTheme();
   const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -189,16 +191,20 @@ const AgentsListPage = () => {
   const [customerDeleteId, setCustomerDeleteId] = useState();
   const [add, setAdd] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigation = useNavigate();
 
   const handleAdd = () => {
-    setAdd(!add);
-    if (customer && !add) {
-      setCustomer(null);
-    }
+    navigation('/apps/new-agent/create/personal');
   };
 
   const handleClose = () => {
     setOpen(!open);
+  };
+
+  const handleUpdate = (customer) => {
+    let obj = { updating: true, id: customer.id };
+    dispatch(updateAgent(obj));
+    navigation('/apps/new-agent/create/personal');
   };
 
   const fetchAgents = async () => {
@@ -397,7 +403,7 @@ const AgentsListPage = () => {
                   onClick={(e) => {
                     e.stopPropagation();
                     setCustomer(row.values);
-                    handleAdd();
+                    handleUpdate(row.values);
                   }}
                 >
                   <Edit />

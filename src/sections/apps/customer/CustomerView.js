@@ -47,9 +47,8 @@ const CustomerView = ({ data }) => {
                 <Grid container spacing={3}>
                   <Grid item xs={12}>
                     <Stack spacing={2.5} alignItems="center">
-                      <Avatar alt="Avatar 1" size="xl" src={avatarImage(`./avatar-${data.avatar}.png`)} />
                       <Stack spacing={0.5} alignItems="center">
-                        <Typography variant="h5">{data.fatherName}</Typography>
+                        <Typography variant="h5">{data.first_name} {data.last_name}</Typography>
                       </Stack>
                     </Stack>
                   </Grid>
@@ -72,7 +71,7 @@ const CustomerView = ({ data }) => {
                         </ListItemIcon>
                         <ListItemSecondaryAction>
                           <Typography align="right">
-                            <PatternFormat displayType="text" format="+1 (###) ###-####" mask="_" defaultValue={data.contact} />
+                            <PatternFormat displayType="text" format="+39 (###) ###-####" mask="_" defaultValue={data.phone} />
                           </Typography>
                         </ListItemSecondaryAction>
                       </ListItem>
@@ -81,7 +80,7 @@ const CustomerView = ({ data }) => {
                           <Location size={18} />
                         </ListItemIcon>
                         <ListItemSecondaryAction>
-                          <Typography align="right">{data.country}</Typography>
+                          <Typography align="right">{data.city}</Typography>
                         </ListItemSecondaryAction>
                       </ListItem>
                     </List>
@@ -98,14 +97,14 @@ const CustomerView = ({ data }) => {
                         <Grid item xs={12} md={6}>
                           <Stack spacing={0.5}>
                             <Typography color="secondary">Nome</Typography>
-                            <Typography>{data.firstName}</Typography>
+                            <Typography>{data.first_name}</Typography>
                           </Stack>
                         </Grid>
                         <Grid item xs={12} md={6}>
                           <Stack spacing={0.5}>
                             <Typography color="secondary">Cognome</Typography>
                             <Typography>
-                              {data.lastName}
+                              {data.last_name}
                             </Typography>
                           </Stack>
                         </Grid>
@@ -115,15 +114,15 @@ const CustomerView = ({ data }) => {
                       <Grid container spacing={3}>
                         <Grid item xs={12} md={6}>
                           <Stack spacing={0.5}>
-                            <Typography color="secondary">Paese</Typography>
-                            <Typography>{data.country}</Typography>
+                            <Typography color="secondary">Città</Typography>
+                            <Typography>{data.city}</Typography>
                           </Stack>
                         </Grid>
                         <Grid item xs={12} md={6}>
                           <Stack spacing={0.5}>
                             <Typography color="secondary">Codice postale</Typography>
                             <Typography>
-                              <PatternFormat displayType="text" format="### ###" mask="_" defaultValue={data.contact} />
+                              {data.zip}                                
                             </Typography>
                           </Stack>
                         </Grid>
@@ -139,7 +138,7 @@ const CustomerView = ({ data }) => {
                 </MainCard>
                 <MainCard title="Note">
                   <Typography color="secondary">
-                    lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et
+                    {data.notes}
                   </Typography>
                 </MainCard>
               </Stack>

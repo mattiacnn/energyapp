@@ -50,6 +50,18 @@ const AccountTabPassword = Loadable(lazy(() => import('sections/apps/profiles/ac
 const AccountTabRole = Loadable(lazy(() => import('sections/apps/profiles/account/TabRole')));
 const AccountTabSettings = Loadable(lazy(() => import('sections/apps/profiles/account/TabSettings')));
 
+const NewClientProfile = Loadable(lazy(() => import('pages/apps/addClient/addClient')));
+const NewClientTabAddressess = Loadable(lazy(() => import('sections/apps/addClient/addClient/TabAddressess')));
+const NewClientTabAgent = Loadable(lazy(() => import('sections/apps/addClient/addClient/TabAgent')));
+const NewClientTabContacts = Loadable(lazy(() => import('sections/apps/addClient/addClient/TabContacts')));
+const NewClientTabAccount = Loadable(lazy(() => import('sections/apps/addClient/addClient/TabAccount')));
+
+const NewAgentrofile = Loadable(lazy(() => import('pages/apps/addAgent/addAgent')));
+const NewAgentTabAddressess = Loadable(lazy(() => import('sections/apps/addAgent/addAgent/TabAddressess')));
+const NewAgentTabContacts = Loadable(lazy(() => import('sections/apps/addAgent/addAgent/TabContacts')));
+const NewAgentTabAccount = Loadable(lazy(() => import('sections/apps/addAgent/addAgent/TabAccount')));
+const NewAgentTabPassword = Loadable(lazy(() => import('sections/apps/addAgent/addAgent/TabPassword')));
+
 const AppECommProducts = Loadable(lazy(() => import('pages/apps/e-commerce/product')));
 const AppECommProductDetails = Loadable(lazy(() => import('pages/apps/e-commerce/product-details')));
 const AppECommProductList = Loadable(lazy(() => import('pages/apps/e-commerce/products-list')));
@@ -283,6 +295,82 @@ const MainRoutes = {
                     }
                   ]
                 }
+              ]
+            },
+            {
+              path: 'new-client',
+              children: [
+                {
+                  path: 'create',
+                  element: <NewClientProfile />,
+                  children: [
+                    {
+                      path: 'personal',
+                      element: <NewClientTabAccount />
+                    },
+                    {
+                      path: 'addressess',
+                      element: <NewClientTabAddressess />
+                    },
+                    {
+                      path: 'agent',
+                      element: <NewClientTabAgent />
+                    },
+                    {
+                      path: 'contacts',
+                      element: <NewClientTabContacts />
+                    },
+                  ]
+                },
+                {
+                  path: 'user',
+                  element: <UserProfile />,
+                  children: [
+                    {
+                      path: 'personal',
+                      element: <UserTabPersonal />
+                    },
+                    {
+                      path: 'payment',
+                      element: <UserTabPayment />
+                    },
+                    {
+                      path: 'password',
+                      element: <UserTabPassword />
+                    },
+                    {
+                      path: 'settings',
+                      element: <UserTabSettings />
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              path: 'new-agent',
+              children: [
+                {
+                  path: 'create',
+                  element: <NewAgentrofile />,
+                  children: [
+                    {
+                      path: 'personal',
+                      element: <NewAgentTabAccount />
+                    },
+                    {
+                      path: 'addressess',
+                      element: <NewAgentTabAddressess />
+                    },
+                    {
+                      path: 'contacts',
+                      element: <NewAgentTabContacts />
+                    },
+                    {
+                      path: 'password',
+                      element: <NewAgentTabPassword />
+                    },
+                  ]
+                },
               ]
             },
             {

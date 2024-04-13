@@ -261,6 +261,7 @@ const Create = () => {
                       <InputLabel>Tariffa</InputLabel>
                       <FormControl sx={{ width: '100%' }}>
                         <Select
+                          disabled
                           value={values.rate}
                           displayEmpty
                           name="rate"

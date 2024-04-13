@@ -95,7 +95,7 @@ const Create = () => {
   const [client, setClient] = useState({});
   const [agent, setAgent] = useState({});
   const [contractTypes, setContractTypes] = useState({});
-
+  const [selectedRates, setSelectedRates] = useState([]);
   const { open, isCustomerOpen } = useSelector((state) => state.invoice);
 
   // get client_id parameter from url
@@ -172,6 +172,15 @@ const Create = () => {
     );
   };
 
+  const handleChangeContractType = (setFieldValue, value) => {
+    setFieldValue('contract_type_id', value);
+    console.log(rates)
+    console.log("value", value)
+    const filteredRates = rates.filter((rate) => rate.contract_type_id === Number(value));
+    console.log(filteredRates)
+    setSelectedRates(filteredRates);
+  }
+
   useEffect(() => {
     fetchRates();
     fetchClient();
@@ -212,73 +221,38 @@ const Create = () => {
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={6} md={3}>
                     <Stack spacing={1}>
-                      <InputLabel>Tariffa</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <Select
-                          value={values.rate}
-                          displayEmpty
-                          name="rate_id"
-                          onChange={handleChange}
-                          error={Boolean(errors.rate_id && touched.rate_id)}
-                        >
-                          <MenuItem disabled value="">
-                            Seleziona tariffa
-                          </MenuItem>
-                          {rates.map((rate) => (
-                            <MenuItem key={rate.id} value={rate.id}>
-                              {rate.name}
-                            </MenuItem>
-                          ))}
-                        </Select>
+                      <InputLabel>Data di sottoscrizione</InputLabel>
+                      <FormControl sx={{ width: '100%' }} error={Boolean(touched.date && errors.date)}>
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                          <DatePicker format="dd/MM/yyyy" value={values.date} onChange={(newValue) => setFieldValue('date', newValue)} />
+                        </LocalizationProvider>
                       </FormControl>
                     </Stack>
-                    {touched.status && errors.status && <FormHelperText error={true}>{errors.status}</FormHelperText>}
+                    {touched.date && errors.date && <FormHelperText error={true}>{errors.date}</FormHelperText>}
                   </Grid>
                   <Grid item xs={12} sm={6} md={3}>
                     <Stack spacing={1}>
-                      <InputLabel>Tipo cliente</InputLabel>
+                      <InputLabel>Tipologia</InputLabel>
                       <FormControl sx={{ width: '100%' }}>
                         <Select
-                          value={values.rate}
                           displayEmpty
-                          name="client_type_id"
+                          name="type"
                           onChange={handleChange}
-                          error={Boolean(errors.client_type_id && touched.client_type_id)}
+                          error={Boolean(errors.type && touched.type)}
                         >
                           <MenuItem disabled value="">
-                            Seleziona tipo cliente
+                            Seleziona tipologia
                           </MenuItem>
-                          {client_types.map((client) => (
-                            <MenuItem key={client.name} value={client.name}>
-                              {client.name}
-                            </MenuItem>
-                          ))}
+                          <MenuItem value={"switch"}>
+                            Switch
+                          </MenuItem>
+                          <MenuItem value={"voltura"}>
+                            Voltura
+                          </MenuItem>
                         </Select>
                       </FormControl>
                     </Stack>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Tipo contratto</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <Select
-                          value={values.rate}
-                          displayEmpty
-                          name="contract_type_id"
-                          onChange={handleChange}
-                          error={Boolean(errors.contract_type_id && touched.contract_type_id)}
-                        >
-                          <MenuItem disabled value="">
-                            Seleziona tipo contratto
-                          </MenuItem>
-                          {contractTypes?.map((contractType) => (
-                            <MenuItem key={contractType.id} value={contractType.id}>
-                              {contractType.name}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Stack>
+                    {touched.type && errors.type && <FormHelperText error={true}>{errors.type}</FormHelperText>}
                   </Grid>
                   <Grid item xs={12} sm={6} md={3}>
                     <Stack spacing={1}>
@@ -335,14 +309,20 @@ const Create = () => {
                   </Grid>
                   <Grid item xs={12} sm={6} md={3}>
                     <Stack spacing={1}>
-                      <InputLabel>Data di sottoscrizione</InputLabel>
-                      <FormControl sx={{ width: '100%' }} error={Boolean(touched.date && errors.date)}>
-                        <LocalizationProvider dateAdapter={AdapterDateFns}>
-                          <DatePicker format="dd/MM/yyyy" value={values.date} onChange={(newValue) => setFieldValue('date', newValue)} />
-                        </LocalizationProvider>
+                      <InputLabel>Pdr</InputLabel>
+                      <FormControl sx={{ width: '100%' }}>
+                        <TextField
+                          fullWidth
+                          id="pdr"
+                          name="pdr"
+                          value={values.pdr}
+                          onChange={handleChange}
+                          error={Boolean(touched.pdr && errors.pdr)}
+                          helperText={touched.pdr && errors.pdr}
+                        />
+
                       </FormControl>
                     </Stack>
-                    {touched.date && errors.date && <FormHelperText error={true}>{errors.date}</FormHelperText>}
                   </Grid>
                   <Grid item xs={12} sm={6} md={3}>
                     <Stack spacing={1}>
@@ -359,7 +339,112 @@ const Create = () => {
                     </Stack>
                     {touched.due_date && errors.due_date && <FormHelperText error={true}>{errors.due_date}</FormHelperText>}
                   </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Stack spacing={1}>
+                      <InputLabel>Potenza</InputLabel>
+                      <FormControl sx={{ width: '100%' }}>
+                        <TextField
+                          fullWidth
+                          id="power"
+                          name="power"
+                          value={values.power}
+                          onChange={handleChange}
+                          error={Boolean(touched.power && errors.power)}
+                          helperText={touched.power && errors.power}
+                        />
 
+                      </FormControl>
+                    </Stack>
+                    {touched.status && errors.status && <FormHelperText error={true}>{errors.status}</FormHelperText>}
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Stack spacing={1}>
+                      <InputLabel>Consumo annuo</InputLabel>
+                      <FormControl sx={{ width: '100%' }}>
+                        <TextField
+                          fullWidth
+                          id="annual_consumption"
+                          name="annual_consumption"
+                          value={values.annual_consumption}
+                          onChange={handleChange}
+                          error={Boolean(touched.annual_consumption && errors.annual_consumption)}
+                          helperText={touched.annual_consumption && errors.annual_consumption}
+                        />
+
+                      </FormControl>
+                    </Stack>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Stack spacing={1}>
+                      <InputLabel>Tipo contratto</InputLabel>
+                      <FormControl sx={{ width: '100%' }}>
+                        <Select
+                          value={values.rate}
+                          displayEmpty
+                          name="contract_type_id"
+                          onChange={(e) => handleChangeContractType(setFieldValue, e.target.value)}
+                          error={Boolean(errors.contract_type_id && touched.contract_type_id)}
+                        >
+                          <MenuItem disabled value="">
+                            Seleziona tipo contratto
+                          </MenuItem>
+                          {contractTypes?.map((contractType) => (
+                            <MenuItem key={contractType.id} value={contractType.id}>
+                              {contractType.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Stack>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Stack spacing={1}>
+                      <InputLabel>Offerta</InputLabel>
+                      <FormControl sx={{ width: '100%' }}>
+                        <Select
+                          value={values.rate}
+                          displayEmpty
+                          disabled={selectedRates.length === 0}
+                          name="rate_id"
+                          onChange={handleChange}
+                          error={Boolean(errors.rate_id && touched.rate_id)}
+                        >
+                          <MenuItem disabled value="">
+                            Seleziona tariffa
+                          </MenuItem>
+                          {selectedRates?.map((rate) => (
+                            <MenuItem key={rate.id} value={rate.id}>
+                              {rate.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Stack>
+                    {touched.status && errors.status && <FormHelperText error={true}>{errors.status}</FormHelperText>}
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Stack spacing={1}>
+                      <InputLabel>Tipo cliente</InputLabel>
+                      <FormControl sx={{ width: '100%' }}>
+                        <Select
+                          value={values.rate}
+                          displayEmpty
+                          name="client_type_id"
+                          onChange={handleChange}
+                          error={Boolean(errors.client_type_id && touched.client_type_id)}
+                        >
+                          <MenuItem disabled value="">
+                            Seleziona tipo cliente
+                          </MenuItem>
+                          {client_types.map((client) => (
+                            <MenuItem key={client.name} value={client.name}>
+                              {client.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Stack>
+                  </Grid>
                   <Grid item xs={12} sm={6} md={6}>
                     <MainCard sx={{ minHeight: 168 }}>
                       <Grid container spacing={2}>
@@ -428,58 +513,6 @@ const Create = () => {
                     {touched.customerInfo && errors.customerInfo && (
                       <FormHelperText error={true}>{errors?.customerInfo?.name}</FormHelperText>
                     )}
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Pdr</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <TextField
-                          fullWidth
-                          id="pdr"
-                          name="pdr"
-                          value={values.pdr}
-                          onChange={handleChange}
-                          error={Boolean(touched.pdr && errors.pdr)}
-                          helperText={touched.pdr && errors.pdr}
-                        />
-
-                      </FormControl>
-                    </Stack>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Potenza</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <TextField
-                          fullWidth
-                          id="power"
-                          name="power"
-                          value={values.power}
-                          onChange={handleChange}
-                          error={Boolean(touched.power && errors.power)}
-                          helperText={touched.power && errors.power}
-                        />
-
-                      </FormControl>
-                    </Stack>
-                    {touched.status && errors.status && <FormHelperText error={true}>{errors.status}</FormHelperText>}
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Consumo annuo</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <TextField
-                          fullWidth
-                          id="annual_consumption"
-                          name="annual_consumption"
-                          value={values.annual_consumption}
-                          onChange={handleChange}
-                          error={Boolean(touched.annual_consumption && errors.annual_consumption)}
-                          helperText={touched.annual_consumption && errors.annual_consumption}
-                        />
-
-                      </FormControl>
-                    </Stack>
                   </Grid>
                   <Grid item xs={12} sm={6} md={3}>
                     <Stack spacing={1}>

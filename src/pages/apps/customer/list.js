@@ -6,6 +6,7 @@ import { alpha, useTheme } from '@mui/material/styles';
 import {
   Button,
   Chip,
+  CircularProgress,
   Dialog,
   Stack,
   Table,
@@ -49,17 +50,20 @@ import { Add, Edit, ElementPlus, Eye, Trash } from 'iconsax-react';
 import { ThemeMode } from 'config';
 import axios from 'utils/axios';
 import { useNavigate } from 'react-router';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectClient, updateClient } from 'store/reducers/client';
+import { openSnackbar } from 'store/reducers/snackbar';
 
 const avatarImage = require.context('assets/images/users', true);
 
 // ==============================|| REACT TABLE ||============================== //
 
-function ReactTable({ columns, data, renderRowSubComponent, handleAdd }) {
+function ReactTable({ columns, data, renderRowSubComponent, handleAdd, handleUpdate }) {
   const theme = useTheme();
   const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
 
   const filterTypes = useMemo(() => renderFilterTypes, []);
-  const sortBy = { id: 'fatherName', desc: false };
+  const sortBy = { id: 'id', desc: false };
 
   const {
     getTableProps,
@@ -95,7 +99,7 @@ function ReactTable({ columns, data, renderRowSubComponent, handleAdd }) {
 
   useEffect(() => {
     if (matchDownSM) {
-      setHiddenColumns(['age', 'contact', 'visits', 'email', 'status', 'avatar']);
+      setHiddenColumns(['age', 'phone', 'visits', 'email', 'status', 'avatar']);
     } else {
       setHiddenColumns(['avatar', 'email']);
     }
@@ -184,21 +188,63 @@ const CustomerListPage = () => {
   const mode = theme.palette.mode;
   const [open, setOpen] = useState(false);
   const [customer, setCustomer] = useState(null);
-  const [customerDeleteId, setCustomerDeleteId] = useState('');
+  const [customerDelete, setCustomerDelete] = useState();
   const [add, setAdd] = useState(false);
   const [customers, setCustomers] = useState([{}]);
   const [loading, setLoading] = useState(false);
   const navigation = useNavigate();
+  const client = useSelector(selectClient);
+  const dispatch = useDispatch();
+
+  const [agentList, setAgentList] = useState([{}]);
 
   const handleAdd = () => {
-    setAdd(!add);
-    if (customer && !add) setCustomer(null);
+    navigation('/apps/new-client/create/personal');
   };
-
-  const handleClose = () => {
-    setOpen(!open);
+  const handleUpdate = (customer) => {
+    let obj = { updating: true, id: customer.id };
+    dispatch(updateClient(obj));
+    navigation('/apps/new-client/create/personal');
   };
+  const handleClose = async (hasDelete) => {
+    try {
+      if (!hasDelete) {
+        setOpen(!open);
+        return;
+      }
+      // delete customer
+      const response = await axios.delete('/client/' + customerDelete.id);
+      if (response.status === 200) {
+        fetchCustomers();
+        setOpen(!open);
+      }
 
+    } catch (error) {
+      console.error(error);
+      dispatch(
+        openSnackbar({
+          open: true,
+          message: 'Errore durante l\'eliminazione del cliente',
+          variant: 'alert',
+          alert: {
+            color: 'error'
+          },
+          close: false
+        })
+      );
+    }
+
+  };
+  const fetchAgents = async () => {
+    try {
+      const response = await axios.get('/agent/list');
+      const { agents } = response.data;
+
+      setAgentList(agents);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   const columns = useMemo(
     () => [
@@ -216,15 +262,27 @@ const CustomerListPage = () => {
       },
       {
         Header: 'Nome',
-        accessor: 'fatherName',
+        accessor: 'first_name',
         Cell: ({ row }) => {
           const { values } = row;
           return (
             <Stack direction="row" spacing={1.5} alignItems="center">
-              <Avatar alt="Avatar 1" size="sm" src={avatarImage(`./avatar-${!values.avatar ? 1 : values.avatar}.png`)} />
               <Stack spacing={0}>
-                <Typography variant="subtitle1">{values.fatherName}</Typography>
-                <Typography color="text.secondary">{values.email}</Typography>
+                <Typography color="text.secondary">{values.first_name}</Typography>
+              </Stack>
+            </Stack>
+          );
+        }
+      },
+      {
+        Header: 'Cognome',
+        accessor: 'last_name',
+        Cell: ({ row }) => {
+          const { values } = row;
+          return (
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <Stack spacing={0}>
+                <Typography color="text.secondary">{values.last_name}</Typography>
               </Stack>
             </Stack>
           );
@@ -233,17 +291,19 @@ const CustomerListPage = () => {
       {
         Header: 'Agente associato',
         accessor: 'agent',
-        className: 'cell-right'
-      },
-      {
-        Header: 'Tipo di contratto',
-        accessor: 'contract',
-        className: 'cell-right'
-      },
-      {
-        Header: 'Avatar',
-        accessor: 'avatar',
-        disableSortBy: true
+        className: 'cell-right',
+        Cell: ({ row }) => {
+          const { values } = row;
+          return (
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <Stack spacing={0}>
+                <Typography color="text.secondary">
+                  {values.agent}
+                </Typography>
+              </Stack>
+            </Stack>
+          );
+        }
       },
       {
         Header: 'Email',
@@ -251,8 +311,17 @@ const CustomerListPage = () => {
       },
       {
         Header: 'Contatto',
-        accessor: 'contact',
-        Cell: ({ value }) => <PatternFormat displayType="text" format="+1 (###) ###-####" mask="_" defaultValue={value} />
+        accessor: 'phone',
+        Cell: ({ row }) => {
+          const { values } = row;
+          return (
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <Stack spacing={0}>
+                <Typography color="text.secondary">{values.phone}</Typography>
+              </Stack>
+            </Stack>
+          );
+        }
       },
       {
         Header: 'Azioni',
@@ -319,7 +388,7 @@ const CustomerListPage = () => {
                   onClick={(e) => {
                     e.stopPropagation();
                     setCustomer(row.values);
-                    handleAdd();
+                    handleUpdate(row.values);
                   }}
                 >
                   <Edit />
@@ -341,7 +410,7 @@ const CustomerListPage = () => {
                   onClick={(e) => {
                     e.stopPropagation();
                     handleClose();
-                    setCustomerDeleteId(row.values.id);
+                    setCustomerDelete(row.values);
                   }}
                 >
                   <Trash />
@@ -357,28 +426,35 @@ const CustomerListPage = () => {
   );
 
   const fetchCustomers = async () => {
-    setLoading(true);
     const customers = await axios.get('/client/list');
     setCustomers(customers.data.clients);
-    // after 500ms setloading to false
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
   }
 
   useEffect(() => {
-    fetchCustomers();
+    setLoading(true);
+    fetchCustomers().then(() => {
+      fetchAgents().then(() => {
+        setTimeout(() => {
+          setLoading(false);
+        }, 500);
+      })
+    })
   }, [])
-
 
   const renderRowSubComponent = useCallback(({ row }) => <CustomerView data={customers[Number(row.id)]} />, [customers]);
 
   return (
     <MainCard content={false}>
-      <ScrollX>
-        <ReactTable columns={columns} data={customers} handleAdd={handleAdd} renderRowSubComponent={renderRowSubComponent} />
-      </ScrollX>
-      <AlertCustomerDelete title={customerDeleteId} open={open} handleClose={handleClose} />
+      {loading ?
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: 20 }} >
+          <CircularProgress />
+        </div>
+        :
+        <ScrollX>
+          <ReactTable columns={columns} data={customers} handleAdd={handleAdd} handleUpdate={handleUpdate} renderRowSubComponent={renderRowSubComponent} />
+        </ScrollX>
+      }
+      <AlertCustomerDelete title={customerDelete?.first_name + " " + customerDelete?.last_name} open={open} handleClose={handleClose} />
       {/* add customer dialog */}
       <Dialog
         maxWidth="sm"

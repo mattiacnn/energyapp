@@ -75,8 +75,7 @@ const allStatus = ['Complicated', 'Single', 'Relationship'];
 const AddAgent = ({ customer, onCancel, fetchAgents }) => {
   const theme = useTheme();
   const isCreating = !customer;
-
-  const [selectedImage, setSelectedImage] = useState(undefined);
+  const [contractTypes, setContractTypes] = useState([]);
 
   const CustomerSchema = Yup.object().shape({
     name: Yup.string().max(255).required('Nome è un campo obbligatorio'),
@@ -84,6 +83,7 @@ const AddAgent = ({ customer, onCancel, fetchAgents }) => {
     agent_monthly_fee: Yup.number().default(0),
     agent_monthly_fee_2: Yup.number().default(0),
     agent_bonus_2: Yup.number().default(0),
+    contract_type_id: Yup.number().default(1).required('Tipo di contratto è un campo obbligatorio'),
   });
 
   const [openAlert, setOpenAlert] = useState(false);
@@ -104,6 +104,7 @@ const AddAgent = ({ customer, onCancel, fetchAgents }) => {
           agent_monthly_fee: values.agent_monthly_fee,
           agent_monthly_fee_2: values.agent_monthly_fee_2,
           agent_bonus_2: values.agent_bonus_2,
+          contract_type_id: values.contract_type_id
         }
         const response = await axios.post('/rate/create', new_agent);
         const { newRate } = response.data;
@@ -140,6 +141,19 @@ const AddAgent = ({ customer, onCancel, fetchAgents }) => {
       }
     }
   });
+  const fetchContractTypes = async () => {
+    try {
+      const response = await axios.get('/contract-types/list');
+      const { contractTypes } = response.data;
+      setContractTypes(contractTypes);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  useEffect(() => {
+    fetchContractTypes();
+  }, []);
 
   const { errors, touched, handleSubmit, isSubmitting, getFieldProps, setFieldValue } = formik;
 
@@ -164,6 +178,26 @@ const AddAgent = ({ customer, onCancel, fetchAgents }) => {
                           error={Boolean(touched.name && errors.name)}
                           helperText={touched.name && errors.name}
                         />
+                      </Stack>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Stack spacing={1.25}>
+                        <InputLabel htmlFor="contract_type_id">Tipo di contratto</InputLabel>
+                        <Select
+                          displayEmpty
+                          name="contract_type_id"
+                          {...getFieldProps('contract_type_id')}
+                          error={Boolean(errors.contract_type_id && touched.contract_type_id)}
+                        >
+                          <MenuItem disabled value="">
+                            Seleziona tipo contratto
+                          </MenuItem>
+                          {contractTypes?.map((contractType) => (
+                            <MenuItem key={contractType.id} value={contractType.id}>
+                              {contractType.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
                       </Stack>
                     </Grid>
                     <Grid item xs={12}>

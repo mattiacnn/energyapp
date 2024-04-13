@@ -10,16 +10,19 @@ import menu from './menu';
 import snackbar from './snackbar';
 import productReducer from './product';
 import cartReducer from './cart';
+import client from './client';
 import kanban from './kanban';
 import invoice from './invoice';
 import { apiSlice } from "../api/apiSlice";
 import auth from '../../features/auth/authSlice';
-
+import agent from './agent';
 // ==============================|| COMBINE REDUCERS ||============================== //
 
 const reducers = combineReducers({
   chat,
   calendar,
+  client,
+  agent,
   menu,
   snackbar,
   cart: persistReducer(

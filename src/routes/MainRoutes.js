@@ -5,6 +5,7 @@ import MainLayout from 'layout/MainLayout';
 import CommonLayout from 'layout/CommonLayout';
 import Loadable from 'components/Loadable';
 import AuthGuard from 'utils/route-guard/AuthGuard';
+import ContractsListPage from 'pages/apps/contracts/list';
 
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard/default')));
@@ -29,6 +30,8 @@ const AppCustomerCard = Loadable(lazy(() => import('pages/apps/customer/card')))
 
 const AppAgentsList = Loadable(lazy(() => import('pages/apps/agents/list')));
 const RatesList = Loadable(lazy(() => import('pages/apps/rates/list')));
+
+const AppContractsList = Loadable(lazy(() => import('pages/apps/contracts/list')));
 
 const AppInvoiceCreate = Loadable(lazy(() => import('pages/apps/invoice/create')));
 const AppInvoiceDashboard = Loadable(lazy(() => import('pages/apps/invoice/dashboard')));
@@ -207,6 +210,15 @@ const MainRoutes = {
               ]
             },
             {
+              path: 'contracts',
+              children: [
+                {
+                  path: 'contracts-list',
+                  element: <AppContractsList />
+                }
+              ]
+            },
+            {
               path: 'rates',
               children: [
                 {
@@ -236,7 +248,7 @@ const MainRoutes = {
                 },
                 {
                   path: 'list',
-                  element: <AppInvoiceList />
+                  element: <ContractsListPage />
                 }
               ]
             },

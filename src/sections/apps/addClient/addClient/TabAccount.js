@@ -167,6 +167,34 @@ const TabAccount = () => {
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <Stack spacing={1.25}>
+                    <InputLabel htmlFor="vat">Partita iva</InputLabel>
+                    <TextField
+                      id="vat"
+                      onChange={(e) => handleChange('vat',e)}
+                      onBlur={handleBlur}
+                      onReset={handleReset}
+                      value={client.vat || ''}
+                      error={Boolean(touched.vat && errors.vat)}
+                      helperText={touched.vat && errors.vat}
+                    />
+                  </Stack>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Stack spacing={1.25}>
+                    <InputLabel htmlFor="cf">Codice fiscale</InputLabel>
+                    <TextField
+                      id="cf"
+                      onChange={(e) => handleChange('cf',e)}
+                      onBlur={handleBlur}
+                      onReset={handleReset}
+                      value={client.cf || ''}
+                      error={Boolean(touched.cf && errors.cf)}
+                      helperText={touched.cf && errors.cf}
+                    />
+                  </Stack>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Stack spacing={1.25}>
                     <InputLabel htmlFor="referer">Referente</InputLabel>
                     <TextField
                       id="referer"
@@ -176,6 +204,20 @@ const TabAccount = () => {
                       value={client.referer || ''}
                       error={Boolean(touched.referer && errors.referer)}
                       helperText={touched.referer && errors.referer}
+                    />
+                  </Stack>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Stack spacing={1.25}>
+                    <InputLabel htmlFor="referer2">Referente</InputLabel>
+                    <TextField
+                      id="referer2"
+                      onChange={(e) => handleChange('referer2',e)}
+                      onBlur={handleBlur}
+                      onReset={handleReset}
+                      value={client.referer2 || ''}
+                      error={Boolean(touched.referer2 && errors.referer2)}
+                      helperText={touched.referer2 && errors.referer2}
                     />
                   </Stack>
                 </Grid>

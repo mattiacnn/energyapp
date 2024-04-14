@@ -112,7 +112,7 @@ const TabContacts = () => {
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <Stack spacing={1.25}>
-                    <InputLabel htmlFor="phone">Phone</InputLabel>
+                    <InputLabel htmlFor="phone">Cellulare</InputLabel>
                     <TextField
                       id="phone"
                       onBlur={handleBlur}
@@ -122,6 +122,21 @@ const TabContacts = () => {
                       error={Boolean(touched.phone && errors.phone)}
                       helperText={touched.phone && errors.phone}
                       type='tel'
+                    />
+                  </Stack>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Stack spacing={1.25}>
+                    <InputLabel htmlFor="pec">Pec</InputLabel>
+                    <TextField
+                      id="pec"
+                      onBlur={handleBlur}
+                      onReset={handleReset}
+                      value={client.pec || ''}
+                      onChange={(e) => handleChange('pec', e)}
+                      type='pec'
+                      error={Boolean(touched.pec && errors.pec)}
+                      helperText={touched.pec && errors.pec}
                     />
                   </Stack>
                 </Grid>

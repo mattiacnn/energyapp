@@ -141,6 +141,21 @@ const TabAccount = () => {
                     />
                   </Stack>
                 </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Stack spacing={1.25}>
+                    <InputLabel htmlFor="percentage">Percentuale</InputLabel>
+                    <TextField
+                      id="percentage"
+                      onChange={(e) => handleChange('percentage',e)}
+                      onBlur={handleBlur}
+                      onReset={handleReset}
+                      value={client.percentage || ''}
+                      error={Boolean(touched.percentage && errors.percentage)}
+                      helperText={touched.percentage && errors.percentage}
+                      type='number'
+                    />
+                  </Stack>
+                </Grid>
               </Grid>
             </Form>
           </FormikProvider>

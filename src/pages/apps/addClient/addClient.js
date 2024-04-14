@@ -158,10 +158,10 @@ const AddClient = () => {
     <MainCard border={false}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider', width: '100%' }}>
         <Tabs value={value} onChange={handleChange} variant="scrollable" scrollButtons="auto" aria-label="account profile tab">
-          <Tab label="Anagrafica" component={Link} to="/apps/new-agent/create/personal" icon={<Profile />} iconPosition="start" />
-          <Tab label="Indirizzi" component={Link} to="/apps/new-agent/create/addressess" icon={<TableDocument />} iconPosition="start" />
-          <Tab label="Contatti" component={Link} to="/apps/new-agent/create/contacts" icon={<Call />} iconPosition="start" />
-          <Tab label="Agente" component={Link} to="/apps/new-agent/create/agent" icon={<Profile2User />} iconPosition="start" />
+          <Tab label="Anagrafica" component={Link} to="/apps/new-client/create/personal" icon={<Profile />} iconPosition="start" />
+          <Tab label="Indirizzi" component={Link} to="/apps/new-client/create/addressess" icon={<TableDocument />} iconPosition="start" />
+          <Tab label="Contatti" component={Link} to="/apps/new-client/create/contacts" icon={<Call />} iconPosition="start" />
+          <Tab label="Agente" component={Link} to="/apps/new-client/create/agent" icon={<Profile2User />} iconPosition="start" />
           {/*<Tab label="Allegati" component={Link} to="/apps/new-client/create/addressess" icon={<AttachCircle />} iconPosition="start" />*/}
         </Tabs>
       </Box>

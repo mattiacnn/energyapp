@@ -101,13 +101,13 @@ const Create = () => {
   // get client_id parameter from url
   const { client_id } = useParams();
 
-  const handlerCreate = (values) => {
+  const handlerCreate = async (values) => {
     const new_contract = {
       agent_id: values.agent_id,
       client_id: values.client_id,
       rate_id: values.rate_id,
       partita: values.partita,
-      client_type_id: values.client_type_id,
+      client_type: values.client_type_id,
       contract_type_id: values.contract_type_id,
       date: format(values.date, 'yyyy-MM-dd'),
       due_date: format(values.due_date, 'yyyy-MM-dd'),
@@ -119,6 +119,12 @@ const Create = () => {
       discount: values.discount,
       discount2: values.discount2
     };
+    try {
+      const response = await axios.post('/contract/create', new_contract);
+      navigation('/apps/contracts/contracts-list');
+    } catch (error) {
+      console.error(error);
+    }
 
   };
 
@@ -164,20 +170,9 @@ const Create = () => {
       console.error(error);
     }
   }
-  const addNextInvoiceHandler = () => {
-    dispatch(
-      reviewInvoicePopup({
-        isOpen: false
-      })
-    );
-  };
-
   const handleChangeContractType = (setFieldValue, value) => {
     setFieldValue('contract_type_id', value);
-    console.log(rates)
-    console.log("value", value)
     const filteredRates = rates.filter((rate) => rate.contract_type_id === Number(value));
-    console.log(filteredRates)
     setSelectedRates(filteredRates);
   }
 

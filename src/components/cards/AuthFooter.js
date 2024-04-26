@@ -15,7 +15,7 @@ const AuthFooter = () => {
         textAlign={matchDownSM ? 'center' : 'inherit'}
       >
         <Typography variant="subtitle2" color="secondary" component="span">
-          Able Pro ♥ crafted by Team{' '}
+          
           <Typography
             component={Link}
             variant="subtitle2"
@@ -23,7 +23,7 @@ const AuthFooter = () => {
             target="_blank"
             underline="hover"
           >
-            Phoenixcoded
+            
           </Typography>
         </Typography>
 

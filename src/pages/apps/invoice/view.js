@@ -72,7 +72,8 @@ const validationSchema = yup.object({
   client_id: yup.number().required('Cliente è obbligatorio'),
   rate_id: yup.number().required('Tariffa è obbligatorio'),
   provider_id: yup.number(),
-  client_type_id: yup.string().required('Tipo cliente è obbligatorio'),
+  client_type: yup.string().required('Tipo cliente è obbligatorio'),
+  typology: yup.string().required('Tipologia è obbligatorio'),
   contract_type_id: yup.number().required('Tipo contratto è obbligatorio'),
   partita: yup.string().required('Partita è obbligatorio'),
   date: yup.date().required('Data di sottoscrizione è obbligatorio'),
@@ -88,44 +89,112 @@ const validationSchema = yup.object({
 
 // ==============================|| INVOICE - CREATE ||============================== //
 
-const Create = () => {
+const View = () => {
   const theme = useTheme();
   const navigation = useNavigate();
   const notesLimit = 500;
   const [rates, setRates] = useState([{}]);
   const [client, setClient] = useState({});
   const [agent, setAgent] = useState({});
-  const [providers, setProviders] = useState([]);
-  const [contractTypes, setContractTypes] = useState({});
+  const [providers, setProviders] = useState([{}]);
+  const [contractTypes, setContractTypes] = useState([{}]);
   const [selectedRates, setSelectedRates] = useState([]);
+  const [contract, setContract] = useState({});
+
   const { open, isCustomerOpen } = useSelector((state) => state.invoice);
 
   // get client_id parameter from url
-  const { client_id } = useParams();
+  const { contract_id } = useParams();
 
   const handlerCreate = async (values) => {
     const new_contract = {
-      agent_id: values.agent_id,
+      agent_id: values.agent,
       client_id: values.client_id,
       rate_id: values.rate_id,
-      provider_id: values.provider_id,
       partita: values.partita,
-      client_type: values.client_type_id,
+      client_type: values.client_type,
+      provider_id: values.provider_id,
       contract_type_id: values.contract_type_id,
       date: format(values.date, 'yyyy-MM-dd'),
       due_date: format(values.due_date, 'yyyy-MM-dd'),
+      typology: values.typology,
       cod: values.cod,
       pod: values.pod,
       pdr: values.pdr,
       power: values.power,
       annual_consumption: values.annual_consumption,
       discount: values.discount,
-      discount2: values.discount2
+      discount2: values.discount2,
+      id: contract_id
     };
     try {
-      const response = await axios.post('/contract/create', new_contract);
-      navigation('/apps/contracts/contracts-list');
+      const response = await axios.put('/contract/update/', new_contract);
+      dispatch(
+        dispatch(
+          openSnackbar({
+            open: true,
+            message: 'Contratto aggiornato con successo',
+            variant: 'alert',
+            alert: {
+              color: 'success'
+            },
+            close: false
+          })
+        )
+      );
+      // after 500 ms
+      setTimeout(() => {
+        navigation('/apps/contracts/contracts-list');
+      }, 1000);
     } catch (error) {
+      dispatch(
+        openSnackbar({
+          open: true,
+          message: 'Errore durante l\'aggiornamento del contratto',
+          variant: 'alert',
+          alert: {
+            color: 'error'
+          },
+          close: false
+        })
+      );
+      console.error(error);
+    }
+
+  };
+
+  const handleDeleteContract = async () => {
+    try {
+      const response = await axios.delete('/contract/' + contract_id);
+      dispatch(
+        dispatch(
+          openSnackbar({
+            open: true,
+            message: 'Contratto eliminato con successo',
+            variant: 'alert',
+            alert: {
+              color: 'success'
+            },
+            close: false
+          })
+        )
+      );
+      // after 500 ms
+      setTimeout(() => {
+        navigation('/apps/contracts/contracts-list');
+      }, 1000);
+    } catch (error) {
+      dispatch(
+        openSnackbar({
+          open: true,
+          message: 'Errore durante l\'eliminazione del contratto',
+          variant: 'alert',
+          alert: {
+            color: 'error'
+          },
+          close: false
+        })
+      );
       console.error(error);
     }
 
@@ -143,7 +212,7 @@ const Create = () => {
 
   const fetchClient = async () => {
     try {
-      const response = await axios.get('/client/' + client_id);
+      const response = await axios.get('/client/' + contract.client_id);
       const { client } = response.data;
       setClient(client);
       if (client.agent) {
@@ -154,9 +223,9 @@ const Create = () => {
     }
   }
 
-  const fetchAgent = async (agent_id) => {
+  const fetchAgent = async () => {
     try {
-      const response = await axios.get('/agent/' + agent_id);
+      const response = await axios.get('/agent/' + contract.agent_id);
       const { agent } = response.data;
       setAgent(agent);
     } catch (error) {
@@ -183,6 +252,16 @@ const Create = () => {
       console.error(error);
     }
   }
+
+  const fetchContract = async () => {
+    try {
+      const response = await axios.get('/contract/' + contract_id);
+      const { contract } = response.data;
+      setContract(contract);
+    } catch (error) {
+      console.error(error);
+    }
+  }
   const handleChangeContractType = (setFieldValue, value) => {
     setFieldValue('contract_type_id', value);
     const filteredRates = rates.filter((rate) => rate.contract_type_id === Number(value));
@@ -190,33 +269,44 @@ const Create = () => {
   }
 
   useEffect(() => {
-    fetchRates();
-    fetchClient();
-    fetchContractTypes();
     fetchProviders();
+    fetchContract();
+    fetchContractTypes();
+    fetchRates();
   }, []);
+
+  useEffect(() => {
+    if (contract && contract.client_id) {
+      fetchClient()
+    }
+    if (contract && contract.agent_id) {
+      fetchAgent()
+    }
+  }, [contract])
 
   return (
     <MainCard>
       {
-        client && agent?.id ? <Formik
+        contract && contract.id ? <Formik
           initialValues={
             {
-              agent_id: agent?.id,
-              client_id: client_id,
-              rate_id: '',
-              partita: '',
-              client_type_id: '',
-              contract_type_id: '',
-              date: new Date(),
-              due_date: new Date(),
-              cod: '',
-              pod: '',
-              pdr: '',
-              power: '',
-              annual_consumption: '',
-              discount: 0,
-              discount2: 0,
+              agent_id: contract.agent_id,
+              client_id: contract.client_id,
+              rate_id: contract.rate_id,
+              partita: contract.partita,
+              client_type: contract.client_type,
+              provider_id: contract.provider_id,
+              contract_type_id: contract.contract_type_id,
+              date: new Date(contract.date),
+              typology: contract.typology,
+              due_date: new Date(contract.due_date),
+              cod: contract.cod,
+              pod: contract.pod,
+              pdr: contract.pdr,
+              power: contract.power,
+              annual_consumption: contract.annual_consumption,
+              discount: contract.discount,
+              discount2: contract.discount2,
             }
           }
           validationSchema={validationSchema}
@@ -245,7 +335,9 @@ const Create = () => {
                       <FormControl sx={{ width: '100%' }}>
                         <Select
                           displayEmpty
-                          name="type"
+                          name="typology"
+                          value={values.typology}
+                          id='typology'
                           onChange={handleChange}
                           error={Boolean(errors.type && touched.type)}
                         >
@@ -275,7 +367,7 @@ const Create = () => {
                           error={Boolean(errors.provider_id && touched.provider_id)}
                         >
                           <MenuItem disabled value="">
-                            Seleziona un fornitore
+                            Seleziona vecchio fornitore
                           </MenuItem>
                           {providers?.map((provider) => (
                             <MenuItem key={provider.id} value={provider.id}>
@@ -412,7 +504,7 @@ const Create = () => {
                       <InputLabel>Tipo contratto</InputLabel>
                       <FormControl sx={{ width: '100%' }}>
                         <Select
-                          value={values.rate}
+                          value={values.contract_type_id}
                           displayEmpty
                           name="contract_type_id"
                           onChange={(e) => handleChangeContractType(setFieldValue, e.target.value)}
@@ -435,9 +527,8 @@ const Create = () => {
                       <InputLabel>Offerta</InputLabel>
                       <FormControl sx={{ width: '100%' }}>
                         <Select
-                          value={values.rate}
+                          value={values.rate_id}
                           displayEmpty
-                          disabled={selectedRates.length === 0}
                           name="rate_id"
                           onChange={handleChange}
                           error={Boolean(errors.rate_id && touched.rate_id)}
@@ -445,7 +536,7 @@ const Create = () => {
                           <MenuItem disabled value="">
                             Seleziona tariffa
                           </MenuItem>
-                          {selectedRates?.map((rate) => (
+                          {rates?.map((rate) => (
                             <MenuItem key={rate.id} value={rate.id}>
                               {rate.name}
                             </MenuItem>
@@ -454,29 +545,6 @@ const Create = () => {
                       </FormControl>
                     </Stack>
                     {touched.status && errors.status && <FormHelperText error={true}>{errors.status}</FormHelperText>}
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Tipo cliente</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <Select
-                          value={values.rate}
-                          displayEmpty
-                          name="client_type_id"
-                          onChange={handleChange}
-                          error={Boolean(errors.client_type_id && touched.client_type_id)}
-                        >
-                          <MenuItem disabled value="">
-                            Seleziona tipo cliente
-                          </MenuItem>
-                          {client_types.map((client) => (
-                            <MenuItem key={client.name} value={client.name}>
-                              {client.name}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Stack>
                   </Grid>
                   <Grid item xs={12} sm={6} md={6}>
                     <MainCard sx={{ minHeight: 168 }}>
@@ -549,6 +617,29 @@ const Create = () => {
                   </Grid>
                   <Grid item xs={12} sm={6} md={3}>
                     <Stack spacing={1}>
+                      <InputLabel>Tipo cliente</InputLabel>
+                      <FormControl sx={{ width: '100%' }}>
+                        <Select
+                          value={values.client_type}
+                          displayEmpty
+                          name="client_type_id"
+                          onChange={handleChange}
+                          error={Boolean(errors.client_type_id && touched.client_type_id)}
+                        >
+                          <MenuItem disabled value="">
+                            Seleziona tipo cliente
+                          </MenuItem>
+                          {client_types.map((client) => (
+                            <MenuItem key={client.name} value={client.name}>
+                              {client.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Stack>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Stack spacing={1}>
                       <InputLabel>Sconto</InputLabel>
                       <FormControl sx={{ width: '100%' }}>
                         <TextField
@@ -583,10 +674,23 @@ const Create = () => {
                     </Stack>
                     {touched.discount2 && errors.discount2 && <FormHelperText error={true}>{errors.discount2}</FormHelperText>}
                   </Grid>
+                  <Grid item xs={12}>
+                    {/* map errors */}
+                    {
+                      Object.keys(errors).map((key, index) => {
+                        return (
+                          <FormHelperText key={index} error={true}>{errors[key]}</FormHelperText>
+                        )
+                      })
+                    }
+                  </Grid>
                   <Grid item xs={12} sm={6}>
-                    <Stack direction="row" justifyContent="flex-end" alignItems="flex-end" spacing={2} sx={{ height: '100%' }}>
+                    <Stack direction="row" justifyContent="flex-start" alignItems="flex-end" spacing={2} sx={{ height: '100%' }}>
                       <Button color="primary" variant="contained" type="submit">
-                        Crea contratto
+                        Aggiorna contratto
+                      </Button>
+                      <Button color="error" variant="outlined" onClick={() => handleDeleteContract()}>
+                        Elimina contratto
                       </Button>
                     </Stack>
                   </Grid>
@@ -602,4 +706,4 @@ const Create = () => {
   );
 };
 
-export default Create;
+export default View;

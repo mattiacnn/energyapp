@@ -140,6 +140,64 @@ const TabContacts = () => {
                     />
                   </Stack>
                 </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <Stack spacing={1.25}>
+                    <InputLabel htmlFor="referer">Nome referente 1</InputLabel>
+                    <TextField
+                      id="referer"
+                      onChange={(e) => handleChange('referer',e)}
+                      onBlur={handleBlur}
+                      onReset={handleReset}
+                      value={client.referer || ''}
+                      error={Boolean(touched.referer && errors.referer)}
+                      helperText={touched.referer && errors.referer}
+                    />
+                  </Stack>
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <Stack spacing={1.25}>
+                    <InputLabel htmlFor="referer">Contatto referente 1</InputLabel>
+                    <TextField
+                      id="referer_phone"
+                      onChange={(e) => handleChange('referer_phone',e)}
+                      onBlur={handleBlur}
+                      onReset={handleReset}
+                      value={client.referer_phone || ''}
+                      error={Boolean(touched.referer_phone && errors.referer_phone)}
+                      helperText={touched.referer_phone && errors.referer_phone}
+                    />
+                  </Stack>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Stack spacing={1.25}>
+                    <InputLabel htmlFor="referer2">Nome referente 2</InputLabel>
+                    <TextField
+                      id="referer2"
+                      onChange={(e) => handleChange('referer2',e)}
+                      onBlur={handleBlur}
+                      onReset={handleReset}
+                      value={client.referer2 || ''}
+                      error={Boolean(touched.referer2 && errors.referer2)}
+                      helperText={touched.referer2 && errors.referer2}
+                    />
+                  </Stack>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Stack spacing={1.25}>
+                    <InputLabel htmlFor="referer2_phone">Contatto referente 2</InputLabel>
+                    <TextField
+                      id="referer2_phone"
+                      onChange={(e) => handleChange('referer2_phone',e)}
+                      onBlur={handleBlur}
+                      onReset={handleReset}
+                      value={client.referer2_phone || ''}
+                      error={Boolean(touched.referer2_phone && errors.referer2_phone)}
+                      helperText={touched.referer2_phone && errors.referer2_phone}
+                    />
+                  </Stack>
+                </Grid>
               </Grid>
             </Form>
           </FormikProvider>

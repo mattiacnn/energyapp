@@ -96,7 +96,10 @@ const AddClient = () => {
       }
       let response;
       if (local_client.updating) {
-        response = await axios.post('/client/update', local_client);
+        let obj = { ...local_client };
+        // delete obj.updating;
+        delete obj.updating;
+        response = await axios.post('/client/update', obj);
       } else {
         response = await axios.post('/client/create', local_client);
       }
@@ -152,7 +155,7 @@ const AddClient = () => {
     return () => {
       dispatch(resetClient());
     }
-  },[])
+  }, [])
 
   return (
     <MainCard border={false}>

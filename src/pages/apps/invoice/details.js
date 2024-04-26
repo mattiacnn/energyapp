@@ -45,7 +45,7 @@ const Details = () => {
   const navigation = useNavigate();
 
   const { country, list } = useSelector((state) => state.invoice);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     //dispatch(getInvoiceSingleList(Number(id))).then(() => setLoading(false));

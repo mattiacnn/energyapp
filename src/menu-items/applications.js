@@ -2,7 +2,7 @@
 import { FormattedMessage } from 'react-intl';
 
 // assets
-import { KyberNetwork, Messages2, Calendar1, Kanban, Profile2User, Bill, UserSquare, ShoppingBag, Star } from 'iconsax-react';
+import { KyberNetwork, Messages2, Calendar1, Kanban, Profile2User, Bill, UserSquare, ShoppingBag, Star, CardAdd, DocumentText } from 'iconsax-react';
 
 // icons
 const icons = {
@@ -14,7 +14,9 @@ const icons = {
   invoice: Bill,
   profile: UserSquare,
   ecommerce: ShoppingBag,
-  star: Star
+  star: Star,
+  card: CardAdd,
+  archive: DocumentText
 };
 
 // ==============================|| MENU ITEMS - APPLICATIONS ||============================== //
@@ -52,26 +54,6 @@ const applications = {
       type: 'collapse',
       icon: icons.invoice,
       breadcrumbs: true,
-      children: [
-        {
-          id: 'list',
-          title: <FormattedMessage id="Energia" />,
-          type: 'item',
-          url: '/apps/contratti/list'
-        },
-        {
-          id: 'details',
-          title: <FormattedMessage id="Telefonia" />,
-          type: 'item',
-          url: '/apps/invoice/details/1'
-        },
-        {
-          id: 'list',
-          title: <FormattedMessage id="Altro" />,
-          type: 'item',
-          url: '/apps/invoice/list'
-        },
-      ]
     },
     {
       id: 'rates',
@@ -82,25 +64,28 @@ const applications = {
       breadcrumbs: true,
     },
     {
-      id: 'profile',
-      title: <FormattedMessage id="profile" />,
+      id: 'contract-types',
+      title: <FormattedMessage id="Tipi di contratto" />,
+      url: '/apps/contract-types/contract-types-list',
       type: 'collapse',
-      icon: icons.profile,
-      children: [
-        {
-          id: 'user-profile',
-          title: <FormattedMessage id="user-profile" />,
-          type: 'item',
-          url: '/apps/profiles/user/personal',
-          breadcrumbs: false
-        },
-        {
-          id: 'account-profile',
-          title: <FormattedMessage id="account-profile" />,
-          type: 'item',
-          url: '/apps/profiles/account/basic'
-        }
-      ]
+      icon: icons.archive,
+      breadcrumbs: true,
+    },
+    {
+      id: 'providers',
+      title: <FormattedMessage id="Fornitori" />,
+      url: '/apps/providers/providers-list',
+      type: 'collapse',
+      icon: icons.archive,
+      breadcrumbs: true,
+    },
+    {
+      id: 'methods',
+      title: <FormattedMessage id="Metodi di pagamento" />,
+      url: '/apps/methods/methods-list',
+      type: 'collapse',
+      icon: icons.card,
+      breadcrumbs: true,
     },
   ]
 };

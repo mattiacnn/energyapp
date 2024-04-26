@@ -193,34 +193,6 @@ const TabAccount = () => {
                     />
                   </Stack>
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Stack spacing={1.25}>
-                    <InputLabel htmlFor="referer">Referente</InputLabel>
-                    <TextField
-                      id="referer"
-                      onChange={(e) => handleChange('referer',e)}
-                      onBlur={handleBlur}
-                      onReset={handleReset}
-                      value={client.referer || ''}
-                      error={Boolean(touched.referer && errors.referer)}
-                      helperText={touched.referer && errors.referer}
-                    />
-                  </Stack>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Stack spacing={1.25}>
-                    <InputLabel htmlFor="referer2">Referente</InputLabel>
-                    <TextField
-                      id="referer2"
-                      onChange={(e) => handleChange('referer2',e)}
-                      onBlur={handleBlur}
-                      onReset={handleReset}
-                      value={client.referer2 || ''}
-                      error={Boolean(touched.referer2 && errors.referer2)}
-                      helperText={touched.referer2 && errors.referer2}
-                    />
-                  </Stack>
-                </Grid>
               </Grid>
             </Form>
           </FormikProvider>

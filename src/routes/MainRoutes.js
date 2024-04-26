@@ -1,4 +1,4 @@
-import { lazy } from 'react';
+import { lazy, useEffect } from 'react';
 
 // project-imports
 import MainLayout from 'layout/MainLayout';
@@ -30,14 +30,19 @@ const AppCustomerCard = Loadable(lazy(() => import('pages/apps/customer/card')))
 
 const AppAgentsList = Loadable(lazy(() => import('pages/apps/agents/list')));
 const RatesList = Loadable(lazy(() => import('pages/apps/rates/list')));
+const PMethodsList = Loadable(lazy(() => import('pages/apps/methods/list')));
+const ContractTypesList = Loadable(lazy(() => import('pages/apps/contract-types/list')));
 
 const AppContractsList = Loadable(lazy(() => import('pages/apps/contracts/list')));
+const AppProvidersList = Loadable(lazy(() => import('pages/apps/providers/list')));
 
 const AppInvoiceCreate = Loadable(lazy(() => import('pages/apps/invoice/create')));
+const AppInvoiceCreateNoClient = Loadable(lazy(() => import('pages/apps/invoice/createNoClient')));
 const AppInvoiceDashboard = Loadable(lazy(() => import('pages/apps/invoice/dashboard')));
 const AppInvoiceList = Loadable(lazy(() => import('pages/apps/invoice/list')));
 const AppInvoiceDetails = Loadable(lazy(() => import('pages/apps/invoice/details')));
 const AppInvoiceEdit = Loadable(lazy(() => import('pages/apps/invoice/edit')));
+const AppContractView = Loadable(lazy(() => import('pages/apps/invoice/view')));
 
 const UserProfile = Loadable(lazy(() => import('pages/apps/profiles/user')));
 const UserTabPersonal = Loadable(lazy(() => import('sections/apps/profiles/user/TabPersonal')));
@@ -228,6 +233,33 @@ const MainRoutes = {
               ]
             },
             {
+              path: 'methods',
+              children: [
+                {
+                  path: 'methods-list',
+                  element: <PMethodsList />
+                }
+              ]
+            },
+            {
+              path: 'contract-types',
+              children: [
+                {
+                  path: 'contract-types-list',
+                  element: <ContractTypesList />
+                }
+              ]
+            },
+            {
+              path: 'providers',
+              children: [
+                {
+                  path: 'providers-list',
+                  element: <AppProvidersList />
+                }
+              ]
+            },
+            {
               path: 'contratti',
               children: [
                 {
@@ -239,8 +271,12 @@ const MainRoutes = {
                   element: <AppInvoiceCreate />
                 },
                 {
-                  path: 'details/:id',
-                  element: <AppInvoiceDetails />
+                  path: 'create/new/',
+                  element: <AppInvoiceCreateNoClient />
+                },
+                {
+                  path: 'details/:contract_id',
+                  element: <AppContractView />
                 },
                 {
                   path: 'edit/:id',

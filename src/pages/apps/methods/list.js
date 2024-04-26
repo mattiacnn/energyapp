@@ -51,14 +51,12 @@ import AgentView from './AgentView';
 import AlertAgentDelete from './AlertAgentDelete';
 import snackbar, { openSnackbar } from 'store/reducers/snackbar';
 import { dispatch } from 'store';
-import { useNavigate } from 'react-router';
-import { updateAgent } from 'store/reducers/agent';
 
 const avatarImage = require.context('assets/images/users', true);
 
 // ==============================|| REACT TABLE ||============================== //
 
-function ReactTable({ columns, data, renderRowSubComponent, handleAdd, handleUpdate }) {
+function ReactTable({ columns, data, renderRowSubComponent, handleAdd }) {
   const theme = useTheme();
   const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -99,9 +97,9 @@ function ReactTable({ columns, data, renderRowSubComponent, handleAdd, handleUpd
 
   useEffect(() => {
     if (matchDownSM) {
-      setHiddenColumns(['age', 'visits', 'email', 'status', 'avatar', 'phone', "notes"]);
+      setHiddenColumns(['agent_bonus_2', 'agent_monthly_fee_2']);
     } else {
-      setHiddenColumns(['avatar', "notes"]);
+      setHiddenColumns(['agent_bonus_2', 'agent_monthly_fee_2']);
     }
     // eslint-disable-next-line
   }, [matchDownSM]);
@@ -121,7 +119,7 @@ function ReactTable({ columns, data, renderRowSubComponent, handleAdd, handleUpd
           <Stack direction={matchDownSM ? 'column' : 'row'} alignItems="center" spacing={2}>
             <SortingSelect sortBy={sortBy.id} setSortBy={setSortBy} allColumns={allColumns} />
             <Button variant="contained" startIcon={<Add />} onClick={handleAdd} size="small">
-              Aggiungi contratto
+              Aggiungi metodo di pagamento
             </Button>
           </Stack>
         </Stack>
@@ -182,37 +180,72 @@ ReactTable.propTypes = {
 
 // ==============================|| CUSTOMER - LIST ||============================== //
 
-const ContractsListPage = () => {
+const RatesListPage = () => {
   const theme = useTheme();
   const mode = theme.palette.mode;
-  const [contracts, setContracts] = useState([{}]);
+  const [agents, setAgents] = useState([{}]);
   const [open, setOpen] = useState(false);
   const [customer, setCustomer] = useState(null);
   const [customerDeleteId, setCustomerDeleteId] = useState();
   const [add, setAdd] = useState(false);
   const [loading, setLoading] = useState(false);
-  const navigation = useNavigate();
 
   const handleAdd = () => {
-    navigation('/apps/contratti/create/new/');
+    setAdd(!add);
+    if (customer && !add) {
+      setCustomer(null);
+    }
   };
 
   const handleClose = () => {
     setOpen(!open);
   };
 
-  const fetchContracts = async () => {
+  const fetchAgents = async () => {
     setLoading(true);
-    const contracts = await axios.get('/contract/list');
-    setContracts(contracts.data.contracts);
+    const agents = await axios.get('/pmethod/list');
+    setAgents(agents.data.pmethods);
     // after 500ms setloading to false
     setTimeout(() => {
       setLoading(false);
     }, 500);
   }
 
+  const handleDelete = async () => {
+    try {
+      const deleteAgent = await axios.delete(`/pmethod/${customerDeleteId.id}`);
+      setOpen(false);
+      dispatch(
+        openSnackbar({
+          open: true,
+          message: 'Metodo di pagamento cancellato con successo!',
+          variant: 'Metodo di pagamento',
+          alert: {
+            color: 'success'
+          },
+          close: false
+        })
+      );
+      if (deleteAgent.status === 200) {
+        fetchAgents();
+      }
+    } catch (err) {
+      dispatch(
+        openSnackbar({
+          open: true,
+          message: 'Errore durante la cancellazione del metodo di pagamento',
+          variant: 'alert',
+          alert: {
+            color: 'error'
+          },
+          close: false
+        })
+      );
+    }
+  }
+
   useEffect(() => {
-    fetchContracts();
+    fetchAgents();
   }, [])
 
 
@@ -231,47 +264,7 @@ const ContractsListPage = () => {
         className: 'cell-center'
       },
       {
-        Header: 'Nome cliente',
-        accessor: 'first_name',
-        Cell: ({ row }) => {
-          const { values } = row;
-          return (
-            <Stack direction="row" spacing={1.5} alignItems="center">
-              <Stack spacing={0}>
-                <Typography variant="subtitle1">{values.first_name}</Typography>
-              </Stack>
-            </Stack>
-          );
-        }
-      },
-      {
-        Header: 'Cognome cliente',
-        accessor: 'last_name',
-        Cell: ({ row }) => {
-          const { values } = row;
-          return (
-            <Stack spacing={0}>
-              <Typography variant="subtitle1">{values.last_name}</Typography>
-            </Stack>
-          );
-        }
-      },
-      {
-        Header: 'Email',
-        accessor: 'email',
-        Cell: ({ row }) => {
-          const { values } = row;
-          return (
-            <Stack direction="row" spacing={1.5} alignItems="center">
-              <Stack spacing={0}>
-                <Typography variant="subtitle1">{values.email}</Typography>
-              </Stack>
-            </Stack>
-          );
-        }
-      },
-      {
-        Header: 'Tariffa',
+        Header: 'Nome',
         accessor: 'name',
         Cell: ({ row }) => {
           const { values } = row;
@@ -285,43 +278,13 @@ const ContractsListPage = () => {
         }
       },
       {
-        Header: 'Tipo',
-        accessor: 'contract_type_name',
-        Cell: ({ row }) => {
-          const { values } = row;
-          return (
-            <Stack direction="row" spacing={1.5} alignItems="center">
-              <Stack spacing={0}>
-                <Typography variant="subtitle1">{values.contract_type_name}</Typography>
-              </Stack>
-            </Stack>
-          );
-        }
-      },
-      /*{
-        Header: 'Status',
-        accessor: 'status',
-        Cell: ({ value }) => {
-          switch (value) {
-            case 'Complicated':
-              return <Chip color="error" label="Complicated" size="small" variant="light" />;
-            case 'Relationship':
-              return <Chip color="success" label="Relationship" size="small" variant="light" />;
-            case 'Single':
-            default:
-              return <Chip color="info" label="Single" size="small" variant="light" />;
-          }
-        }
-      },*/
-      {
         Header: 'Azioni',
         className: 'cell-center',
         disableSortBy: true,
         Cell: ({ row }) => {
-          const collapseIcon = row.isExpanded ? <Add style={{ color: theme.palette.error.main, transform: 'rotate(45deg)' }} /> : <Eye />;
+          const collapseIcon = row.isExpanded ? <Add style={{ color: theme.palette.error.main, transform: 'rotate(45deg)' }} /> : null;
           return (
             <Stack direction="row" alignItems="center" justifyContent="center" spacing={0}>
-              {
               <Tooltip
                 componentsProps={{
                   tooltip: {
@@ -337,15 +300,14 @@ const ContractsListPage = () => {
                   color="primary"
                   onClick={(e) => {
                     e.stopPropagation();
-                    navigation(`/apps/contratti/details/${row.values.id}`);
+                    setCustomer(row.values);
+                    handleAdd();
                   }}
                 >
                   <Edit />
                 </IconButton>
               </Tooltip>
-
-                /* 
-                              <Tooltip
+              <Tooltip
                 componentsProps={{
                   tooltip: {
                     sx: {
@@ -366,24 +328,17 @@ const ContractsListPage = () => {
                 >
                   <Trash />
                 </IconButton>
-              </Tooltip> 
-*/
-              }
+              </Tooltip>
             </Stack>
           );
         }
-      },
-      {
-        Header: 'Note',
-        accessor: 'notes',
-        disableSortBy: true,
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [theme]
   );
 
-  const renderRowSubComponent = useCallback(({ row }) => <AgentView data={contracts[Number(row.id)]} />, [contracts]);
+  const renderRowSubComponent = useCallback(({ row }) => <AgentView data={agents[Number(row.id)]} />, [agents]);
 
   return (
     <MainCard content={false}>
@@ -394,11 +349,11 @@ const ContractsListPage = () => {
           </div>
           :
           <ScrollX>
-            <ReactTable columns={columns} data={contracts} handleAdd={handleAdd} renderRowSubComponent={renderRowSubComponent} />
+            <ReactTable columns={columns} data={agents} handleAdd={handleAdd} renderRowSubComponent={renderRowSubComponent} />
           </ScrollX>
 
       }
-      <AlertAgentDelete title={customerDeleteId} open={open} handleClose={handleClose} handleDelete={() => null} />
+      <AlertAgentDelete title={customerDeleteId} open={open} handleClose={handleClose} handleDelete={handleDelete} />
       {/* add customer dialog */}
       <Dialog
         maxWidth="sm"
@@ -415,12 +370,12 @@ const ContractsListPage = () => {
             <EditAgent
               customer={customer}
               onCancel={handleAdd}
-              fetchAgents={fetchContracts}
+              fetchAgents={fetchAgents}
             />
             : <AddAgent
               customer={customer}
               onCancel={handleAdd}
-              fetchAgents={fetchContracts}
+              fetchAgents={fetchAgents}
             />
 
         }
@@ -429,7 +384,7 @@ const ContractsListPage = () => {
   );
 };
 
-ContractsListPage.propTypes = {
+RatesListPage.propTypes = {
   row: PropTypes.object,
   values: PropTypes.object,
   avatar: PropTypes.object,
@@ -443,4 +398,4 @@ ContractsListPage.propTypes = {
   id: PropTypes.number
 };
 
-export default ContractsListPage;
+export default RatesListPage;

@@ -76,6 +76,7 @@ const AddAgent = ({ customer, onCancel, fetchAgents }) => {
   const theme = useTheme();
   const isCreating = !customer;
   const [contractTypes, setContractTypes] = useState([]);
+  const [providers, setProviders] = useState([]);
 
   const CustomerSchema = Yup.object().shape({
     name: Yup.string().max(255).required('Nome è un campo obbligatorio'),
@@ -83,7 +84,8 @@ const AddAgent = ({ customer, onCancel, fetchAgents }) => {
     agent_monthly_fee: Yup.number().default(0),
     agent_monthly_fee_2: Yup.number().default(0),
     agent_bonus_2: Yup.number().default(0),
-    contract_type_id: Yup.number().default(1).required('Tipo di contratto è un campo obbligatorio'),
+    contract_type_id: Yup.number().default(1).required('Servizio è un campo obbligatorio'),
+    provider_id: Yup.number().required('Fornitore è un campo obbligatorio')
   });
 
   const [openAlert, setOpenAlert] = useState(false);
@@ -104,7 +106,8 @@ const AddAgent = ({ customer, onCancel, fetchAgents }) => {
           agent_monthly_fee: values.agent_monthly_fee,
           agent_monthly_fee_2: values.agent_monthly_fee_2,
           agent_bonus_2: values.agent_bonus_2,
-          contract_type_id: values.contract_type_id
+          contract_type_id: values.contract_type_id,
+          provider_id: values.provider_id
         }
         const response = await axios.post('/rate/create', new_agent);
         const { newRate } = response.data;
@@ -150,9 +153,19 @@ const AddAgent = ({ customer, onCancel, fetchAgents }) => {
       console.error(error);
     }
   }
+  const fetchProviders = async () => {
+    try {
+      const response = await axios.get('/provider/list');
+      const { providers } = response.data;
+      setProviders(providers);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   useEffect(() => {
     fetchContractTypes();
+    fetchProviders();
   }, []);
 
   const { errors, touched, handleSubmit, isSubmitting, getFieldProps, setFieldValue } = formik;
@@ -182,7 +195,27 @@ const AddAgent = ({ customer, onCancel, fetchAgents }) => {
                     </Grid>
                     <Grid item xs={12}>
                       <Stack spacing={1.25}>
-                        <InputLabel htmlFor="contract_type_id">Tipo di contratto</InputLabel>
+                        <InputLabel htmlFor="provider_id">Fornitore</InputLabel>
+                        <Select
+                          displayEmpty
+                          name="provider_id"
+                          {...getFieldProps('provider_id')}
+                          error={Boolean(errors.provider_id && touched.provider_id)}
+                        >
+                          <MenuItem disabled value="">
+                            Seleziona fornitore
+                          </MenuItem>
+                          {providers?.map((provider) => (
+                            <MenuItem key={provider.id} value={provider.id}>
+                              {provider.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </Stack>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Stack spacing={1.25}>
+                        <InputLabel htmlFor="contract_type_id">Servizio</InputLabel>
                         <Select
                           displayEmpty
                           name="contract_type_id"

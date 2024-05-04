@@ -103,7 +103,7 @@ const AddAgent = ({ customer, onCancel, fetchAgents }) => {
           dispatch(
             openSnackbar({
               open: true,
-              message: 'Tipo di contratto aggiunta con successo!',
+              message: 'Servizio aggiunta con successo!',
               variant: 'alert',
               alert: {
                 color: 'success'
@@ -119,7 +119,7 @@ const AddAgent = ({ customer, onCancel, fetchAgents }) => {
         dispatch(
           openSnackbar({
             open: true,
-            message: 'Errore durante l\'aggiunta del Tipo di contratto. Riprova più tardi.',
+            message: 'Errore durante l\'aggiunta del Servizio. Riprova più tardi.',
             variant: 'alert',
             alert: {
               color: 'error'
@@ -152,7 +152,7 @@ const AddAgent = ({ customer, onCancel, fetchAgents }) => {
       <FormikProvider value={formik}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
-            <DialogTitle>{customer ? 'Modifica' : 'Nuovo Tipo di contratto'}</DialogTitle>
+            <DialogTitle>{customer ? 'Modifica' : 'Nuovo Servizio'}</DialogTitle>
             <Divider />
             <DialogContent sx={{ p: 2.5 }}>
               <Grid container spacing={3}>

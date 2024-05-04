@@ -197,6 +197,15 @@ const RatesListPage = () => {
     }
   };
 
+  const fetchProviders = async () => {
+    try {
+      const response = await axios.get('/provider/list');
+      const { providers } = response.data;
+      setProviders(providers);
+    } catch (error) {
+      console.error(error);
+    }
+  }
   const handleClose = () => {
     setOpen(!open);
   };
@@ -272,6 +281,20 @@ const RatesListPage = () => {
             <Stack direction="row" spacing={1.5} alignItems="center">
               <Stack spacing={0}>
                 <Typography variant="subtitle1">{values.name}</Typography>
+              </Stack>
+            </Stack>
+          );
+        }
+      },
+      {
+        Header: 'Fornitore',
+        accessor: 'provider_name',
+        Cell: ({ row }) => {
+          const { values } = row;
+          return (
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <Stack spacing={0}>
+                <Typography variant="subtitle1">{values.provider_name}</Typography>
               </Stack>
             </Stack>
           );

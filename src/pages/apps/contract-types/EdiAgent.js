@@ -83,7 +83,7 @@ const EditAgent = ({ customer, onCancel, fetchAgents }) => {
           dispatch(
             openSnackbar({
               open: true,
-              message: 'Tipo di contratto modificato con successo!',
+              message: 'Servizio modificato con successo!',
               variant: 'alert',
               alert: {
                 color: 'success'
@@ -99,7 +99,7 @@ const EditAgent = ({ customer, onCancel, fetchAgents }) => {
         dispatch(
           openSnackbar({
             open: true,
-            message: 'Errore durante l\'aggiunta del Tipo di contratto. Riprova più tardi.',
+            message: 'Errore durante l\'aggiunta del Servizio. Riprova più tardi.',
             variant: 'alert',
             alert: {
               color: 'error'
@@ -120,7 +120,7 @@ const EditAgent = ({ customer, onCancel, fetchAgents }) => {
       <FormikProvider value={formik}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
-            <DialogTitle>{"Modifica Tipo di contratto"}</DialogTitle>
+            <DialogTitle>{"Modifica Servizio"}</DialogTitle>
             <Divider />
             <DialogContent sx={{ p: 2.5 }}>
             <Grid container spacing={3}>

@@ -119,7 +119,7 @@ function ReactTable({ columns, data, renderRowSubComponent, handleAdd }) {
           <Stack direction={matchDownSM ? 'column' : 'row'} alignItems="center" spacing={2}>
             <SortingSelect sortBy={sortBy.id} setSortBy={setSortBy} allColumns={allColumns} />
             <Button variant="contained" startIcon={<Add />} onClick={handleAdd} size="small">
-              Aggiungi Tipo di contratto
+              Aggiungi Servizio
             </Button>
           </Stack>
         </Stack>
@@ -218,8 +218,8 @@ const RatesListPage = () => {
       dispatch(
         openSnackbar({
           open: true,
-          message: 'Tipo di contratto cancellato con successo!',
-          variant: 'Tipo di contratto',
+          message: 'Servizio cancellato con successo!',
+          variant: 'Servizio',
           alert: {
             color: 'success'
           },
@@ -233,7 +233,7 @@ const RatesListPage = () => {
       dispatch(
         openSnackbar({
           open: true,
-          message: 'Errore durante la cancellazione del Tipo di contratto',
+          message: 'Errore durante la cancellazione del Servizio',
           variant: 'alert',
           alert: {
             color: 'error'

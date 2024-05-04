@@ -65,7 +65,7 @@ const applications = {
     },
     {
       id: 'contract-types',
-      title: <FormattedMessage id="Tipi di contratto" />,
+      title: <FormattedMessage id="Servizi" />,
       url: '/apps/contract-types/contract-types-list',
       type: 'collapse',
       icon: icons.archive,

@@ -45,7 +45,7 @@ const allColumns = [
   },
   {
     id: 9,
-    header: 'Tipo di Contratto'
+    header: 'Servizio'
   },
   {
     id: 3,

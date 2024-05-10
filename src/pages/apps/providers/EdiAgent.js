@@ -145,8 +145,8 @@ const EditAgent = ({ customer, onCancel, fetchAgents }) => {
                       <ListItem divider>
                         <ListItemText
                           id="switch-list-label-sb"
-                          primary="Disabilita tariffa"
-                          secondary="Disabilitando la tariffa non verrà più visualizzata nel sistema"
+                          primary="Disabilita fornitore"
+                          secondary="Disabilitando il fornitore non verrà più visualizzato nel sistema"
                         />
                         <Switch
                           edge="end"

@@ -71,6 +71,7 @@ const NewAgentTabContacts = Loadable(lazy(() => import('sections/apps/addAgent/a
 const NewAgentTabAccount = Loadable(lazy(() => import('sections/apps/addAgent/addAgent/TabAccount')));
 const NewAgentTabPassword = Loadable(lazy(() => import('sections/apps/addAgent/addAgent/TabPassword')));
 const NewAgentTabNotes = Loadable(lazy(() => import('sections/apps/addAgent/addAgent/TabNotes')));
+const NewAgentTabProviders = Loadable(lazy(() => import('sections/apps/addAgent/addAgent/TabProviders')));
 
 const AppECommProducts = Loadable(lazy(() => import('pages/apps/e-commerce/product')));
 const AppECommProductDetails = Loadable(lazy(() => import('pages/apps/e-commerce/product-details')));
@@ -426,6 +427,10 @@ const MainRoutes = {
                     {
                       path: 'notes',
                       element: <NewAgentTabNotes />
+                    },
+                    {
+                      path: 'providers',
+                      element: <NewAgentTabProviders />
                     },
                   ]
                 },

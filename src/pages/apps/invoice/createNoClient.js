@@ -101,6 +101,7 @@ const CreateNoClient = () => {
   const [selectedRates, setSelectedRates] = useState([]);
   const { open, isCustomerOpen } = useSelector((state) => state.invoice);
   const [agents, setAgents] = useState([]);
+  const [methods, setMethods] = useState([]);
 
   // get client_id parameter from url
 
@@ -113,6 +114,7 @@ const CreateNoClient = () => {
       partita: values.partita,
       client_type: values.client_type_id,
       contract_type_id: values.contract_type_id,
+      payment_method: values.payment_method,
       date: format(values.date, 'yyyy-MM-dd'),
       due_date: format(values.due_date, 'yyyy-MM-dd'),
       cod: values.cod,
@@ -151,6 +153,15 @@ const CreateNoClient = () => {
       if (client.agent) {
         fetchAgent(client.agent);
       }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  const fetchMethod = async () => {
+    try {
+      const response = await axios.get('/pmethod/list');
+      const { pmethods } = response.data;
+      setMethods(pmethods);
     } catch (error) {
       console.error(error);
     }
@@ -218,6 +229,7 @@ const CreateNoClient = () => {
     fetchAgents();
     fetchClients();
     fetchProviders();
+    fetchMethod();
   }, []);
 
   const formik = useFormik({
@@ -653,6 +665,29 @@ const CreateNoClient = () => {
                   </Stack>
                   {touched.discount && errors.discount && <FormHelperText error={true}>{errors.discount}</FormHelperText>}
                 </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                    <Stack spacing={1}>
+                      <InputLabel>Metodo di pagamento</InputLabel>
+                      <FormControl sx={{ width: '100%' }}>
+                        <Select
+                          value={values.payment_method}
+                          displayEmpty
+                          name="payment_method"
+                          onChange={handleChange}
+                          error={Boolean(errors.payment_method && touched.payment_method)}
+                        >
+                          <MenuItem disabled value="">
+                            Seleziona metodo di pagamento
+                          </MenuItem>
+                          {methods?.map((method) => (
+                            <MenuItem key={method.id} value={method.id}>
+                              {method.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Stack>
+                  </Grid>
                 <Grid item xs={12} sm={6} md={3}>
                   <Stack spacing={1}>
                     <InputLabel>Sconto 2</InputLabel>

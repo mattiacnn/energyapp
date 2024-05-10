@@ -56,7 +56,7 @@ const avatarImage = require.context('assets/images/users', true);
 
 // ==============================|| REACT TABLE ||============================== //
 
-function ReactTable({ columns, data, renderRowSubComponent, handleAdd }) {
+function ReactTable({ columns, data, renderRowSubComponent, handleAdd, setShowHidden, showHidden }) {
   const theme = useTheme();
   const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -97,9 +97,9 @@ function ReactTable({ columns, data, renderRowSubComponent, handleAdd }) {
 
   useEffect(() => {
     if (matchDownSM) {
-      setHiddenColumns(['agent_bonus_2', 'agent_monthly_fee_2']);
+      setHiddenColumns(['agent_bonus_2', 'agent_monthly_fee_2', 'hidden']);
     } else {
-      setHiddenColumns(['agent_bonus_2', 'agent_monthly_fee_2']);
+      setHiddenColumns(['agent_bonus_2', 'agent_monthly_fee_2', 'hidden']);
     }
     // eslint-disable-next-line
   }, [matchDownSM]);
@@ -115,7 +115,14 @@ function ReactTable({ columns, data, renderRowSubComponent, handleAdd }) {
           alignItems="center"
           sx={{ p: 3, pb: 0 }}
         >
-          <GlobalFilter preGlobalFilteredRows={preGlobalFilteredRows} globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
+          <div>
+            <Button variant="outlined" startIcon={<Eye />} onClick={() => setShowHidden(!showHidden)} size="small" style={{ marginRight: 20 }}>
+              {
+                showHidden ? "Nascondi cancellati" : "Mostra cancellati"
+              }
+            </Button>
+            <GlobalFilter preGlobalFilteredRows={preGlobalFilteredRows} globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
+          </div>
           <Stack direction={matchDownSM ? 'column' : 'row'} alignItems="center" spacing={2}>
             <SortingSelect sortBy={sortBy.id} setSortBy={setSortBy} allColumns={allColumns} />
             <Button variant="contained" startIcon={<Add />} onClick={handleAdd} size="small">
@@ -189,6 +196,7 @@ const RatesListPage = () => {
   const [customerDeleteId, setCustomerDeleteId] = useState();
   const [add, setAdd] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showHidden, setShowHidden] = useState(false);
 
   const handleAdd = () => {
     setAdd(!add);
@@ -203,7 +211,7 @@ const RatesListPage = () => {
 
   const fetchAgents = async () => {
     setLoading(true);
-    const agents = await axios.get('/contract-types/list');
+    const agents = await axios.get('/contract-types/list', { params: { hidden: showHidden } });
     setAgents(agents.data.contractTypes);
     // after 500ms setloading to false
     setTimeout(() => {
@@ -226,8 +234,21 @@ const RatesListPage = () => {
           close: false
         })
       );
-      if (deleteAgent.status === 200) {
+      if (deleteAgent.status === 200 && deleteAgent.data.deleted) {
         fetchAgents();
+      }
+      else if (deleteAgent.status === 200 && !deleteAgent.data.deleted) {
+        dispatch(
+          openSnackbar({
+            open: true,
+            message: 'Non puoi cancellare questo servizio perchè ha delle tariffe associate. Prova a disattivarla',
+            variant: 'alert',
+            alert: {
+              color: 'error'
+            },
+            close: false
+          })
+        );
       }
     } catch (err) {
       dispatch(
@@ -248,6 +269,9 @@ const RatesListPage = () => {
     fetchAgents();
   }, [])
 
+  useEffect(() => {
+    fetchAgents();
+  }, [showHidden])
 
   const columns = useMemo(
     () => [
@@ -276,6 +300,12 @@ const RatesListPage = () => {
             </Stack>
           );
         }
+      },
+      {
+        Header: 'Nascosto',
+        accessor: 'hidden',
+        className: 'cell-center',
+        disableSortBy: true,
       },
       {
         Header: 'Azioni',
@@ -349,7 +379,7 @@ const RatesListPage = () => {
           </div>
           :
           <ScrollX>
-            <ReactTable columns={columns} data={agents} handleAdd={handleAdd} renderRowSubComponent={renderRowSubComponent} />
+            <ReactTable columns={columns} data={agents} handleAdd={handleAdd} renderRowSubComponent={renderRowSubComponent} showHidden={showHidden} setShowHidden={setShowHidden} />
           </ScrollX>
 
       }

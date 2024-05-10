@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const axiosServices = axios.create({ baseURL: process.env.REACT_APP_API_URL || 'http://192.168.178.120:3001/api/' });
+const axiosServices = axios.create({ baseURL:  'https://energyapp-api.vercel.app/api/' });
 
 // ==============================|| AXIOS - FOR MOCK SERVICES ||============================== //
 

@@ -63,12 +63,14 @@ const NewClientTabAddressess = Loadable(lazy(() => import('sections/apps/addClie
 const NewClientTabAgent = Loadable(lazy(() => import('sections/apps/addClient/addClient/TabAgent')));
 const NewClientTabContacts = Loadable(lazy(() => import('sections/apps/addClient/addClient/TabContacts')));
 const NewClientTabAccount = Loadable(lazy(() => import('sections/apps/addClient/addClient/TabAccount')));
+const NewClientTabNotes = Loadable(lazy(() => import('sections/apps/addClient/addClient/TabNotes')));
 
 const NewAgentrofile = Loadable(lazy(() => import('pages/apps/addAgent/addAgent')));
 const NewAgentTabAddressess = Loadable(lazy(() => import('sections/apps/addAgent/addAgent/TabAddressess')));
 const NewAgentTabContacts = Loadable(lazy(() => import('sections/apps/addAgent/addAgent/TabContacts')));
 const NewAgentTabAccount = Loadable(lazy(() => import('sections/apps/addAgent/addAgent/TabAccount')));
 const NewAgentTabPassword = Loadable(lazy(() => import('sections/apps/addAgent/addAgent/TabPassword')));
+const NewAgentTabNotes = Loadable(lazy(() => import('sections/apps/addAgent/addAgent/TabNotes')));
 
 const AppECommProducts = Loadable(lazy(() => import('pages/apps/e-commerce/product')));
 const AppECommProductDetails = Loadable(lazy(() => import('pages/apps/e-commerce/product-details')));
@@ -368,6 +370,10 @@ const MainRoutes = {
                       path: 'contacts',
                       element: <NewClientTabContacts />
                     },
+                    {
+                      path: 'notes',
+                      element: <NewClientTabNotes />
+                    },
                   ]
                 },
                 {
@@ -416,6 +422,10 @@ const MainRoutes = {
                     {
                       path: 'password',
                       element: <NewAgentTabPassword />
+                    },
+                    {
+                      path: 'notes',
+                      element: <NewAgentTabNotes />
                     },
                   ]
                 },

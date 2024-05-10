@@ -58,7 +58,7 @@ const avatarImage = require.context('assets/images/users', true);
 
 // ==============================|| REACT TABLE ||============================== //
 
-function ReactTable({ columns, data, renderRowSubComponent, handleAdd, handleUpdate}) {
+function ReactTable({ columns, data, renderRowSubComponent, handleAdd, setShowHidden, showHidden }) {
   const theme = useTheme();
   const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -117,7 +117,14 @@ function ReactTable({ columns, data, renderRowSubComponent, handleAdd, handleUpd
           alignItems="center"
           sx={{ p: 3, pb: 0 }}
         >
-          <GlobalFilter preGlobalFilteredRows={preGlobalFilteredRows} globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
+          <div>
+            <Button variant="outlined" startIcon={<Eye />} onClick={() => setShowHidden(!showHidden)} size="small" style={{ marginRight: 20 }}>
+              {
+                showHidden ? "Nascondi cancellati" : "Mostra cancellati"
+              }
+            </Button>
+            <GlobalFilter preGlobalFilteredRows={preGlobalFilteredRows} globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
+          </div>
           <Stack direction={matchDownSM ? 'column' : 'row'} alignItems="center" spacing={2}>
             <SortingSelect sortBy={sortBy.id} setSortBy={setSortBy} allColumns={allColumns} />
             <Button variant="contained" startIcon={<Add />} onClick={handleAdd} size="small">
@@ -188,6 +195,7 @@ const AgentsListPage = () => {
   const [agents, setAgents] = useState([{}]);
   const [open, setOpen] = useState(false);
   const [customer, setCustomer] = useState(null);
+  const [showHidden, setShowHidden] = useState(false);
   const [customerDeleteId, setCustomerDeleteId] = useState();
   const [add, setAdd] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -209,7 +217,7 @@ const AgentsListPage = () => {
 
   const fetchAgents = async () => {
     setLoading(true);
-    const agents = await axios.get('/agent/list');
+    const agents = await axios.get('/agent/list', { params: { hidden: showHidden }});
     setAgents(agents.data.agents);
     // after 500ms setloading to false
     setTimeout(() => {
@@ -232,8 +240,21 @@ const AgentsListPage = () => {
           close: false
         })
       );
-      if (deleteAgent.status === 200) {
+      if (deleteAgent.status === 200 && deleteAgent.data.deleted) {
         fetchAgents();
+      }
+      else if (deleteAgent.status === 200 && !deleteAgent.data.deleted) {
+        dispatch(
+          openSnackbar({
+            open: true,
+            message: 'Non puoi cancellare questo agente perchè ha dei contratti attivi. Prova a disattivarlo',
+            variant: 'alert',
+            alert: {
+              color: 'error'
+            },
+            close: false
+          })
+        );
       }
     } catch (err) {
       dispatch(
@@ -254,6 +275,9 @@ const AgentsListPage = () => {
     fetchAgents();
   }, [])
 
+  useEffect(() => {
+    fetchAgents();
+  }, [showHidden])
 
   const columns = useMemo(
     () => [
@@ -381,7 +405,8 @@ const AgentsListPage = () => {
                   color="secondary"
                   onClick={(e) => {
                     e.stopPropagation();
-                    row.toggleRowExpanded();
+                    setCustomer(row.values);
+                    handleUpdate(row.values);
                   }}
                 >
                   {collapseIcon}
@@ -456,7 +481,7 @@ const AgentsListPage = () => {
           </div>
           :
           <ScrollX>
-            <ReactTable columns={columns} data={agents} handleAdd={handleAdd} renderRowSubComponent={renderRowSubComponent} />
+            <ReactTable columns={columns} data={agents} handleAdd={handleAdd} renderRowSubComponent={renderRowSubComponent} showHidden={showHidden} setShowHidden={setShowHidden} />
           </ScrollX>
 
       }

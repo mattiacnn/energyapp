@@ -70,17 +70,15 @@ const TabAccount = () => {
 
   const [checked, setChecked] = useState([]);
 
-  const handleToggle = (value) => () => {
-    const currentIndex = checked.indexOf(value);
-    const newChecked = [...checked];
-
-    if (currentIndex === -1) {
-      newChecked.push(value);
-    } else {
-      newChecked.splice(currentIndex, 1);
+  const handleToggle = (e) => { 
+    const isChecked = e.target.checked;
+    let event = {
+      target: {
+        value: isChecked
+      }
     }
 
-    setChecked(newChecked);
+    handleChange('hidden', event);
   };
 
   const formik = useFormik({
@@ -210,8 +208,8 @@ const TabAccount = () => {
               />
               <Switch
                 edge="end"
-                onChange={handleToggle('sb')}
-                checked={checked.indexOf('sb') !== -1}
+                onChange={(e) => handleToggle(e)}
+                checked={client.hidden}
                 inputProps={{
                   'aria-labelledby': 'switch-list-label-sb'
                 }}

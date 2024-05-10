@@ -30,7 +30,7 @@ export default function AlertCustomerDelete({ title, open, handleClose }) {
           </Avatar>
           <Stack spacing={2}>
             <Typography variant="h4" align="center">
-              Sei sicuro di voler cancellare questo agente?
+              Sei sicuro di voler cancellare questo cliente?
             </Typography>
             <Typography align="center">
               Cancellando

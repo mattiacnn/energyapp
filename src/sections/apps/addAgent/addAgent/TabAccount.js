@@ -57,20 +57,14 @@ const TabAccount = () => {
     last_name: Yup.string().required('Il cognome è obbligatorio'),
   });
 
-
-  const [checked, setChecked] = useState([]);
-
-  const handleToggle = (value) => () => {
-    const currentIndex = checked.indexOf(value);
-    const newChecked = [...checked];
-
-    if (currentIndex === -1) {
-      newChecked.push(value);
-    } else {
-      newChecked.splice(currentIndex, 1);
+  const handleToggle = (e) => {
+    const isChecked = e.target.checked;
+    let event = {
+      target: {
+        value: isChecked
+      }
     }
-
-    setChecked(newChecked);
+    handleChange('hidden', event);
   };
 
   const formik = useFormik({
@@ -78,7 +72,6 @@ const TabAccount = () => {
     validationSchema: CustomerSchema,
     onSubmit: async (values, { setSubmitting }) => {
       try {
-        console.log(values);
         const new_client = {
           first_name: values.first_name,
           last_name: values.last_name,
@@ -118,7 +111,7 @@ const TabAccount = () => {
                     <InputLabel htmlFor="first_name">Nome</InputLabel>
                     <TextField
                       id="first_name"
-                      onChange={(e) => handleChange('first_name',e)}
+                      onChange={(e) => handleChange('first_name', e)}
                       onBlur={handleBlur}
                       onReset={handleReset}
                       value={client.first_name || ''}
@@ -132,7 +125,7 @@ const TabAccount = () => {
                     <InputLabel htmlFor="last_name">Cognome</InputLabel>
                     <TextField
                       id="last_name"
-                      onChange={(e) => handleChange('last_name',e)}
+                      onChange={(e) => handleChange('last_name', e)}
                       onBlur={handleBlur}
                       onReset={handleReset}
                       value={client.last_name || ''}
@@ -146,7 +139,7 @@ const TabAccount = () => {
                     <InputLabel htmlFor="percentage">Percentuale</InputLabel>
                     <TextField
                       id="percentage"
-                      onChange={(e) => handleChange('percentage',e)}
+                      onChange={(e) => handleChange('percentage', e)}
                       onBlur={handleBlur}
                       onReset={handleReset}
                       value={client.percentage || ''}
@@ -173,8 +166,8 @@ const TabAccount = () => {
               />
               <Switch
                 edge="end"
-                onChange={handleToggle('sb')}
-                checked={checked.indexOf('sb') !== -1}
+                onChange={(e) => handleToggle(e)}
+                checked={client.hidden}
                 inputProps={{
                   'aria-labelledby': 'switch-list-label-sb'
                 }}

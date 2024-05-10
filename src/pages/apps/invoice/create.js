@@ -98,6 +98,8 @@ const Create = () => {
   const [providers, setProviders] = useState([]);
   const [contractTypes, setContractTypes] = useState({});
   const [selectedRates, setSelectedRates] = useState([]);
+  const [methods, setMethods] = useState([]);
+
   const { open, isCustomerOpen } = useSelector((state) => state.invoice);
 
   // get client_id parameter from url
@@ -110,6 +112,7 @@ const Create = () => {
       rate_id: values.rate_id,
       provider_id: values.provider_id,
       partita: values.partita,
+      payment_method: values.payment_method,
       client_type: values.client_type_id,
       contract_type_id: values.contract_type_id,
       date: format(values.date, 'yyyy-MM-dd'),
@@ -163,7 +166,15 @@ const Create = () => {
       console.error(error);
     }
   }
-
+ const fetchMethod = async () => {
+    try {
+      const response = await axios.get('/pmethod/list');
+      const { pmethods } = response.data;
+      setMethods(pmethods);
+    } catch (error) {
+      console.error(error);
+    }
+  }
   const fetchContractTypes = async () => {
     try {
       const response = await axios.get('/contract-types/list');
@@ -194,6 +205,8 @@ const Create = () => {
     fetchClient();
     fetchContractTypes();
     fetchProviders();
+    fetchMethod();
+
   }, []);
 
   return (
@@ -286,23 +299,6 @@ const Create = () => {
                       </FormControl>
                     </Stack>
                     {touched.status && errors.status && <FormHelperText error={true}>{errors.status}</FormHelperText>}
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Partita</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <TextField
-                          fullWidth
-                          id="partita"
-                          name="partita"
-                          value={values.partita}
-                          onChange={handleChange}
-                          error={Boolean(touched.partita && errors.partita)}
-                          helperText={touched.partita && errors.partita}
-                        />
-
-                      </FormControl>
-                    </Stack>
                   </Grid>
                   <Grid item xs={12} sm={6} md={3}>
                     <Stack spacing={1}>
@@ -582,6 +578,46 @@ const Create = () => {
                       </FormControl>
                     </Stack>
                     {touched.discount2 && errors.discount2 && <FormHelperText error={true}>{errors.discount2}</FormHelperText>}
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Stack spacing={1}>
+                      <InputLabel>Partita</InputLabel>
+                      <FormControl sx={{ width: '100%' }}>
+                        <TextField
+                          fullWidth
+                          id="partita"
+                          name="partita"
+                          value={values.partita}
+                          onChange={handleChange}
+                          error={Boolean(touched.partita && errors.partita)}
+                          helperText={touched.partita && errors.partita}
+                        />
+
+                      </FormControl>
+                    </Stack>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Stack spacing={1}>
+                      <InputLabel>Metodo di pagamento</InputLabel>
+                      <FormControl sx={{ width: '100%' }}>
+                        <Select
+                          value={values.payment_method}
+                          displayEmpty
+                          name="payment_method"
+                          onChange={handleChange}
+                          error={Boolean(errors.payment_method && touched.payment_method)}
+                        >
+                          <MenuItem disabled value="">
+                            Seleziona metodo di pagamento
+                          </MenuItem>
+                          {methods?.map((method) => (
+                            <MenuItem key={method.id} value={method.id}>
+                              {method.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Stack>
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <Stack direction="row" justifyContent="flex-end" alignItems="flex-end" spacing={2} sx={{ height: '100%' }}>

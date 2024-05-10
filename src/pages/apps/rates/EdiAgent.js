@@ -24,7 +24,8 @@ import {
   Switch,
   TextField,
   Tooltip,
-  Typography
+  Typography,
+  ListItem
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 
@@ -82,6 +83,7 @@ const EditAgent = ({ customer, onCancel, fetchAgents }) => {
           agent_monthly_fee: values.agent_monthly_fee,
           agent_monthly_fee_2: values.agent_monthly_fee_2,
           agent_bonus_2: values.agent_bonus_2,
+          hidden: values.hidden,
           id: customer.id
         }
         const response = await axios.put('/rate/update', new_agent);
@@ -120,18 +122,17 @@ const EditAgent = ({ customer, onCancel, fetchAgents }) => {
     }
   });
 
-  const { errors, touched, handleSubmit, isSubmitting, getFieldProps, setFieldValue } = formik;
-
+  const { errors, touched, handleSubmit, isSubmitting, getFieldProps, setFieldValue, values } = formik;
 
   return (
     <>
       <FormikProvider value={formik}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
-            <DialogTitle>{"Modifica agente"}</DialogTitle>
+            <DialogTitle>{"Modifica Tariffa"}</DialogTitle>
             <Divider />
             <DialogContent sx={{ p: 2.5 }}>
-            <Grid container spacing={3}>
+              <Grid container spacing={3}>
                 <Grid item xs={12} md={8}>
                   <Grid container spacing={3}>
                     <Grid item xs={12}>
@@ -196,6 +197,25 @@ const EditAgent = ({ customer, onCancel, fetchAgents }) => {
                           error={Boolean(touched.agent_bonus_2 && errors.agent_bonus_2)}
                           helperText={touched.agent_bonus_2 && errors.agent_bonus_2}
                         />
+                      </Stack>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Stack spacing={1.25}>
+                        <ListItem divider>
+                          <ListItemText
+                            id="switch-list-label-sb"
+                            primary="Disabilita tariffa"
+                            secondary="Disabilitando la tariffa non verrà più visualizzata nel sistema"
+                          />
+                          <Switch
+                            edge="end"
+                            onChange={(e) => setFieldValue('hidden', e.target.checked)}
+                            checked={values.hidden}
+                            inputProps={{
+                              'aria-labelledby': 'switch-list-label-sb'
+                            }}
+                          />
+                        </ListItem>
                       </Stack>
                     </Grid>
                   </Grid>

@@ -24,7 +24,8 @@ import {
   Switch,
   TextField,
   Tooltip,
-  Typography
+  Typography,
+  ListItem
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 
@@ -74,6 +75,7 @@ const EditAgent = ({ customer, onCancel, fetchAgents }) => {
       try {
         const new_agent = {
           id: customer.id,
+          hidden: values.hidden,
           name: values.name,
         }
         const response = await axios.put('/provider/update', new_agent);
@@ -112,8 +114,7 @@ const EditAgent = ({ customer, onCancel, fetchAgents }) => {
     }
   });
 
-  const { errors, touched, handleSubmit, isSubmitting, getFieldProps, setFieldValue } = formik;
-
+  const { errors, touched, handleSubmit, isSubmitting, getFieldProps, setFieldValue, values} = formik;
 
   return (
     <>
@@ -123,7 +124,7 @@ const EditAgent = ({ customer, onCancel, fetchAgents }) => {
             <DialogTitle>{"Modifica Fornitore"}</DialogTitle>
             <Divider />
             <DialogContent sx={{ p: 2.5 }}>
-            <Grid container spacing={3}>
+              <Grid container spacing={3}>
                 <Grid item xs={12} md={8}>
                   <Grid container spacing={3}>
                     <Grid item xs={12}>
@@ -138,6 +139,25 @@ const EditAgent = ({ customer, onCancel, fetchAgents }) => {
                         />
                       </Stack>
                     </Grid>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Stack spacing={1.25}>
+                      <ListItem divider>
+                        <ListItemText
+                          id="switch-list-label-sb"
+                          primary="Disabilita tariffa"
+                          secondary="Disabilitando la tariffa non verrà più visualizzata nel sistema"
+                        />
+                        <Switch
+                          edge="end"
+                          onChange={(e) => setFieldValue('hidden', e.target.checked)}
+                          checked={values.hidden}
+                          inputProps={{
+                            'aria-labelledby': 'switch-list-label-sb'
+                          }}
+                        />
+                      </ListItem>
+                    </Stack>
                   </Grid>
                 </Grid>
               </Grid>

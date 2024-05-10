@@ -39,6 +39,9 @@ const AddAgent = () => {
     case '/apps/new-agent/create/password':
       selectedTab = 4;
       break;
+    case '/apps/new-agent/create/notes':
+      selectedTab = 5;
+      break;
     default:
       selectedTab = 0;
   }
@@ -182,7 +185,7 @@ const AddAgent = () => {
           <Tab label="Contatti" component={Link} to="/apps/new-agent/create/contacts" icon={<Call />} iconPosition="start" />
           {/*<Tab label="Allegati" component={Link} to="/apps/new-client/create/addressess" icon={<AttachCircle />} iconPosition="start" />*/}
           <Tab label="Password" component={Link} to="/apps/new-agent/create/password" icon={<Profile2User />} iconPosition="start" />
-
+          <Tab label="Note" component={Link} to="/apps/new-agent/create/notes" icon={<TableDocument />} iconPosition="start" />
         </Tabs>
       </Box>
       <Box sx={{ mt: 2.5 }}>

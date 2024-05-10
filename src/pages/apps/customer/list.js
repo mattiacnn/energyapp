@@ -58,7 +58,7 @@ const avatarImage = require.context('assets/images/users', true);
 
 // ==============================|| REACT TABLE ||============================== //
 
-function ReactTable({ columns, data, renderRowSubComponent, handleAdd, handleUpdate }) {
+function ReactTable({ columns, data, renderRowSubComponent, handleAdd, setShowHidden, showHidden }) {
   const theme = useTheme();
   const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -110,6 +110,7 @@ function ReactTable({ columns, data, renderRowSubComponent, handleAdd, handleUpd
     <>
       <TableRowSelection selected={Object.keys(selectedRowIds).length} />
       <Stack spacing={3}>
+
         <Stack
           direction={matchDownSM ? 'column' : 'row'}
           spacing={1}
@@ -117,7 +118,14 @@ function ReactTable({ columns, data, renderRowSubComponent, handleAdd, handleUpd
           alignItems="center"
           sx={{ p: 3, pb: 0 }}
         >
-          <GlobalFilter preGlobalFilteredRows={preGlobalFilteredRows} globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
+          <div>
+            <Button variant="outlined" startIcon={<Eye />} onClick={() => setShowHidden(!showHidden)} size="small" style={{ marginRight: 20 }}>
+              {
+                showHidden ? "Nascondi cancellati" : "Mostra cancellati"
+              }
+            </Button>
+            <GlobalFilter preGlobalFilteredRows={preGlobalFilteredRows} globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
+          </div>
           <Stack direction={matchDownSM ? 'column' : 'row'} alignItems="center" spacing={2}>
             <SortingSelect sortBy={sortBy.id} setSortBy={setSortBy} allColumns={allColumns} />
             <Button variant="contained" startIcon={<Add />} onClick={handleAdd} size="small">
@@ -192,6 +200,8 @@ const CustomerListPage = () => {
   const [add, setAdd] = useState(false);
   const [customers, setCustomers] = useState([{}]);
   const [loading, setLoading] = useState(false);
+  const [showHidden, setShowHidden] = useState(false);
+
   const navigation = useNavigate();
   const client = useSelector(selectClient);
   const dispatch = useDispatch();
@@ -214,9 +224,22 @@ const CustomerListPage = () => {
       }
       // delete customer
       const response = await axios.delete('/client/' + customerDelete.id);
-      if (response.status === 200) {
+      if (response.status === 200 && response.data.deleted) {
         fetchCustomers();
         setOpen(!open);
+      } else if (response.status === 200 && !response.data.deleted) {
+        setOpen(!open);
+        dispatch(
+          openSnackbar({
+            open: true,
+            message: 'Non puoi cancellare questo cliente perchè ha dei contratti associati. Prova a disattivarlo',
+            variant: 'alert',
+            alert: {
+              color: 'error'
+            },
+            close: false
+          })
+        );
       }
 
     } catch (error) {
@@ -366,7 +389,8 @@ const CustomerListPage = () => {
                   color="secondary"
                   onClick={(e) => {
                     e.stopPropagation();
-                    row.toggleRowExpanded();
+                    setCustomer(row.values);
+                    handleUpdate(row.values);
                   }}
                 >
                   {collapseIcon}
@@ -426,7 +450,7 @@ const CustomerListPage = () => {
   );
 
   const fetchCustomers = async () => {
-    const customers = await axios.get('/client/list');
+    const customers = await axios.get('/client/list', { params: { hidden: showHidden } });
     setCustomers(customers.data.clients);
   }
 
@@ -441,6 +465,10 @@ const CustomerListPage = () => {
     })
   }, [])
 
+  useEffect(() => {
+    fetchCustomers();
+  }, [showHidden])
+
   const renderRowSubComponent = useCallback(({ row }) => <CustomerView data={customers[Number(row.id)]} />, [customers]);
 
   return (
@@ -451,7 +479,7 @@ const CustomerListPage = () => {
         </div>
         :
         <ScrollX>
-          <ReactTable columns={columns} data={customers} handleAdd={handleAdd} handleUpdate={handleUpdate} renderRowSubComponent={renderRowSubComponent} />
+          <ReactTable columns={columns} data={customers} handleAdd={handleAdd} handleUpdate={handleUpdate} renderRowSubComponent={renderRowSubComponent} setShowHidden={setShowHidden} showHidden={showHidden} />
         </ScrollX>
       }
       <AlertCustomerDelete title={customerDelete?.first_name + " " + customerDelete?.last_name} open={open} handleClose={handleClose} />

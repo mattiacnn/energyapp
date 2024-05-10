@@ -35,6 +35,9 @@ const AddClient = () => {
     case '/apps/new-agent/create/contacts':
       selectedTab = 3;
       break;
+    case '/apps/new-agent/create/notes':
+      selectedTab = 4;
+      break;
     default:
       selectedTab = 0;
   }
@@ -165,6 +168,8 @@ const AddClient = () => {
           <Tab label="Indirizzi" component={Link} to="/apps/new-client/create/addressess" icon={<TableDocument />} iconPosition="start" />
           <Tab label="Contatti" component={Link} to="/apps/new-client/create/contacts" icon={<Call />} iconPosition="start" />
           <Tab label="Agente" component={Link} to="/apps/new-client/create/agent" icon={<Profile2User />} iconPosition="start" />
+          <Tab label="Note" component={Link} to="/apps/new-client/create/notes" icon={<TableDocument />} iconPosition="start" />
+
           {/*<Tab label="Allegati" component={Link} to="/apps/new-client/create/addressess" icon={<AttachCircle />} iconPosition="start" />*/}
         </Tabs>
       </Box>

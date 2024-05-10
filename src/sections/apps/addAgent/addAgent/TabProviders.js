@@ -5,6 +5,8 @@ import {
   Box,
   Button,
   Checkbox,
+  FormControlLabel,
+  FormGroup,
   Grid,
   InputLabel,
   List,
@@ -59,7 +61,7 @@ const TabProviders = () => {
   const CustomerSchema = Yup.object().shape({
     notes: Yup.string()
   });
- 
+
   const formik = useFormik({
     initialValues: getInitialValues(client),
     validationSchema: CustomerSchema,
@@ -77,13 +79,22 @@ const TabProviders = () => {
       }
     }
   });
-  const { errors, touched, handleSubmit, isSubmitting, getFieldProps, setFieldValue, handleBlur, handleReset} = formik;
+  const { errors, touched, handleSubmit, isSubmitting, getFieldProps, setFieldValue, handleBlur, handleReset } = formik;
 
-  const handleChange = (key, event) => {
-    const { value } = event.target;
-    const newClient = { ...client, [key]: value };
+  const handleChange = ( event, providerId) => {
+    const { checked } = event.target;
+    let providers = client.providers || [];
+
+
+    if (checked) {
+      providers = [...providers, providerId];
+    } else {
+      providers = providers.filter((id) => id !== providerId);
+    }
+ 
+    const newClient = { ...client, providers };
     dispatch(updateAgent(newClient));
-    setFieldValue(key, value);
+    setFieldValue('providers', providers);
   }
 
   const fetchProviders = async () => {
@@ -110,25 +121,27 @@ const TabProviders = () => {
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
-        <MainCard title="Note">
+        <MainCard title="Fornitori">
           <FormikProvider value={formik}>
             <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
               <Grid container spacing={3}>
                 <Grid item xs={12} sm={6}>
                   <Stack spacing={1.25}>
-                    <InputLabel htmlFor="notes">Fornitori</InputLabel>
-                    {
-                      providers?.map((provider, index) => (
-                        <ListItem key={index} disablePadding>
-                          <ListItemText primary={provider.name} />
-                          <Checkbox
-                            checked={client.providers?.includes(provider.id)}
-                            onChange={(event) => handleChange('providers', event, provider.id)}
-                            inputProps={{ 'aria-label': 'primary checkbox' }}
-                          />
-                        </ListItem>
-                      ))
-                    }
+                    <FormGroup>
+                      {
+                        providers?.map((provider, index) => (
+                          <FormControlLabel
+                            key={index}
+                            control={
+                              <Checkbox
+                                checked={client.providers?.includes(provider.id)}
+                                onChange={(event) => handleChange(event, provider.id)}
+                              />}
+                            label={provider.name} />
+                        ))
+                      }
+                    </FormGroup>
+
                   </Stack>
                 </Grid>
               </Grid>

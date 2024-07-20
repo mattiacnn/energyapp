@@ -1,7 +1,7 @@
 import axios from 'axios';
 export const downloadUrl = "https://energyapp-api.vercel.app"
 export const apiUrl = "http://energyapp-api.vercel.app/api"
-const axiosServices = axios.create({ baseURL:  'energyapp-api.vercel.app/api/' });
+const axiosServices = axios.create({ baseURL:  'http://energyapp-api.vercel.app/api/' });
 
 // ==============================|| AXIOS - FOR MOCK SERVICES ||============================== //
 

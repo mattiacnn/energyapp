@@ -88,7 +88,7 @@ ConfirmationDialogRaw.propTypes = {
   value: PropTypes.string.isRequired
 };
 
-export default function ConfirmationDialog() {
+ const ConfirmationDialog = () => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState('Hangouts Call');
 
@@ -128,3 +128,5 @@ export default function ConfirmationDialog() {
     </Box>
   );
 }
+
+export default ConfirmationDialog;

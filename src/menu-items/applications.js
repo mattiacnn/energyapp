@@ -2,7 +2,7 @@
 import { FormattedMessage } from 'react-intl';
 
 // assets
-import { KyberNetwork, Messages2, Calendar1, Kanban, Profile2User, Bill, UserSquare, ShoppingBag, Star, CardAdd, DocumentText } from 'iconsax-react';
+import { KyberNetwork, Messages2, Calendar1, Kanban, Profile2User, Bill, UserSquare, ShoppingBag, Star, CardAdd, DocumentText,DocumentText1 } from 'iconsax-react';
 
 // icons
 const icons = {
@@ -64,6 +64,14 @@ const applications = {
       breadcrumbs: true,
     },
     {
+      id: 'rates_type',
+      title: <FormattedMessage id="Tipi di tariffa" />,
+      url: '/apps/rates/rates-types-list',
+      type: 'collapse',
+      icon: icons.star,
+      breadcrumbs: true,
+    },
+    {
       id: 'contract-types',
       title: <FormattedMessage id="Servizi" />,
       url: '/apps/contract-types/contract-types-list',
@@ -85,6 +93,22 @@ const applications = {
       url: '/apps/methods/methods-list',
       type: 'collapse',
       icon: icons.card,
+      breadcrumbs: true,
+    },
+    {
+      id: 'tipologies',
+      title: <FormattedMessage id="Tipologie" />,
+      url: '/apps/tipologies/tipologies-list',
+      type: 'collapse',
+      icon: icons.archive,
+      breadcrumbs: true,
+    },
+    {
+      id: 'statuses',
+      title: <FormattedMessage id="Stati" />,
+      url: '/apps/status/status-list',
+      type: 'collapse',
+      icon: icons.archive,
       breadcrumbs: true,
     },
   ]

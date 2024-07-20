@@ -88,9 +88,9 @@ const EditAgent = ({ customer, onCancel, fetchAgents }) => {
           hidden: values.hidden,
           id: customer.id
         }
-        const response = await axios.put('/rate/update', new_agent);
-        const { rate } = response.data;
-        if (rate) {
+        const response = await axios.put('/rate-type/update', new_agent);
+        const { rateType } = response.data;
+        if (rateType) {
           // dispatch(openSnackbar('Customer Added Successfully'));
           dispatch(
             openSnackbar({
@@ -155,7 +155,6 @@ const EditAgent = ({ customer, onCancel, fetchAgents }) => {
   useEffect(() => {
     console.log("provider is",provider);
     console.log("service si", contractType);
-    console.log("customer is", customer);
   },[provider, contractType])
   const { errors, touched, handleSubmit, isSubmitting, getFieldProps, setFieldValue, values } = formik;
 
@@ -172,47 +171,6 @@ const EditAgent = ({ customer, onCancel, fetchAgents }) => {
                   <Grid container spacing={3}>
                     <Grid item xs={6}>
                       <Stack spacing={1.25}>
-                        <InputLabel htmlFor="provider">Fornitore</InputLabel>
-                        <TextField
-                          fullWidth
-                          id="provider"
-                          placeholder={provider?.name}
-                          disabled
-                          {...getFieldProps('provider')}
-                          error={Boolean(touched.provider && errors.provider)}
-                          helperText={touched.provider && errors.provider}
-                        />
-                      </Stack>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Stack spacing={1.25}>
-                        <InputLabel htmlFor="service">Servizio</InputLabel>
-                        <TextField
-                          fullWidth
-                          id="service"
-                          placeholder={contractType?.name}
-                          disabled
-                          {...getFieldProps('service')}
-                          error={Boolean(touched.service && errors.service)}
-                          helperText={touched.service && errors.service}
-                        />
-                      </Stack>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Stack spacing={1.25}>
-                        <InputLabel htmlFor="is_business">Tariffa business</InputLabel>
-                        <TextField
-                          fullWidth
-                          id="is_business"
-                          value={customer?.is_business ? 'Si' : 'No'}
-                          disabled
-                          error={Boolean(touched.is_business && errors.is_business)}
-                          helperText={touched.is_business && errors.is_business}
-                        />
-                      </Stack>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Stack spacing={1.25}>
                         <InputLabel htmlFor="name">Nome</InputLabel>
                         <TextField
                           fullWidth
@@ -223,65 +181,13 @@ const EditAgent = ({ customer, onCancel, fetchAgents }) => {
                         />
                       </Stack>
                     </Grid>
-                    <Grid item xs={6}>
-                      <Stack spacing={1.25}>
-                        <InputLabel htmlFor="agent_bonus">Gettone</InputLabel>
-                        <TextField
-                          fullWidth
-                          id="agent_bonus"
-                          placeholder="Inserisci bonus"
-                          {...getFieldProps('agent_bonus')}
-                          error={Boolean(touched.agent_bonus && errors.agent_bonus)}
-                          helperText={touched.agent_bonus && errors.agent_bonus}
-                        />
-                      </Stack>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Stack spacing={1.25}>
-                        <InputLabel htmlFor="agent_monthly_fee">Ricorenza</InputLabel>
-                        <TextField
-                          fullWidth
-                          id="agent_monthly_fee"
-                          placeholder="Inserisci ricorrenza"
-                          {...getFieldProps('agent_monthly_fee')}
-                          error={Boolean(touched.agent_monthly_fee && errors.agent_monthly_fee)}
-                          helperText={touched.agent_monthly_fee && errors.agent_monthly_fee}
-                        />
-                      </Stack>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Stack spacing={1.25}>
-                        <InputLabel htmlFor="agent_monthly_fee_2">Ricorenza 13 mese</InputLabel>
-                        <TextField
-                          fullWidth
-                          id="agent_monthly_fee_2"
-                          placeholder="Inserisci ricorrenza 13 mese"
-                          {...getFieldProps('agent_monthly_fee_2')}
-                          error={Boolean(touched.agent_monthly_fee_2 && errors.agent_monthly_fee_2)}
-                          helperText={touched.agent_monthly_fee_2 && errors.agent_monthly_fee_2}
-                        />
-                      </Stack>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Stack spacing={1.25}>
-                        <InputLabel htmlFor="agent_bonus_2">Gettone 13 mese</InputLabel>
-                        <TextField
-                          fullWidth
-                          id="agent_bonus_2"
-                          placeholder="Inserisci bonus 13 mese"
-                          {...getFieldProps('agent_bonus_2')}
-                          error={Boolean(touched.agent_bonus_2 && errors.agent_bonus_2)}
-                          helperText={touched.agent_bonus_2 && errors.agent_bonus_2}
-                        />
-                      </Stack>
-                    </Grid>
                     <Grid item xs={12}>
                       <Stack spacing={1.25}>
                         <ListItem divider>
                           <ListItemText
                             id="switch-list-label-sb"
-                            primary="Disabilita tariffa"
-                            secondary="Disabilitando la tariffa non verrà più visualizzata nel sistema"
+                            primary="Disabilita tipo di tariffa tariffa"
+                            secondary="Disabilitando il tipo di tariffa non verrà più visualizzata nel sistema"
                           />
                           <Switch
                             edge="end"

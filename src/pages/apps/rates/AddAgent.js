@@ -46,6 +46,7 @@ import { ThemeMode } from 'config';
 // assets
 import { Camera, Trash } from 'iconsax-react';
 import AlertAgentDelete from './AlertAgentDelete';
+import RatesTypesList from '../ratesTypes/list';
 
 
 // constant
@@ -77,15 +78,18 @@ const AddAgent = ({ customer, onCancel, fetchAgents }) => {
   const isCreating = !customer;
   const [contractTypes, setContractTypes] = useState([]);
   const [providers, setProviders] = useState([]);
+  const [ratesTypes, setRatesTypes] = useState([]);
 
   const CustomerSchema = Yup.object().shape({
     name: Yup.string().max(255).required('Nome è un campo obbligatorio'),
+    rate_type_id: Yup.number().default(1).required('Tipo tariffa è un campo obbligatorio'),
     agent_bonus: Yup.number().default(0),
     agent_monthly_fee: Yup.number().default(0),
     agent_monthly_fee_2: Yup.number().default(0),
     agent_bonus_2: Yup.number().default(0),
     contract_type_id: Yup.number().default(1).required('Servizio è un campo obbligatorio'),
-    provider_id: Yup.number().required('Fornitore è un campo obbligatorio')
+    provider_id: Yup.number().required('Fornitore è un campo obbligatorio'),
+    is_business: Yup.boolean().default(false)
   });
 
   const [openAlert, setOpenAlert] = useState(false);
@@ -107,7 +111,9 @@ const AddAgent = ({ customer, onCancel, fetchAgents }) => {
           agent_monthly_fee_2: values.agent_monthly_fee_2,
           agent_bonus_2: values.agent_bonus_2,
           contract_type_id: values.contract_type_id,
-          provider_id: values.provider_id
+          provider_id: values.provider_id,
+          rate_type_id: values.rate_type_id,
+          is_business: values.is_business
         }
         const response = await axios.post('/rate/create', new_agent);
         const { newRate } = response.data;
@@ -163,9 +169,19 @@ const AddAgent = ({ customer, onCancel, fetchAgents }) => {
     }
   }
 
+  const fetchRatesTypes = async () => {
+    try {
+      const response = await axios.get('/rate-type/list');
+      const { rate_types } = response.data;
+      setRatesTypes(rate_types);
+    } catch (error) {
+      console.error(error);
+    }
+  }
   useEffect(() => {
     fetchContractTypes();
     fetchProviders();
+    fetchRatesTypes();
   }, []);
 
   const { errors, touched, handleSubmit, isSubmitting, getFieldProps, setFieldValue } = formik;
@@ -213,6 +229,50 @@ const AddAgent = ({ customer, onCancel, fetchAgents }) => {
                         </Select>
                       </Stack>
                     </Grid>
+                    <Grid item xs={12}>
+                      <Stack spacing={1.25}>
+                        <InputLabel htmlFor="is_business">Tariffa business</InputLabel>
+                        <Select
+                          displayEmpty
+                          name="is_business"
+                          {...getFieldProps('is_business')}
+                          error={Boolean(errors.is_business && touched.is_business)}
+                        >
+                          <MenuItem disabled value="">
+                            Selezione setariffa business
+                          </MenuItem>
+                          <MenuItem value={true}>
+                            Sì
+                          </MenuItem>
+                          <MenuItem value={false}>
+                            No
+                          </MenuItem>
+
+                        </Select>
+                      </Stack>
+                    </Grid>
+
+                    <Grid item xs={12}>
+                      <Stack spacing={1.25}>
+                        <InputLabel htmlFor="rate_type_id">Tipo di tariffa</InputLabel>
+                        <Select
+                          displayEmpty
+                          name="rate_type_id"
+                          {...getFieldProps('rate_type_id')}
+                          error={Boolean(errors.rate_type_id && touched.rate_type_id)}
+                        >
+                          <MenuItem disabled value="">
+                            Seleziona tipo di tariffa
+                          </MenuItem>
+                          {ratesTypes?.map((rateType) => (
+                            <MenuItem key={rateType.id} value={rateType.id}>
+                              {rateType.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </Stack>
+                    </Grid>
+
                     <Grid item xs={12}>
                       <Stack spacing={1.25}>
                         <InputLabel htmlFor="contract_type_id">Servizio</InputLabel>

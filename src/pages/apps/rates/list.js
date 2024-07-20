@@ -97,9 +97,9 @@ function ReactTable({ columns, data, renderRowSubComponent, handleAdd, showHidde
 
   useEffect(() => {
     if (matchDownSM) {
-      setHiddenColumns(['agent_bonus_2', 'agent_monthly_fee_2', 'hidden']);
+      setHiddenColumns(['agent_bonus_2', 'agent_monthly_fee_2', 'hidden', 'provider_id', 'contract_type_id', 'is_business', 'rate_type_id']);
     } else {
-      setHiddenColumns(['agent_bonus_2', 'agent_monthly_fee_2','hidden']);
+      setHiddenColumns(['agent_bonus_2', 'agent_monthly_fee_2', 'hidden', 'provider_id', 'contract_type_id', 'is_business', 'rate_type_id']);
     }
     // eslint-disable-next-line
   }, [matchDownSM]);
@@ -364,6 +364,21 @@ const RatesListPage = () => {
       {
         Header: 'Nascosto',
         accessor: 'hidden',
+        disableSortBy: true,
+      },
+      {
+        Header: 'Nascosto',
+        accessor: 'is_business',
+        disableSortBy: true,
+      },
+      {
+        Header: 'Nascosto',
+        accessor: 'provider_id',
+        disableSortBy: true
+      },
+      {
+        Header: 'Nascosto',
+        accessor: 'contract_type_id',
         disableSortBy: true
       },
       {

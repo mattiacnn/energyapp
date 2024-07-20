@@ -10,7 +10,7 @@ import MainCard from 'components/MainCard';
 // assets
 import { DocumentText, Lock, Profile, Profile2User, Setting3, TableDocument, AttachCircle, Call } from 'iconsax-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { resetClient, selectClient, updateClient } from 'store/reducers/client';
+import client, { resetClient, selectClient, updateClient } from 'store/reducers/client';
 import axios from 'utils/axios';
 import { openSnackbar } from 'store/reducers/snackbar';
 import { resetAgent, selectAgent, updateAgent } from 'store/reducers/agent';
@@ -44,6 +44,12 @@ const AddAgent = () => {
       break;
     case '/apps/new-agent/create/providers':
       selectedTab = 6;
+      break;
+    case '/apps/new-agent/create/attachments':
+      selectedTab = 7;
+      break;
+    case '/apps/new-agent/create/edit':
+      selectedTab = 8;
       break;
     default:
       selectedTab = 0;
@@ -82,6 +88,39 @@ const AddAgent = () => {
     }
   }, [])
 
+  const uploadFile = async (agent) => {
+    try {
+      // Prevents HTML handling submission
+      const id = agent[0].id;
+      const files = local_agent.files;
+      const formData = new FormData();
+      // Creates empty formData object
+      formData.append("id", id);
+      // Appends value of text input
+      for (let i = 0; i < files.files.length; i++) {
+        formData.append("files", files.files[i]);
+      }
+      // Appends value(s) of file input
+      // Post data to Node and Express server:
+      const response = await axios.post('/agent/upload', formData);
+      if (response.status === 200) {
+        dispatch(
+          openSnackbar({
+            open: true,
+            message: 'Allegato caricato con successo',
+            variant: 'alert',
+            alert: {
+              color: 'success'
+            },
+            close: false
+          })
+        );
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   const handleClientSubmit = async () => {
     try {
       // if company_name is empyty and first_name and last_name are empty is not valid.
@@ -105,14 +144,19 @@ const AddAgent = () => {
       }
 
       let response;
+      let formattedAgent = { ...local_agent };
+      formattedAgent.files = null
+      console.log(formattedAgent);
+
       if (local_agent.updating) {
-        response = await axios.put('/agent/update', local_agent);
+        response = await axios.put('/agent/update', formattedAgent);
       } else {
-        response = await axios.post('/agent/create', local_agent);
+        response = await axios.post('/agent/create', formattedAgent);
       }
       const { agent } = response.data;
       if (agent) {
         // dispatch(openSnackbar('Customer Added Successfully'));
+        await uploadFile(agent);
         dispatch(
           openSnackbar({
             open: true,
@@ -181,8 +225,8 @@ const AddAgent = () => {
 
   return (
     <MainCard border={false}>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider', width: '100%' }}>
-        <Tabs value={value} onChange={handleChange} variant="scrollable" scrollButtons="auto" aria-label="account profile tab">
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', width: '100%', }}>
+        <Tabs value={value} onChange={handleChange} variant="scrollable" scrollButtons="auto" aria-label="account profile tab" >
           <Tab label="Anagrafica" component={Link} to="/apps/new-agent/create/personal" icon={<Profile />} iconPosition="start" />
           <Tab label="Indirizzi" component={Link} to="/apps/new-agent/create/addressess" icon={<TableDocument />} iconPosition="start" />
           <Tab label="Contatti" component={Link} to="/apps/new-agent/create/contacts" icon={<Call />} iconPosition="start" />
@@ -190,6 +234,8 @@ const AddAgent = () => {
           <Tab label="Password" component={Link} to="/apps/new-agent/create/password" icon={<Profile2User />} iconPosition="start" />
           <Tab label="Note" component={Link} to="/apps/new-agent/create/notes" icon={<TableDocument />} iconPosition="start" />
           <Tab label="Forntitori" component={Link} to="/apps/new-agent/create/providers" icon={<Profile2User />} iconPosition="start" />
+          <Tab label="Allegati" component={Link} to="/apps/new-agent/create/attachments" icon={<AttachCircle />} iconPosition="start" />
+
         </Tabs>
       </Box>
       <Box sx={{ mt: 2.5 }}>
@@ -199,10 +245,12 @@ const AddAgent = () => {
             <Button variant="contained" sx={{ mt: 2.4 }} onClick={handleClientSubmit} >
               Aggiorna agente
             </Button>
-            :
-            <Button variant="contained" sx={{ mt: 2.4 }} onClick={handleClientSubmit} >
-              Crea agente
-            </Button>
+            :// check if path ends with /attachments
+            window.location.pathname.endsWith('/attachments') ?
+              <Button variant="contained" sx={{ mt: 2.4 }} onClick={handleClientSubmit} >
+                Crea agente
+              </Button>
+              : null
         }
 
       </Box>

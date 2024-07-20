@@ -24,6 +24,7 @@ import { useFormik, Form, FormikProvider } from 'formik';
 import { selectClient, updateClient } from 'store/reducers/client';
 import { dispatch } from 'store';
 import { useSelector } from 'store';
+import { useNavigate } from 'react-router';
 
 
 // styles & constant
@@ -61,6 +62,7 @@ const TabAccount = () => {
 
 
   const [checked, setChecked] = useState(client.address2 ? false : true);
+  const navigate = useNavigate();
 
   const formik = useFormik({
     initialValues: getInitialValues(client),
@@ -113,15 +115,28 @@ const TabAccount = () => {
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
-        <MainCard title="Sede legale">
+        <MainCard title="Indirizzo e codice fiscale">
           <FormikProvider value={formik}>
             <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
               <Grid container spacing={3}>
                 <Grid item xs={12} sm={6}>
                   <Stack spacing={1.25}>
+                    <InputLabel htmlFor="cf">Codice fiscale</InputLabel>
+                    <TextField
+                      id="cf"
+                      onChange={(e) => handleChange('cf', e)}
+                      onBlur={handleBlur}
+                      onReset={handleReset}
+                      value={client.cf || ''}
+                      error={Boolean(touched.cf && errors.cf)}
+                      helperText={touched.cf && errors.cf}
+                    />
+                  </Stack>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Stack spacing={1.25}>
                     <InputLabel htmlFor="address">Indirizzo</InputLabel>
                     <TextField
-
                       id="address"
                       onBlur={handleBlur}
                       onReset={handleReset}
@@ -139,6 +154,7 @@ const TabAccount = () => {
                       id="zip"
                       value={client.zip || ''}
                       {...getFieldProps('zip')}
+                      onChange={(e) => handleChange('zip', e)}
                       error={Boolean(touched.zip && errors.zip)}
                       helperText={touched.zip && errors.zip}
                     />
@@ -173,11 +189,22 @@ const TabAccount = () => {
                   </Stack>
                 </Grid>
               </Grid>
+              <Grid item xs={12} sm={6} mt={5}>
+                <Button
+                  variant="contained"
+                  onClick={() => navigate('/apps/new-client/create/contacts')}
+                  disabled={!(client.address && client.city && client.zip && client.country && client.cf)}
+                >
+                  Continua
+                </Button>
+              </Grid>
             </Form>
           </FormikProvider>
         </MainCard>
       </Grid>
-      <Grid item xs={12} sm={12}>
+      {
+        /* 
+              <Grid item xs={12} sm={12}>
         <MainCard title="Sede amministrativa" content={false}>
           <List sx={{ p: 0 }}>
             <ListItem divider>
@@ -257,15 +284,17 @@ const TabAccount = () => {
                         />
                       </Stack>
                     </Grid>
-
+    
                   </Grid>
                 </Form>
               </FormikProvider>
-
+    
             </div>
           )}
         </MainCard>
       </Grid>
+        */
+      }
 
     </Grid >
   );

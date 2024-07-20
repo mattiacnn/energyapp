@@ -24,6 +24,7 @@ import { useFormik, Form, FormikProvider } from 'formik';
 import { dispatch } from 'store';
 import { selectClient, updateClient } from 'store/reducers/client';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
 
 
 // styles & constant
@@ -55,7 +56,7 @@ const TabContacts = () => {
     email: Yup.string().email('Inserisci un indirizzo email valido').required('Inserisci un indirizzo email'),
     phone: Yup.string().required('Inserisci un numero di telefono'),
   });
- 
+
   const formik = useFormik({
     initialValues: getInitialValues(client),
     validationSchema: CustomerSchema,
@@ -73,7 +74,7 @@ const TabContacts = () => {
       }
     }
   });
-  const { errors, touched, handleSubmit, isSubmitting, getFieldProps, setFieldValue, handleBlur, handleReset} = formik;
+  const { errors, touched, handleSubmit, isSubmitting, getFieldProps, setFieldValue, handleBlur, handleReset } = formik;
 
   const handleChange = (key, event) => {
     const { value } = event.target;
@@ -81,6 +82,7 @@ const TabContacts = () => {
     dispatch(updateClient(newClient));
     setFieldValue(key, value);
   }
+  const navigate = useNavigate();
 
   useEffect(() => {
     // on leave
@@ -95,115 +97,90 @@ const TabContacts = () => {
           <FormikProvider value={formik}>
             <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
               <Grid container spacing={3}>
-                <Grid item xs={12} sm={6}>
-                  <Stack spacing={1.25}>
-                    <InputLabel htmlFor="email">Email</InputLabel>
-                    <TextField
-                      id="email"
-                      onBlur={handleBlur}
-                      onReset={handleReset}
-                      value={client.email || ''}
-                      onChange={(e) => handleChange('email', e)}
-                      type='email'
-                      error={Boolean(touched.email && errors.email)}
-                      helperText={touched.email && errors.email}
-                    />
-                  </Stack>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Stack spacing={1.25}>
-                    <InputLabel htmlFor="phone">Cellulare</InputLabel>
-                    <TextField
-                      id="phone"
-                      onBlur={handleBlur}
-                      onReset={handleReset}
-                      value={client.phone || ''}
-                      onChange={(e) => handleChange('phone', e)}
-                      error={Boolean(touched.phone && errors.phone)}
-                      helperText={touched.phone && errors.phone}
-                      type='tel'
-                    />
-                  </Stack>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Stack spacing={1.25}>
-                    <InputLabel htmlFor="pec">Pec</InputLabel>
-                    <TextField
-                      id="pec"
-                      onBlur={handleBlur}
-                      onReset={handleReset}
-                      value={client.pec || ''}
-                      onChange={(e) => handleChange('pec', e)}
-                      type='pec'
-                      error={Boolean(touched.pec && errors.pec)}
-                      helperText={touched.pec && errors.pec}
-                    />
-                  </Stack>
-                </Grid>
+                {
+                  <>
+                    <Grid item xs={12} sm={6}>
+                      <Stack spacing={1.25}>
+                        <InputLabel htmlFor="email">Email</InputLabel>
+                        <TextField
+                          id="email"
+                          onBlur={handleBlur}
+                          onReset={handleReset}
+                          value={client.email || ''}
+                          onChange={(e) => handleChange('email', e)}
+                          type='email'
+                          error={Boolean(touched.email && errors.email)}
+                          helperText={touched.email && errors.email}
+                        />
+                      </Stack>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <Stack spacing={1.25}>
+                        <InputLabel htmlFor="phone">Cellulare</InputLabel>
+                        <TextField
+                          id="phone"
+                          onBlur={handleBlur}
+                          onReset={handleReset}
+                          value={client.phone || ''}
+                          onChange={(e) => handleChange('phone', e)}
+                          error={Boolean(touched.phone && errors.phone)}
+                          helperText={touched.phone && errors.phone}
+                          type='tel'
+                        />
+                      </Stack>
+                    </Grid>
+                    {
+                      client.is_business === "true" &&
+                      <>
+                        <Grid item xs={12} sm={6}>
+                          <Stack spacing={1.25}>
+                            <InputLabel htmlFor="referer">Nome referente</InputLabel>
+                            <TextField
+                              id="referer"
+                              onChange={(e) => handleChange('referer', e)}
+                              onBlur={handleBlur}
+                              onReset={handleReset}
+                              value={client.referer || ''}
+                              error={Boolean(touched.referer && errors.referer)}
+                              helperText={touched.referer && errors.referer}
+                            />
+                          </Stack>
+                        </Grid>
 
-                <Grid item xs={12} sm={6}>
-                  <Stack spacing={1.25}>
-                    <InputLabel htmlFor="referer">Nome referente 1</InputLabel>
-                    <TextField
-                      id="referer"
-                      onChange={(e) => handleChange('referer',e)}
-                      onBlur={handleBlur}
-                      onReset={handleReset}
-                      value={client.referer || ''}
-                      error={Boolean(touched.referer && errors.referer)}
-                      helperText={touched.referer && errors.referer}
-                    />
-                  </Stack>
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <Stack spacing={1.25}>
-                    <InputLabel htmlFor="referer">Contatto referente 1</InputLabel>
-                    <TextField
-                      id="referer_phone"
-                      onChange={(e) => handleChange('referer_phone',e)}
-                      onBlur={handleBlur}
-                      onReset={handleReset}
-                      value={client.referer_phone || ''}
-                      error={Boolean(touched.referer_phone && errors.referer_phone)}
-                      helperText={touched.referer_phone && errors.referer_phone}
-                    />
-                  </Stack>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Stack spacing={1.25}>
-                    <InputLabel htmlFor="referer2">Nome referente 2</InputLabel>
-                    <TextField
-                      id="referer2"
-                      onChange={(e) => handleChange('referer2',e)}
-                      onBlur={handleBlur}
-                      onReset={handleReset}
-                      value={client.referer2 || ''}
-                      error={Boolean(touched.referer2 && errors.referer2)}
-                      helperText={touched.referer2 && errors.referer2}
-                    />
-                  </Stack>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Stack spacing={1.25}>
-                    <InputLabel htmlFor="referer2_phone">Contatto referente 2</InputLabel>
-                    <TextField
-                      id="referer2_phone"
-                      onChange={(e) => handleChange('referer2_phone',e)}
-                      onBlur={handleBlur}
-                      onReset={handleReset}
-                      value={client.referer2_phone || ''}
-                      error={Boolean(touched.referer2_phone && errors.referer2_phone)}
-                      helperText={touched.referer2_phone && errors.referer2_phone}
-                    />
-                  </Stack>
-                </Grid>
+                        <Grid item xs={12} sm={6}>
+                          <Stack spacing={1.25}>
+                            <InputLabel htmlFor="referer">Contatto referente</InputLabel>
+                            <TextField
+                              id="referer_phone"
+                              onChange={(e) => handleChange('referer_phone', e)}
+                              onBlur={handleBlur}
+                              onReset={handleReset}
+                              value={client.referer_phone || ''}
+                              error={Boolean(touched.referer_phone && errors.referer_phone)}
+                              helperText={touched.referer_phone && errors.referer_phone}
+                            />
+                          </Stack>
+                        </Grid>
+                      </>
+                    }
+                  </>
+                }
               </Grid>
+              <Grid item xs={12} sm={6} mt={5}>
+                <Button
+                  variant="contained"
+                  onClick={() => navigate('/apps/new-client/create/agent')}
+                  disabled={!(client.email && client.phone)}
+                >
+                  Continua
+                </Button>
+              </Grid>
+
             </Form>
           </FormikProvider>
         </MainCard>
       </Grid>
-    </Grid>
+    </Grid >
   );
 };
 

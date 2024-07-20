@@ -25,6 +25,7 @@ import axios from 'utils/axios';
 import { dispatch } from 'store';
 import client, { selectClient, updateClient } from 'store/reducers/client';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
 
 
 // styles & constant
@@ -82,6 +83,7 @@ const TabAgent = () => {
     setFieldValue(key, value);
   }
 
+  const navigate = useNavigate();
   const fetchAgents = async () => {
     try {
       const response = await axios.get('/agent/list');
@@ -126,6 +128,15 @@ const TabAgent = () => {
                     </Select>
                   </Stack>
                 </Grid>
+              </Grid>
+              <Grid item xs={12} sm={6} mt={5}>
+                <Button
+                  variant="contained"
+                  onClick={() => navigate('/apps/new-client/create/attachments')}
+                  disabled={!(client.agent)}
+                >
+                  Continua
+                </Button>
               </Grid>
             </Form>
           </FormikProvider>

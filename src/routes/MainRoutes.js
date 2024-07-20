@@ -30,8 +30,12 @@ const AppCustomerCard = Loadable(lazy(() => import('pages/apps/customer/card')))
 
 const AppAgentsList = Loadable(lazy(() => import('pages/apps/agents/list')));
 const RatesList = Loadable(lazy(() => import('pages/apps/rates/list')));
+const RatesTypesList = Loadable(lazy(() => import('pages/apps/ratesTypes/list')));
+
 const PMethodsList = Loadable(lazy(() => import('pages/apps/methods/list')));
 const ContractTypesList = Loadable(lazy(() => import('pages/apps/contract-types/list')));
+const TipologiesList = Loadable(lazy(() => import('pages/apps/tipologies/list')));
+const StatusList = Loadable(lazy(() => import('pages/apps/status/list')));
 
 const AppContractsList = Loadable(lazy(() => import('pages/apps/contracts/list')));
 const AppProvidersList = Loadable(lazy(() => import('pages/apps/providers/list')));
@@ -64,6 +68,8 @@ const NewClientTabAgent = Loadable(lazy(() => import('sections/apps/addClient/ad
 const NewClientTabContacts = Loadable(lazy(() => import('sections/apps/addClient/addClient/TabContacts')));
 const NewClientTabAccount = Loadable(lazy(() => import('sections/apps/addClient/addClient/TabAccount')));
 const NewClientTabNotes = Loadable(lazy(() => import('sections/apps/addClient/addClient/TabNotes')));
+const NewClientTabAttachments = Loadable(lazy(() => import('sections/apps/addClient/addClient/TabAttachments')));
+const NewClientTabEdit = Loadable(lazy(() => import('sections/apps/addClient/addClient/TabEdit')));
 
 const NewAgentrofile = Loadable(lazy(() => import('pages/apps/addAgent/addAgent')));
 const NewAgentTabAddressess = Loadable(lazy(() => import('sections/apps/addAgent/addAgent/TabAddressess')));
@@ -72,6 +78,7 @@ const NewAgentTabAccount = Loadable(lazy(() => import('sections/apps/addAgent/ad
 const NewAgentTabPassword = Loadable(lazy(() => import('sections/apps/addAgent/addAgent/TabPassword')));
 const NewAgentTabNotes = Loadable(lazy(() => import('sections/apps/addAgent/addAgent/TabNotes')));
 const NewAgentTabProviders = Loadable(lazy(() => import('sections/apps/addAgent/addAgent/TabProviders')));
+const NewAgentTabAttachments = Loadable(lazy(() => import('sections/apps/addAgent/addAgent/TabAttachments')));
 
 const AppECommProducts = Loadable(lazy(() => import('pages/apps/e-commerce/product')));
 const AppECommProductDetails = Loadable(lazy(() => import('pages/apps/e-commerce/product-details')));
@@ -236,11 +243,38 @@ const MainRoutes = {
               ]
             },
             {
+              path: 'rates',
+              children: [
+                {
+                  path: 'rates-types-list',
+                  element: <RatesTypesList />
+                }
+              ]
+            },
+            {
               path: 'methods',
               children: [
                 {
                   path: 'methods-list',
                   element: <PMethodsList />
+                }
+              ]
+            },
+            {
+              path: 'tipologies',
+              children: [
+                {
+                  path: 'tipologies-list',
+                  element: <TipologiesList />
+                }
+              ]
+            },
+            {
+              path: 'status',
+              children: [
+                {
+                  path: 'status-list',
+                  element: <StatusList />
                 }
               ]
             },
@@ -375,6 +409,14 @@ const MainRoutes = {
                       path: 'notes',
                       element: <NewClientTabNotes />
                     },
+                    {
+                      path: 'attachments',
+                      element: <NewClientTabAttachments />
+                    },
+                    {
+                      path: 'edit',
+                      element: <NewClientTabEdit />
+                    }
                   ]
                 },
                 {
@@ -431,6 +473,10 @@ const MainRoutes = {
                     {
                       path: 'providers',
                       element: <NewAgentTabProviders />
+                    },
+                    {
+                      path: 'attachments',
+                      element: <NewAgentTabAttachments />
                     },
                   ]
                 },

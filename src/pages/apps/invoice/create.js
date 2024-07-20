@@ -22,6 +22,7 @@ import {
   TableHead,
   TableRow,
   TextField,
+  TextareaAutosize,
   Typography
 } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
@@ -54,7 +55,7 @@ import {
 // assets
 import { Add, Edit } from 'iconsax-react';
 import axios from 'utils/axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const client_types = [
   {
@@ -74,7 +75,6 @@ const validationSchema = yup.object({
   provider_id: yup.number(),
   client_type_id: yup.string().required('Tipo cliente è obbligatorio'),
   contract_type_id: yup.number().required('Tipo contratto è obbligatorio'),
-  partita: yup.string().required('Partita è obbligatorio'),
   date: yup.date().required('Data di sottoscrizione è obbligatorio'),
   due_date: yup.date().required('Inizio fornitura è obbligatorio'),
   cod: yup.string().required('Cod è obbligatorio'),
@@ -99,9 +99,10 @@ const Create = () => {
   const [contractTypes, setContractTypes] = useState({});
   const [selectedRates, setSelectedRates] = useState([]);
   const [methods, setMethods] = useState([]);
-
+  const [tipologies, setTipologies] = useState([{}]);
+  const [status, setStatus] = useState([]);
   const { open, isCustomerOpen } = useSelector((state) => state.invoice);
-
+  const formRef = useRef();
   // get client_id parameter from url
   const { client_id } = useParams();
 
@@ -110,14 +111,16 @@ const Create = () => {
       agent_id: values.agent_id,
       client_id: values.client_id,
       rate_id: values.rate_id,
-      provider_id: values.provider_id,
-      partita: values.partita,
+      provider_id: values.old_provider_id,
       payment_method: values.payment_method,
       client_type: values.client_type_id,
       contract_type_id: values.contract_type_id,
+      tipology_id: values.tipology_id,
+      status_id: values.status_id,
       date: format(values.date, 'yyyy-MM-dd'),
       due_date: format(values.due_date, 'yyyy-MM-dd'),
       cod: values.cod,
+      notes:values.notes,
       pod: values.pod,
       pdr: values.pdr,
       power: values.power,
@@ -127,7 +130,11 @@ const Create = () => {
     };
     try {
       const response = await axios.post('/contract/create', new_contract);
-      navigation('/apps/contracts/contracts-list');
+      const { contract } = response.data;
+      if (contract) {
+        await uploadFile(contract[0].id);
+        navigation('/apps/contracts/contracts-list');
+      }
     } catch (error) {
       console.error(error);
     }
@@ -166,7 +173,7 @@ const Create = () => {
       console.error(error);
     }
   }
- const fetchMethod = async () => {
+  const fetchMethod = async () => {
     try {
       const response = await axios.get('/pmethod/list');
       const { pmethods } = response.data;
@@ -194,10 +201,76 @@ const Create = () => {
       console.error(error);
     }
   }
+  const fetchTiplogies = async () => {
+    try {
+      const response = await axios.get('/tipology/list');
+      const { tipologies } = response.data;
+      setTipologies(tipologies);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  const fetchStatus = async () => {
+    try {
+      const response = await axios.get('/status/list');
+      const { status } = response.data;
+      setStatus(status);
+    } catch (error) {
+      console.error(error);
+    }
+  }
   const handleChangeContractType = (setFieldValue, value) => {
     setFieldValue('contract_type_id', value);
     const filteredRates = rates.filter((rate) => rate.contract_type_id === Number(value));
     setSelectedRates(filteredRates);
+  }
+  const getProvider = (rate_id) => {
+    if (rate_id) {
+      const rate = rates.find((rate) => rate.id === rate_id);
+      const provider = providers.find((provider) => provider.id === rate.provider_id);
+      if (provider)
+        return (
+          <MenuItem key={provider.id} value={provider.id}>
+            {provider.name}
+          </MenuItem>
+        )
+    }
+    return null
+  }
+  const uploadFile = async (contract_id) => {
+    try {
+      // Prevents HTML handling submission
+      const id = contract_id;
+      const files = document.getElementById("files");
+      const formData = new FormData();
+      // Creates empty formData object
+      formData.append("id", id);
+      // Appends value of text input
+      for (let i = 0; i < files.files.length; i++) {
+        formData.append("files", files.files[i]);
+      }
+      // Appends value(s) of file input
+      // Post data to Node and Express server:
+      const response = await axios.post('/contract/upload', formData);
+      if (response.status === 200) {
+        dispatch(
+          openSnackbar({
+            open: true,
+            message: 'Allegato caricato con successo',
+            variant: 'alert',
+            alert: {
+              color: 'success'
+            },
+            close: false
+          })
+        );
+        // clean form
+        formRef.current.reset();
+        formRef.current.querySelector('input[type="file"]').value = '';
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   useEffect(() => {
@@ -206,7 +279,8 @@ const Create = () => {
     fetchContractTypes();
     fetchProviders();
     fetchMethod();
-
+    fetchTiplogies();
+    fetchStatus();
   }, []);
 
   return (
@@ -218,7 +292,6 @@ const Create = () => {
               agent_id: agent?.id,
               client_id: client_id,
               rate_id: '',
-              partita: '',
               client_type_id: '',
               contract_type_id: '',
               date: new Date(),
@@ -252,25 +325,49 @@ const Create = () => {
                     </Stack>
                     {touched.date && errors.date && <FormHelperText error={true}>{errors.date}</FormHelperText>}
                   </Grid>
+
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Stack spacing={1}>
+                      <InputLabel>Tipo cliente</InputLabel>
+                      <FormControl sx={{ width: '100%' }}>
+                        <Select
+                          value={values.rate}
+                          displayEmpty
+                          name="client_type_id"
+                          onChange={handleChange}
+                          error={Boolean(errors.client_type_id && touched.client_type_id)}
+                        >
+                          <MenuItem disabled value="">
+                            Seleziona tipo cliente
+                          </MenuItem>
+                          {client_types.map((client) => (
+                            <MenuItem key={client.name} value={client.name}>
+                              {client.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Stack>
+                  </Grid>
                   <Grid item xs={12} sm={6} md={3}>
                     <Stack spacing={1}>
                       <InputLabel>Tipologia</InputLabel>
                       <FormControl sx={{ width: '100%' }}>
                         <Select
                           displayEmpty
-                          name="type"
+                          name="tipology_id"
+                          value={values.tipology_id}
+                          error={Boolean(errors.tipology_id && touched.tipology_id)}
                           onChange={handleChange}
-                          error={Boolean(errors.type && touched.type)}
                         >
                           <MenuItem disabled value="">
                             Seleziona tipologia
                           </MenuItem>
-                          <MenuItem value={"switch"}>
-                            Switch
-                          </MenuItem>
-                          <MenuItem value={"voltura"}>
-                            Voltura
-                          </MenuItem>
+                          {tipologies.map((tipology) => (
+                            <MenuItem key={tipology.id} value={tipology.id}>
+                              {tipology.name}
+                            </MenuItem>
+                          ))}
                         </Select>
                       </FormControl>
                     </Stack>
@@ -278,14 +375,14 @@ const Create = () => {
                   </Grid>
                   <Grid item xs={12} sm={6} md={3}>
                     <Stack spacing={1}>
-                      <InputLabel>Vecchio fornitore</InputLabel>
+                      <InputLabel>Vecchio fornitore (Facoltativo)</InputLabel>
                       <FormControl sx={{ width: '100%' }}>
                         <Select
-                          value={values.provider_id}
+                          value={values.old_provider_id}
                           displayEmpty
-                          name="provider_id"
+                          name="old_provider_id"
                           onChange={handleChange}
-                          error={Boolean(errors.provider_id && touched.provider_id)}
+                          error={Boolean(errors.old_provider_id && touched.old_provider_id)}
                         >
                           <MenuItem disabled value="">
                             Seleziona un fornitore
@@ -295,6 +392,101 @@ const Create = () => {
                               {provider.name}
                             </MenuItem>
                           ))}
+                        </Select>
+                      </FormControl>
+                    </Stack>
+                    {touched.status && errors.status && <FormHelperText error={true}>{errors.status}</FormHelperText>}
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Stack spacing={1}>
+                      <InputLabel>Tipo contratto</InputLabel>
+                      <FormControl sx={{ width: '100%' }}>
+                        <Select
+                          value={values.rate}
+                          displayEmpty
+                          name="contract_type_id"
+                          onChange={(e) => handleChangeContractType(setFieldValue, e.target.value)}
+                          error={Boolean(errors.contract_type_id && touched.contract_type_id)}
+                        >
+                          <MenuItem disabled value="">
+                            Seleziona tipo contratto
+                          </MenuItem>
+                          {contractTypes?.map((contractType) => (
+                            <MenuItem key={contractType.id} value={contractType.id}>
+                              {contractType.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Stack>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Stack spacing={1}>
+                      <InputLabel>Stato contratto</InputLabel>
+                      <FormControl sx={{ width: '100%' }}>
+                        <Select
+                          value={values.status_id}
+                          displayEmpty
+                          name="status_id"
+                          onChange={handleChange}
+                          error={Boolean(errors.status_id && touched.status_id)}
+                        >
+                          <MenuItem disabled value="">
+                            Seleziona uno stato
+                          </MenuItem>
+                          {status?.map((status) => (
+                            <MenuItem key={status.id} value={status.id}>
+                              {status.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Stack>
+                    {touched.status && errors.status && <FormHelperText error={true}>{errors.status}</FormHelperText>}
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Stack spacing={1}>
+                      <InputLabel>Offerta</InputLabel>
+                      <FormControl sx={{ width: '100%' }}>
+                        <Select
+                          value={values.rate}
+                          displayEmpty
+                          disabled={selectedRates.length === 0}
+                          name="rate_id"
+                          onChange={handleChange}
+                          error={Boolean(errors.rate_id && touched.rate_id)}
+                        >
+                          <MenuItem disabled value="">
+                            Seleziona tariffa
+                          </MenuItem>
+                          {selectedRates?.map((rate) => (
+                            <MenuItem key={rate.id} value={rate.id}>
+                              {rate.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Stack>
+                    {touched.status && errors.status && <FormHelperText error={true}>{errors.status}</FormHelperText>}
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Stack spacing={1}>
+                      <InputLabel>Fornitore</InputLabel>
+                      <FormControl sx={{ width: '100%' }}>
+                        <Select
+                          value={values.provider_id}
+                          displayEmpty
+                          disabled={values.rate_id === ''}
+                          name="provider_id"
+                          onChange={handleChange}
+                          error={Boolean(errors.provider_id && touched.provider_id)}
+                        >
+                          <MenuItem disabled value="">
+                            Seleziona un fornitore
+                          </MenuItem>
+                          {
+                            getProvider(values.rate_id)
+                          }
                         </Select>
                       </FormControl>
                     </Stack>
@@ -368,112 +560,8 @@ const Create = () => {
                     </Stack>
                     {touched.due_date && errors.due_date && <FormHelperText error={true}>{errors.due_date}</FormHelperText>}
                   </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Potenza</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <TextField
-                          fullWidth
-                          id="power"
-                          name="power"
-                          value={values.power}
-                          onChange={handleChange}
-                          error={Boolean(touched.power && errors.power)}
-                          helperText={touched.power && errors.power}
-                        />
+    
 
-                      </FormControl>
-                    </Stack>
-                    {touched.status && errors.status && <FormHelperText error={true}>{errors.status}</FormHelperText>}
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Consumo annuo</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <TextField
-                          fullWidth
-                          id="annual_consumption"
-                          name="annual_consumption"
-                          value={values.annual_consumption}
-                          onChange={handleChange}
-                          error={Boolean(touched.annual_consumption && errors.annual_consumption)}
-                          helperText={touched.annual_consumption && errors.annual_consumption}
-                        />
-
-                      </FormControl>
-                    </Stack>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Tipo contratto</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <Select
-                          value={values.rate}
-                          displayEmpty
-                          name="contract_type_id"
-                          onChange={(e) => handleChangeContractType(setFieldValue, e.target.value)}
-                          error={Boolean(errors.contract_type_id && touched.contract_type_id)}
-                        >
-                          <MenuItem disabled value="">
-                            Seleziona tipo contratto
-                          </MenuItem>
-                          {contractTypes?.map((contractType) => (
-                            <MenuItem key={contractType.id} value={contractType.id}>
-                              {contractType.name}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Stack>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Offerta</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <Select
-                          value={values.rate}
-                          displayEmpty
-                          disabled={selectedRates.length === 0}
-                          name="rate_id"
-                          onChange={handleChange}
-                          error={Boolean(errors.rate_id && touched.rate_id)}
-                        >
-                          <MenuItem disabled value="">
-                            Seleziona tariffa
-                          </MenuItem>
-                          {selectedRates?.map((rate) => (
-                            <MenuItem key={rate.id} value={rate.id}>
-                              {rate.name}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Stack>
-                    {touched.status && errors.status && <FormHelperText error={true}>{errors.status}</FormHelperText>}
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Tipo cliente</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <Select
-                          value={values.rate}
-                          displayEmpty
-                          name="client_type_id"
-                          onChange={handleChange}
-                          error={Boolean(errors.client_type_id && touched.client_type_id)}
-                        >
-                          <MenuItem disabled value="">
-                            Seleziona tipo cliente
-                          </MenuItem>
-                          {client_types.map((client) => (
-                            <MenuItem key={client.name} value={client.name}>
-                              {client.name}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Stack>
-                  </Grid>
                   <Grid item xs={12} sm={6} md={6}>
                     <MainCard sx={{ minHeight: 168 }}>
                       <Grid container spacing={2}>
@@ -545,6 +633,41 @@ const Create = () => {
                   </Grid>
                   <Grid item xs={12} sm={6} md={3}>
                     <Stack spacing={1}>
+                      <InputLabel>Potenza</InputLabel>
+                      <FormControl sx={{ width: '100%' }}>
+                        <TextField
+                          fullWidth
+                          id="power"
+                          name="power"
+                          value={values.power}
+                          onChange={handleChange}
+                          error={Boolean(touched.power && errors.power)}
+                          helperText={touched.power && errors.power}
+                        />
+
+                      </FormControl>
+                    </Stack>
+                    {touched.status && errors.status && <FormHelperText error={true}>{errors.status}</FormHelperText>}
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Stack spacing={1}>
+                      <InputLabel>Consumo annuo</InputLabel>
+                      <FormControl sx={{ width: '100%' }}>
+                        <TextField
+                          fullWidth
+                          id="annual_consumption"
+                          name="annual_consumption"
+                          value={values.annual_consumption}
+                          onChange={handleChange}
+                          error={Boolean(touched.annual_consumption && errors.annual_consumption)}
+                          helperText={touched.annual_consumption && errors.annual_consumption}
+                        />
+
+                      </FormControl>
+                    </Stack>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Stack spacing={1}>
                       <InputLabel>Sconto</InputLabel>
                       <FormControl sx={{ width: '100%' }}>
                         <TextField
@@ -579,23 +702,7 @@ const Create = () => {
                     </Stack>
                     {touched.discount2 && errors.discount2 && <FormHelperText error={true}>{errors.discount2}</FormHelperText>}
                   </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Partita</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <TextField
-                          fullWidth
-                          id="partita"
-                          name="partita"
-                          value={values.partita}
-                          onChange={handleChange}
-                          error={Boolean(touched.partita && errors.partita)}
-                          helperText={touched.partita && errors.partita}
-                        />
 
-                      </FormControl>
-                    </Stack>
-                  </Grid>
                   <Grid item xs={12} sm={6} md={3}>
                     <Stack spacing={1}>
                       <InputLabel>Metodo di pagamento</InputLabel>
@@ -619,6 +726,33 @@ const Create = () => {
                       </FormControl>
                     </Stack>
                   </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Stack spacing={1}>
+                      <InputLabel>Note</InputLabel>
+                      <FormControl sx={{ width: '100%' }}>
+                        <TextareaAutosize
+                          minRows={5}
+                          fullWidth
+                          id="notes"
+                          name="notes"
+                          value={values.notes}
+                          onChange={handleChange}
+                          error={Boolean(touched.notes && errors.notes)}
+                          helperText={touched.notes && errors.notes}
+                        />
+
+                      </FormControl>
+                    </Stack>
+                    {touched.notes && errors.notes && <FormHelperText error={true}>{errors.notes}</FormHelperText>}
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={12}>
+                    <Stack spacing={1.25}>
+                      <InputLabel>Allegati</InputLabel>
+                      <form autoComplete="off" onSubmit={uploadFile} ref={formRef}>
+                        <input type='file' name='file' id="files" multiple />
+                      </form>
+                    </Stack>
+                  </Grid>
                   <Grid item xs={12} sm={6}>
                     <Stack direction="row" justifyContent="flex-end" alignItems="flex-end" spacing={2} sx={{ height: '100%' }}>
                       <Button color="primary" variant="contained" type="submit">
@@ -634,7 +768,7 @@ const Create = () => {
           <CircularProgress />
       }
 
-    </MainCard>
+    </MainCard >
   );
 };
 

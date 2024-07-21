@@ -354,30 +354,57 @@ const CreateNoClient = () => {
           <FormikProvider value={formik}>
             <Form>
               <Grid container spacing={2}>
-
                 <Grid item xs={12} sm={6} md={3}>
+
                   <Stack spacing={1}>
-                    <InputLabel>Tipo contratto</InputLabel>
+                    <InputLabel>Cliente</InputLabel>
                     <FormControl sx={{ width: '100%' }}>
                       <Select
-                        value={values.rate}
+                        value={values.client_id}
                         displayEmpty
-                        name="contract_type_id"
-                        onChange={(e) => handleChangeContractType(setFieldValue, e.target.value)}
-                        error={Boolean(errors.contract_type_id && touched.contract_type_id)}
+                        name="client_id"
+                        onChange={handleChange}
+                        error={Boolean(errors.client_id && touched.client_id)}
                       >
                         <MenuItem disabled value="">
-                          Seleziona tipo contratto
+                          Seleziona cliente
                         </MenuItem>
-                        {contractTypes?.map((contractType) => (
-                          <MenuItem key={contractType.id} value={contractType.id}>
-                            {contractType.name}
+                        {clients?.map((client) => (
+                          <MenuItem key={client.id} value={client.id}>
+                            {client.first_name + ' ' + client.last_name}
                           </MenuItem>
                         ))}
                       </Select>
                     </FormControl>
                   </Stack>
                 </Grid>
+                {
+                  values.client_id &&
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Stack spacing={1}>
+                      <InputLabel>Tipo contratto</InputLabel>
+                      <FormControl sx={{ width: '100%' }}>
+                        <Select
+                          value={values.rate}
+                          displayEmpty
+                          name="contract_type_id"
+                          onChange={(e) => handleChangeContractType(setFieldValue, e.target.value)}
+                          error={Boolean(errors.contract_type_id && touched.contract_type_id)}
+                        >
+                          <MenuItem disabled value="">
+                            Seleziona tipo contratto
+                          </MenuItem>
+                          {contractTypes?.map((contractType) => (
+                            <MenuItem key={contractType.id} value={contractType.id}>
+                              {contractType.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Stack>
+                  </Grid>
+
+                }
 
                 {
                   values.contract_type_id &&
@@ -465,7 +492,44 @@ const CreateNoClient = () => {
                 {
                   values.contract_type_id && values.provider_id && (values.client_type_id) && values.rate_id &&
                   <>
-                                      <Grid item xs={12} sm={6} md={client?.id ? 6 : 3}>
+
+<Grid item xs={12} sm={6} md={3}>
+                      <Stack spacing={1}>
+                        <InputLabel>Data di sottoscrizione</InputLabel>
+                        <FormControl sx={{ width: '100%' }} error={Boolean(touched.date && errors.date)}>
+                          <LocalizationProvider dateAdapter={AdapterDateFns}>
+                            <DatePicker format="dd/MM/yyyy" value={values.date} onChange={(newValue) => setFieldValue('date', newValue)} />
+                          </LocalizationProvider>
+                        </FormControl>
+                      </Stack>
+                      {touched.date && errors.date && <FormHelperText error={true}>{errors.date}</FormHelperText>}
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={3}>
+                      <Stack spacing={1}>
+                        <InputLabel>Tipologia</InputLabel>
+                        <FormControl sx={{ width: '100%' }}>
+                          <Select
+                            displayEmpty
+                            name="tipology_id"
+                            onChange={handleChange}
+                            value={values.tipology_id}
+                            error={Boolean(errors.tipology_id && touched.tipology_id)}
+                          >
+                            <MenuItem disabled value="">
+                              Seleziona tipologia
+                            </MenuItem>
+                            {tipologies.map((tipology) => (
+                              <MenuItem key={tipology.id} value={tipology.id}>
+                                {tipology.name}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Stack>
+                      {touched.type && errors.type && <FormHelperText error={true}>{errors.type}</FormHelperText>}
+                    </Grid>
+
+                    <Grid item xs={12} sm={6} md={client?.id ? 6 : 3}>
                       {
                         client && client.id ?
                           <MainCard sx={{ minHeight: 168 }}>
@@ -584,42 +648,6 @@ const CreateNoClient = () => {
                       {touched.customerInfo && errors.customerInfo && (
                         <FormHelperText error={true}>{errors?.customerInfo?.name}</FormHelperText>
                       )}
-                    </Grid>
-
-                    <Grid item xs={12} sm={6} md={3}>
-                      <Stack spacing={1}>
-                        <InputLabel>Data di sottoscrizione</InputLabel>
-                        <FormControl sx={{ width: '100%' }} error={Boolean(touched.date && errors.date)}>
-                          <LocalizationProvider dateAdapter={AdapterDateFns}>
-                            <DatePicker format="dd/MM/yyyy" value={values.date} onChange={(newValue) => setFieldValue('date', newValue)} />
-                          </LocalizationProvider>
-                        </FormControl>
-                      </Stack>
-                      {touched.date && errors.date && <FormHelperText error={true}>{errors.date}</FormHelperText>}
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={3}>
-                      <Stack spacing={1}>
-                        <InputLabel>Tipologia</InputLabel>
-                        <FormControl sx={{ width: '100%' }}>
-                          <Select
-                            displayEmpty
-                            name="tipology_id"
-                            onChange={handleChange}
-                            value={values.tipology_id}
-                            error={Boolean(errors.tipology_id && touched.tipology_id)}
-                          >
-                            <MenuItem disabled value="">
-                              Seleziona tipologia
-                            </MenuItem>
-                            {tipologies.map((tipology) => (
-                              <MenuItem key={tipology.id} value={tipology.id}>
-                                {tipology.name}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </Stack>
-                      {touched.type && errors.type && <FormHelperText error={true}>{errors.type}</FormHelperText>}
                     </Grid>
                     <Grid item xs={12} sm={6} md={3}>
                       <Stack spacing={1}>

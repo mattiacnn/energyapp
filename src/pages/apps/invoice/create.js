@@ -120,7 +120,7 @@ const Create = () => {
       date: format(values.date, 'yyyy-MM-dd'),
       due_date: format(values.due_date, 'yyyy-MM-dd'),
       cod: values.cod,
-      notes:values.notes,
+      notes: values.notes,
       pod: values.pod,
       pdr: values.pdr,
       power: values.power,
@@ -283,6 +283,10 @@ const Create = () => {
     fetchStatus();
   }, []);
 
+  useEffect(() => {
+    console.log(providers);
+  }, [providers])
+
   return (
     <MainCard>
       {
@@ -316,89 +320,6 @@ const Create = () => {
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={6} md={3}>
                     <Stack spacing={1}>
-                      <InputLabel>Data di sottoscrizione</InputLabel>
-                      <FormControl sx={{ width: '100%' }} error={Boolean(touched.date && errors.date)}>
-                        <LocalizationProvider dateAdapter={AdapterDateFns}>
-                          <DatePicker format="dd/MM/yyyy" value={values.date} onChange={(newValue) => setFieldValue('date', newValue)} />
-                        </LocalizationProvider>
-                      </FormControl>
-                    </Stack>
-                    {touched.date && errors.date && <FormHelperText error={true}>{errors.date}</FormHelperText>}
-                  </Grid>
-
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Tipo cliente</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <Select
-                          value={values.rate}
-                          displayEmpty
-                          name="client_type_id"
-                          onChange={handleChange}
-                          error={Boolean(errors.client_type_id && touched.client_type_id)}
-                        >
-                          <MenuItem disabled value="">
-                            Seleziona tipo cliente
-                          </MenuItem>
-                          {client_types.map((client) => (
-                            <MenuItem key={client.name} value={client.name}>
-                              {client.name}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Stack>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Tipologia</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <Select
-                          displayEmpty
-                          name="tipology_id"
-                          value={values.tipology_id}
-                          error={Boolean(errors.tipology_id && touched.tipology_id)}
-                          onChange={handleChange}
-                        >
-                          <MenuItem disabled value="">
-                            Seleziona tipologia
-                          </MenuItem>
-                          {tipologies.map((tipology) => (
-                            <MenuItem key={tipology.id} value={tipology.id}>
-                              {tipology.name}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Stack>
-                    {touched.type && errors.type && <FormHelperText error={true}>{errors.type}</FormHelperText>}
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Vecchio fornitore (Facoltativo)</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <Select
-                          value={values.old_provider_id}
-                          displayEmpty
-                          name="old_provider_id"
-                          onChange={handleChange}
-                          error={Boolean(errors.old_provider_id && touched.old_provider_id)}
-                        >
-                          <MenuItem disabled value="">
-                            Seleziona un fornitore
-                          </MenuItem>
-                          {providers?.map((provider) => (
-                            <MenuItem key={provider.id} value={provider.id}>
-                              {provider.name}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Stack>
-                    {touched.status && errors.status && <FormHelperText error={true}>{errors.status}</FormHelperText>}
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
                       <InputLabel>Tipo contratto</InputLabel>
                       <FormControl sx={{ width: '100%' }}>
                         <Select
@@ -420,346 +341,447 @@ const Create = () => {
                       </FormControl>
                     </Stack>
                   </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Stato contratto</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <Select
-                          value={values.status_id}
-                          displayEmpty
-                          name="status_id"
-                          onChange={handleChange}
-                          error={Boolean(errors.status_id && touched.status_id)}
-                        >
-                          <MenuItem disabled value="">
-                            Seleziona uno stato
-                          </MenuItem>
-                          {status?.map((status) => (
-                            <MenuItem key={status.id} value={status.id}>
-                              {status.name}
+
+                  {
+                    values.contract_type_id &&
+
+                    <Grid item xs={12} sm={6} md={3}>
+                      <Stack spacing={1}>
+                        <InputLabel>Fornitore</InputLabel>
+                        <FormControl sx={{ width: '100%' }}>
+                          <Select
+                            value={values.provider_id}
+                            name="provider_id"
+                            onChange={handleChange}
+                            error={Boolean(errors.provider_id && touched.provider_id)}
+                          >
+                            <MenuItem disabled value="">
+                              Seleziona un fornitore
                             </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Stack>
-                    {touched.status && errors.status && <FormHelperText error={true}>{errors.status}</FormHelperText>}
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Offerta</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <Select
-                          value={values.rate}
-                          displayEmpty
-                          disabled={selectedRates.length === 0}
-                          name="rate_id"
-                          onChange={handleChange}
-                          error={Boolean(errors.rate_id && touched.rate_id)}
-                        >
-                          <MenuItem disabled value="">
-                            Seleziona tariffa
-                          </MenuItem>
-                          {selectedRates?.map((rate) => (
-                            <MenuItem key={rate.id} value={rate.id}>
-                              {rate.name}
+                            {
+                              providers.map((provider) => (
+                                <MenuItem key={provider.id} value={provider.id}>
+                                  {provider.name}
+                                </MenuItem>
+                              ))
+                            }
+                          </Select>
+                        </FormControl>
+                      </Stack>
+                      {touched.status && errors.status && <FormHelperText error={true}>{errors.status}</FormHelperText>}
+                    </Grid>
+                  }
+                  {
+                    values.contract_type_id && values.provider_id &&
+                    <Grid item xs={12} sm={6} md={3}>
+                      <Stack spacing={1}>
+                        <InputLabel>Tipo cliente</InputLabel>
+                        <FormControl sx={{ width: '100%' }}>
+                          <Select
+                            value={values.rate}
+                            displayEmpty
+                            name="client_type_id"
+                            onChange={handleChange}
+                            error={Boolean(errors.client_type_id && touched.client_type_id)}
+                          >
+                            <MenuItem disabled value="">
+                              Seleziona tipo cliente
                             </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Stack>
-                    {touched.status && errors.status && <FormHelperText error={true}>{errors.status}</FormHelperText>}
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Fornitore</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <Select
-                          value={values.provider_id}
-                          displayEmpty
-                          disabled={values.rate_id === ''}
-                          name="provider_id"
-                          onChange={handleChange}
-                          error={Boolean(errors.provider_id && touched.provider_id)}
-                        >
-                          <MenuItem disabled value="">
-                            Seleziona un fornitore
-                          </MenuItem>
-                          {
-                            getProvider(values.rate_id)
-                          }
-                        </Select>
-                      </FormControl>
-                    </Stack>
-                    {touched.status && errors.status && <FormHelperText error={true}>{errors.status}</FormHelperText>}
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Cod</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <TextField
-                          fullWidth
-                          id="cod"
-                          name="cod"
-                          value={values.cod}
-                          onChange={handleChange}
-                          error={Boolean(touched.cod && errors.cod)}
-                          helperText={touched.cod && errors.cod}
-                        />
-
-                      </FormControl>
-                    </Stack>
-                    {touched.status && errors.status && <FormHelperText error={true}>{errors.status}</FormHelperText>}
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Pod</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <TextField
-                          fullWidth
-                          id="pod"
-                          name="pod"
-                          value={values.pod}
-                          onChange={handleChange}
-                          error={Boolean(touched.pod && errors.pod)}
-                          helperText={touched.pod && errors.pod}
-                        />
-
-                      </FormControl>
-                    </Stack>
-                    {touched.status && errors.status && <FormHelperText error={true}>{errors.status}</FormHelperText>}
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Pdr</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <TextField
-                          fullWidth
-                          id="pdr"
-                          name="pdr"
-                          value={values.pdr}
-                          onChange={handleChange}
-                          error={Boolean(touched.pdr && errors.pdr)}
-                          helperText={touched.pdr && errors.pdr}
-                        />
-
-                      </FormControl>
-                    </Stack>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Inizio fornitura</InputLabel>
-                      <FormControl sx={{ width: '100%' }} error={Boolean(touched.due_date && errors.due_date)}>
-                        <LocalizationProvider dateAdapter={AdapterDateFns}>
-                          <DatePicker
-                            format="dd/MM/yyyy"
-                            value={values.due_date}
-                            onChange={(newValue) => setFieldValue('due_date', newValue)}
-                          />
-                        </LocalizationProvider>
-                      </FormControl>
-                    </Stack>
-                    {touched.due_date && errors.due_date && <FormHelperText error={true}>{errors.due_date}</FormHelperText>}
-                  </Grid>
-    
-
-                  <Grid item xs={12} sm={6} md={6}>
-                    <MainCard sx={{ minHeight: 168 }}>
-                      <Grid container spacing={2}>
-                        <Grid item xs={12} sm={8}>
-                          <Stack spacing={2}>
-                            <Typography variant="h5">Cliente:</Typography>
-                            <Stack sx={{ width: '100%' }}>
-                              <Typography variant="subtitle1">{client?.first_name}</Typography>
-                              <Typography variant="subtitle1">{client?.last_name}</Typography>
-                              <Typography color="secondary">{client?.address}</Typography>
-                              <Typography color="secondary">{client?.phone}</Typography>
-                              <Typography color="secondary">{client?.email}</Typography>
-                            </Stack>
-                          </Stack>
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <Box textAlign={{ xs: 'left', sm: 'right' }} color="secondary.200">
-                            <AddressModal
-                              open={open}
-                              setOpen={(value) =>
-                                dispatch(
-                                  toggleCustomerPopup({
-                                    open: value
-                                  })
-                                )
-                              }
-                              handlerAddress={(address) => setFieldValue('cashierInfo', address)}
-                            />
-                          </Box>
-                        </Grid>
+                            {client_types.map((client) => (
+                              <MenuItem key={client.name} value={client.name}>
+                                {client.name}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Stack>
+                    </Grid>
+                  }
+                  {
+                    values.contract_type_id && values.provider_id && (values.client_type_id) &&
+                    <Grid item xs={12} sm={6} md={3}>
+                      <Stack spacing={1}>
+                        <InputLabel>Offerta</InputLabel>
+                        <FormControl sx={{ width: '100%' }}>
+                          <Select
+                            value={values.rate}
+                            displayEmpty
+                            disabled={selectedRates.length === 0}
+                            name="rate_id"
+                            onChange={handleChange}
+                            error={Boolean(errors.rate_id && touched.rate_id)}
+                          >
+                            <MenuItem disabled value="">
+                              Seleziona tariffa
+                            </MenuItem>
+                            {selectedRates?.map((rate) => (
+                              <MenuItem key={rate.id} value={rate.id}>
+                                {rate.name}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Stack>
+                      {touched.status && errors.status && <FormHelperText error={true}>{errors.status}</FormHelperText>}
+                    </Grid>
+                  }
+                  {
+                    values.contract_type_id && values.provider_id && (values.client_type_id) && values.rate_id &&
+                    <>
+                                          <Grid item xs={12} sm={6} md={6}>
+                        <MainCard sx={{ minHeight: 168 }}>
+                          <Grid container spacing={2}>
+                            <Grid item xs={12} sm={8}>
+                              <Stack spacing={2}>
+                                <Typography variant="h5">Cliente:</Typography>
+                                <Stack sx={{ width: '100%' }}>
+                                  <Typography variant="subtitle1">{client?.first_name}</Typography>
+                                  <Typography variant="subtitle1">{client?.last_name}</Typography>
+                                  <Typography color="secondary">{client?.address}</Typography>
+                                  <Typography color="secondary">{client?.phone}</Typography>
+                                  <Typography color="secondary">{client?.email}</Typography>
+                                </Stack>
+                              </Stack>
+                            </Grid>
+                            <Grid item xs={12} sm={4}>
+                              <Box textAlign={{ xs: 'left', sm: 'right' }} color="secondary.200">
+                                <AddressModal
+                                  open={open}
+                                  setOpen={(value) =>
+                                    dispatch(
+                                      toggleCustomerPopup({
+                                        open: value
+                                      })
+                                    )
+                                  }
+                                  handlerAddress={(address) => setFieldValue('cashierInfo', address)}
+                                />
+                              </Box>
+                            </Grid>
+                          </Grid>
+                        </MainCard>
                       </Grid>
-                    </MainCard>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={6}>
-                    <MainCard sx={{ minHeight: 168 }}>
-                      <Grid container spacing={2}>
-                        <Grid item xs={12} sm={8}>
-                          <Stack spacing={2}>
-                            <Typography variant="h5">Agente:</Typography>
-                            <Stack sx={{ width: '100%' }}>
-                              <Typography variant="subtitle1">{agent?.first_name}</Typography>
-                              <Typography variant="subtitle1">{agent?.last_name}</Typography>
-                              <Typography color="secondary">{agent?.address}</Typography>
-                              <Typography color="secondary">{agent?.phone}</Typography>
-                              <Typography color="secondary">{agent?.email}</Typography>
-                            </Stack>
-                          </Stack>
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <Box textAlign="right" color="secondary.200">
-                            <AddressModal
-                              open={isCustomerOpen}
-                              setOpen={(value) =>
-                                dispatch(
-                                  customerPopup({
-                                    isCustomerOpen: value
-                                  })
-                                )
-                              }
-                              handlerAddress={(value) => setFieldValue('customerInfo', value)}
-                            />
-                          </Box>
-                        </Grid>
+                      <Grid item xs={12} sm={6} md={6}>
+                        <MainCard sx={{ minHeight: 168 }}>
+                          <Grid container spacing={2}>
+                            <Grid item xs={12} sm={8}>
+                              <Stack spacing={2}>
+                                <Typography variant="h5">Agente:</Typography>
+                                <Stack sx={{ width: '100%' }}>
+                                  <Typography variant="subtitle1">{agent?.first_name}</Typography>
+                                  <Typography variant="subtitle1">{agent?.last_name}</Typography>
+                                  <Typography color="secondary">{agent?.address}</Typography>
+                                  <Typography color="secondary">{agent?.phone}</Typography>
+                                  <Typography color="secondary">{agent?.email}</Typography>
+                                </Stack>
+                              </Stack>
+                            </Grid>
+                            <Grid item xs={12} sm={4}>
+                              <Box textAlign="right" color="secondary.200">
+                                <AddressModal
+                                  open={isCustomerOpen}
+                                  setOpen={(value) =>
+                                    dispatch(
+                                      customerPopup({
+                                        isCustomerOpen: value
+                                      })
+                                    )
+                                  }
+                                  handlerAddress={(value) => setFieldValue('customerInfo', value)}
+                                />
+                              </Box>
+                            </Grid>
+                          </Grid>
+                        </MainCard>
+                        {touched.customerInfo && errors.customerInfo && (
+                          <FormHelperText error={true}>{errors?.customerInfo?.name}</FormHelperText>
+                        )}
                       </Grid>
-                    </MainCard>
-                    {touched.customerInfo && errors.customerInfo && (
-                      <FormHelperText error={true}>{errors?.customerInfo?.name}</FormHelperText>
-                    )}
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Potenza</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <TextField
-                          fullWidth
-                          id="power"
-                          name="power"
-                          value={values.power}
-                          onChange={handleChange}
-                          error={Boolean(touched.power && errors.power)}
-                          helperText={touched.power && errors.power}
-                        />
 
-                      </FormControl>
-                    </Stack>
-                    {touched.status && errors.status && <FormHelperText error={true}>{errors.status}</FormHelperText>}
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Consumo annuo</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <TextField
-                          fullWidth
-                          id="annual_consumption"
-                          name="annual_consumption"
-                          value={values.annual_consumption}
-                          onChange={handleChange}
-                          error={Boolean(touched.annual_consumption && errors.annual_consumption)}
-                          helperText={touched.annual_consumption && errors.annual_consumption}
-                        />
+                      <Grid item xs={12} sm={6} md={3}>
+                        <Stack spacing={1}>
+                          <InputLabel>Data di sottoscrizione</InputLabel>
+                          <FormControl sx={{ width: '100%' }} error={Boolean(touched.date && errors.date)}>
+                            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                              <DatePicker format="dd/MM/yyyy" value={values.date} onChange={(newValue) => setFieldValue('date', newValue)} />
+                            </LocalizationProvider>
+                          </FormControl>
+                        </Stack>
+                        {touched.date && errors.date && <FormHelperText error={true}>{errors.date}</FormHelperText>}
+                      </Grid>
+                      <Grid item xs={12} sm={6} md={3}>
+                        <Stack spacing={1}>
+                          <InputLabel>Tipologia</InputLabel>
+                          <FormControl sx={{ width: '100%' }}>
+                            <Select
+                              displayEmpty
+                              name="tipology_id"
+                              value={values.tipology_id}
+                              error={Boolean(errors.tipology_id && touched.tipology_id)}
+                              onChange={handleChange}
+                            >
+                              <MenuItem disabled value="">
+                                Seleziona tipologia
+                              </MenuItem>
+                              {tipologies.map((tipology) => (
+                                <MenuItem key={tipology.id} value={tipology.id}>
+                                  {tipology.name}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </Stack>
+                        {touched.type && errors.type && <FormHelperText error={true}>{errors.type}</FormHelperText>}
+                      </Grid>
+                      <Grid item xs={12} sm={6} md={3}>
+                        <Stack spacing={1}>
+                          <InputLabel>Stato contratto</InputLabel>
+                          <FormControl sx={{ width: '100%' }}>
+                            <Select
+                              value={values.status_id}
+                              displayEmpty
+                              name="status_id"
+                              onChange={handleChange}
+                              error={Boolean(errors.status_id && touched.status_id)}
+                            >
+                              <MenuItem disabled value="">
+                                Seleziona uno stato
+                              </MenuItem>
+                              {status?.map((status) => (
+                                <MenuItem key={status.id} value={status.id}>
+                                  {status.name}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </Stack>
+                        {touched.status && errors.status && <FormHelperText error={true}>{errors.status}</FormHelperText>}
+                      </Grid>
+                      <Grid item xs={12} sm={6} md={3}>
+                        <Stack spacing={1}>
+                          <InputLabel>Vecchio fornitore (Facoltativo)</InputLabel>
+                          <FormControl sx={{ width: '100%' }}>
+                            <Select
+                              value={values.old_provider_id}
+                              displayEmpty
+                              name="old_provider_id"
+                              onChange={handleChange}
+                              error={Boolean(errors.old_provider_id && touched.old_provider_id)}
+                            >
+                              <MenuItem disabled value="">
+                                Seleziona un fornitore
+                              </MenuItem>
+                              {providers?.map((provider) => (
+                                <MenuItem key={provider.id} value={provider.id}>
+                                  {provider.name}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </Stack>
+                        {touched.status && errors.status && <FormHelperText error={true}>{errors.status}</FormHelperText>}
+                      </Grid>
+                      <Grid item xs={12} sm={6} md={3}>
+                        <Stack spacing={1}>
+                          <InputLabel>Cod</InputLabel>
+                          <FormControl sx={{ width: '100%' }}>
+                            <TextField
+                              fullWidth
+                              id="cod"
+                              name="cod"
+                              value={values.cod}
+                              onChange={handleChange}
+                              error={Boolean(touched.cod && errors.cod)}
+                              helperText={touched.cod && errors.cod}
+                            />
 
-                      </FormControl>
-                    </Stack>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Sconto</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <TextField
-                          fullWidth
-                          id="discount"
-                          name="discount"
-                          value={values.discount}
-                          onChange={handleChange}
-                          error={Boolean(touched.discount && errors.discount)}
-                          helperText={touched.discount && errors.discount}
-                        />
+                          </FormControl>
+                        </Stack>
+                        {touched.status && errors.status && <FormHelperText error={true}>{errors.status}</FormHelperText>}
+                      </Grid>
+                      <Grid item xs={12} sm={6} md={3}>
+                        <Stack spacing={1}>
+                          <InputLabel>Pod</InputLabel>
+                          <FormControl sx={{ width: '100%' }}>
+                            <TextField
+                              fullWidth
+                              id="pod"
+                              name="pod"
+                              value={values.pod}
+                              onChange={handleChange}
+                              error={Boolean(touched.pod && errors.pod)}
+                              helperText={touched.pod && errors.pod}
+                            />
 
-                      </FormControl>
-                    </Stack>
-                    {touched.discount && errors.discount && <FormHelperText error={true}>{errors.discount}</FormHelperText>}
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Sconto 2</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <TextField
-                          fullWidth
-                          id="discount2"
-                          name="discount2"
-                          value={values.discount2}
-                          onChange={handleChange}
-                          error={Boolean(touched.discount2 && errors.discount2)}
-                          helperText={touched.discount2 && errors.discount2}
-                        />
+                          </FormControl>
+                        </Stack>
+                        {touched.status && errors.status && <FormHelperText error={true}>{errors.status}</FormHelperText>}
+                      </Grid>
+                      <Grid item xs={12} sm={6} md={3}>
+                        <Stack spacing={1}>
+                          <InputLabel>Pdr</InputLabel>
+                          <FormControl sx={{ width: '100%' }}>
+                            <TextField
+                              fullWidth
+                              id="pdr"
+                              name="pdr"
+                              value={values.pdr}
+                              onChange={handleChange}
+                              error={Boolean(touched.pdr && errors.pdr)}
+                              helperText={touched.pdr && errors.pdr}
+                            />
 
-                      </FormControl>
-                    </Stack>
-                    {touched.discount2 && errors.discount2 && <FormHelperText error={true}>{errors.discount2}</FormHelperText>}
-                  </Grid>
+                          </FormControl>
+                        </Stack>
+                      </Grid>
+                      <Grid item xs={12} sm={6} md={3}>
+                        <Stack spacing={1}>
+                          <InputLabel>Inizio fornitura</InputLabel>
+                          <FormControl sx={{ width: '100%' }} error={Boolean(touched.due_date && errors.due_date)}>
+                            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                              <DatePicker
+                                format="dd/MM/yyyy"
+                                value={values.due_date}
+                                onChange={(newValue) => setFieldValue('due_date', newValue)}
+                              />
+                            </LocalizationProvider>
+                          </FormControl>
+                        </Stack>
+                        {touched.due_date && errors.due_date && <FormHelperText error={true}>{errors.due_date}</FormHelperText>}
+                      </Grid>
 
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Metodo di pagamento</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <Select
-                          value={values.payment_method}
-                          displayEmpty
-                          name="payment_method"
-                          onChange={handleChange}
-                          error={Boolean(errors.payment_method && touched.payment_method)}
-                        >
-                          <MenuItem disabled value="">
-                            Seleziona metodo di pagamento
-                          </MenuItem>
-                          {methods?.map((method) => (
-                            <MenuItem key={method.id} value={method.id}>
-                              {method.name}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Stack>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Note</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <TextareaAutosize
-                          minRows={5}
-                          fullWidth
-                          id="notes"
-                          name="notes"
-                          value={values.notes}
-                          onChange={handleChange}
-                          error={Boolean(touched.notes && errors.notes)}
-                          helperText={touched.notes && errors.notes}
-                        />
+                      <Grid item xs={12} sm={6} md={3}>
+                        <Stack spacing={1}>
+                          <InputLabel>Potenza</InputLabel>
+                          <FormControl sx={{ width: '100%' }}>
+                            <TextField
+                              fullWidth
+                              id="power"
+                              name="power"
+                              value={values.power}
+                              onChange={handleChange}
+                              error={Boolean(touched.power && errors.power)}
+                              helperText={touched.power && errors.power}
+                            />
 
-                      </FormControl>
-                    </Stack>
-                    {touched.notes && errors.notes && <FormHelperText error={true}>{errors.notes}</FormHelperText>}
-                  </Grid>
-                  <Grid item xs={12} sm={12} md={12}>
-                    <Stack spacing={1.25}>
-                      <InputLabel>Allegati</InputLabel>
-                      <form autoComplete="off" onSubmit={uploadFile} ref={formRef}>
-                        <input type='file' name='file' id="files" multiple />
-                      </form>
-                    </Stack>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Stack direction="row" justifyContent="flex-end" alignItems="flex-end" spacing={2} sx={{ height: '100%' }}>
-                      <Button color="primary" variant="contained" type="submit">
-                        Crea contratto
-                      </Button>
-                    </Stack>
-                  </Grid>
+                          </FormControl>
+                        </Stack>
+                        {touched.status && errors.status && <FormHelperText error={true}>{errors.status}</FormHelperText>}
+                      </Grid>
+                      <Grid item xs={12} sm={6} md={3}>
+                        <Stack spacing={1}>
+                          <InputLabel>Consumo annuo</InputLabel>
+                          <FormControl sx={{ width: '100%' }}>
+                            <TextField
+                              fullWidth
+                              id="annual_consumption"
+                              name="annual_consumption"
+                              value={values.annual_consumption}
+                              onChange={handleChange}
+                              error={Boolean(touched.annual_consumption && errors.annual_consumption)}
+                              helperText={touched.annual_consumption && errors.annual_consumption}
+                            />
+
+                          </FormControl>
+                        </Stack>
+                      </Grid>
+
+                      <Grid item xs={12} sm={6} md={3}>
+                        <Stack spacing={1}>
+                          <InputLabel>Sconto</InputLabel>
+                          <FormControl sx={{ width: '100%' }}>
+                            <TextField
+                              fullWidth
+                              id="discount"
+                              name="discount"
+                              value={values.discount}
+                              onChange={handleChange}
+                              error={Boolean(touched.discount && errors.discount)}
+                              helperText={touched.discount && errors.discount}
+                            />
+
+                          </FormControl>
+                        </Stack>
+                        {touched.discount && errors.discount && <FormHelperText error={true}>{errors.discount}</FormHelperText>}
+                      </Grid>
+                      <Grid item xs={12} sm={6} md={3}>
+                        <Stack spacing={1}>
+                          <InputLabel>Sconto 2</InputLabel>
+                          <FormControl sx={{ width: '100%' }}>
+                            <TextField
+                              fullWidth
+                              id="discount2"
+                              name="discount2"
+                              value={values.discount2}
+                              onChange={handleChange}
+                              error={Boolean(touched.discount2 && errors.discount2)}
+                              helperText={touched.discount2 && errors.discount2}
+                            />
+
+                          </FormControl>
+                        </Stack>
+                        {touched.discount2 && errors.discount2 && <FormHelperText error={true}>{errors.discount2}</FormHelperText>}
+                      </Grid>
+
+                      <Grid item xs={12} sm={6} md={3}>
+                        <Stack spacing={1}>
+                          <InputLabel>Metodo di pagamento</InputLabel>
+                          <FormControl sx={{ width: '100%' }}>
+                            <Select
+                              value={values.payment_method}
+                              displayEmpty
+                              name="payment_method"
+                              onChange={handleChange}
+                              error={Boolean(errors.payment_method && touched.payment_method)}
+                            >
+                              <MenuItem disabled value="">
+                                Seleziona metodo di pagamento
+                              </MenuItem>
+                              {methods?.map((method) => (
+                                <MenuItem key={method.id} value={method.id}>
+                                  {method.name}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </Stack>
+                      </Grid>
+                      <Grid item xs={12} sm={6} md={3}>
+                        <Stack spacing={1}>
+                          <InputLabel>Note</InputLabel>
+                          <FormControl sx={{ width: '100%' }}>
+                            <TextareaAutosize
+                              minRows={5}
+                              fullWidth
+                              id="notes"
+                              name="notes"
+                              value={values.notes}
+                              onChange={handleChange}
+                              error={Boolean(touched.notes && errors.notes)}
+                              helperText={touched.notes && errors.notes}
+                            />
+
+                          </FormControl>
+                        </Stack>
+                        {touched.notes && errors.notes && <FormHelperText error={true}>{errors.notes}</FormHelperText>}
+                      </Grid>
+                      <Grid item xs={12} sm={12} md={12}>
+                        <Stack spacing={1.25}>
+                          <InputLabel>Allegati</InputLabel>
+                          <form autoComplete="off" onSubmit={uploadFile} ref={formRef}>
+                            <input type='file' name='file' id="files" multiple />
+                          </form>
+                        </Stack>
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <Stack direction="row" justifyContent="flex-end" alignItems="flex-end" spacing={2} sx={{ height: '100%' }}>
+                          <Button color="primary" variant="contained" type="submit">
+                            Crea contratto
+                          </Button>
+                        </Stack>
+                      </Grid>
+                    </>
+                  }
                 </Grid>
               </Form>
             );

@@ -73,7 +73,7 @@ const validationSchema = yup.object({
   client_id: yup.number().required('Cliente è obbligatorio'),
   rate_id: yup.number().required('Tariffa è obbligatorio'),
   provider_id: yup.number(),
-  client_type_id: yup.string().required('Tipo cliente è obbligatorio'),
+  client_type_id: yup.string(),
   contract_type_id: yup.number().required('Tipo contratto è obbligatorio'),
   date: yup.date().required('Data di sottoscrizione è obbligatorio'),
   due_date: yup.date().required('Inizio fornitura è obbligatorio'),
@@ -112,7 +112,7 @@ const CreateNoClient = () => {
       client_id: values.client_id,
       rate_id: values.rate_id,
       provider_id: values.old_provider_id,
-      client_type: values.client_type_id,
+      client_type: client.is_business ? 'business' : 'privato',
       contract_type_id: values.contract_type_id,
       payment_method: values.payment_method,
       date: format(values.date, 'yyyy-MM-dd'),
@@ -355,31 +355,132 @@ const CreateNoClient = () => {
             <Form>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6} md={3}>
-
-                  <Stack spacing={1}>
-                    <InputLabel>Cliente</InputLabel>
-                    <FormControl sx={{ width: '100%' }}>
-                      <Select
-                        value={values.client_id}
-                        displayEmpty
-                        name="client_id"
-                        onChange={handleChange}
-                        error={Boolean(errors.client_id && touched.client_id)}
-                      >
-                        <MenuItem disabled value="">
-                          Seleziona cliente
-                        </MenuItem>
-                        {clients?.map((client) => (
-                          <MenuItem key={client.id} value={client.id}>
-                            {client.first_name + ' ' + client.last_name}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Stack>
+                  {
+                    values.client_id ?
+                      <MainCard sx={{ minHeight: 168 }}>
+                        <Grid container spacing={2}>
+                          <Grid item xs={12} sm={8}>
+                            <Stack spacing={2}>
+                              <Typography variant="h5">Cliente:</Typography>
+                              <Stack sx={{ width: '100%' }}>
+                                <Typography variant="subtitle1">{client?.first_name}</Typography>
+                                <Typography variant="subtitle1">{client?.last_name}</Typography>
+                                <Typography color="secondary">{client?.address}</Typography>
+                                <Typography color="secondary">{client?.phone}</Typography>
+                                <Typography color="secondary">{client?.email}</Typography>
+                              </Stack>
+                            </Stack>
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <Box textAlign={{ xs: 'left', sm: 'right' }} color="secondary.200">
+                              <AddressModal
+                                open={open}
+                                setOpen={(value) =>
+                                  dispatch(
+                                    toggleCustomerPopup({
+                                      open: value
+                                    })
+                                  )
+                                }
+                                handlerAddress={(address) => setFieldValue('cashierInfo', address)}
+                              />
+                            </Box>
+                          </Grid>
+                        </Grid>
+                      </MainCard>
+                      :
+                      <Stack spacing={1}>
+                        <InputLabel>Cliente</InputLabel>
+                        <FormControl sx={{ width: '100%' }}>
+                          <Select
+                            value={values.client_id}
+                            displayEmpty
+                            name="client_id"
+                            onChange={handleChange}
+                            error={Boolean(errors.client_id && touched.client_id)}
+                          >
+                            <MenuItem disabled value="">
+                              Seleziona cliente
+                            </MenuItem>
+                            {clients?.map((client) => (
+                              <MenuItem key={client.id} value={client.id}>
+                                {client.first_name + ' ' + client.last_name}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Stack>
+                  }
                 </Grid>
                 {
                   values.client_id &&
+                  <Grid item xs={12} sm={6} md={agent?.id ? 4 : 3}>
+                    {
+                      agent && agent.id ?
+                        <MainCard sx={{ minHeight: 168 }}>
+                          <Grid container spacing={2}>
+                            <Grid item xs={12} sm={8}>
+                              <Stack spacing={2}>
+                                <Typography variant="h5">Agente:</Typography>
+                                <Stack sx={{ width: '100%' }}>
+                                  <Typography variant="subtitle1">{agent?.first_name}</Typography>
+                                  <Typography variant="subtitle1">{agent?.last_name}</Typography>
+                                  <Typography color="secondary">{agent?.address}</Typography>
+                                  <Typography color="secondary">{agent?.phone}</Typography>
+                                  <Typography color="secondary">{agent?.email}</Typography>
+                                  <Button onClick={() => setAgent(null)}>
+                                    <Edit />
+                                  </Button>
+                                </Stack>
+                              </Stack>
+                            </Grid>
+                            <Grid item xs={12} sm={4}>
+                              <Box textAlign="right" color="secondary.200">
+                                <AddressModal
+                                  open={isCustomerOpen}
+                                  setOpen={(value) =>
+                                    dispatch(
+                                      customerPopup({
+                                        isCustomerOpen: value
+                                      })
+                                    )
+                                  }
+                                  handlerAddress={(value) => setFieldValue('customerInfo', value)}
+                                />
+                              </Box>
+                            </Grid>
+                          </Grid>
+                        </MainCard>
+                        :
+                        <Stack spacing={1}>
+                          <InputLabel>Agente</InputLabel>
+                          <FormControl sx={{ width: '100%' }}>
+                            <Select
+                              value={values.agent_id}
+                              displayEmpty
+                              name="agent_id"
+                              onChange={handleChange}
+                              error={Boolean(errors.agent_id && touched.agent_id)}
+                            >
+                              <MenuItem disabled value="">
+                                Seleziona agente
+                              </MenuItem>
+                              {agents?.map((agent) => (
+                                <MenuItem key={agent.id} value={agent.id}>
+                                  {agent.first_name + ' ' + agent.last_name}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </Stack>
+                    }
+                    {touched.customerInfo && errors.customerInfo && (
+                      <FormHelperText error={true}>{errors?.customerInfo?.name}</FormHelperText>
+                    )}
+                  </Grid>
+                }
+                {
+                  values.client_id && values.agent_id &&
                   <Grid item xs={12} sm={6} md={3}>
                     <Stack spacing={1}>
                       <InputLabel>Tipo contratto</InputLabel>
@@ -439,32 +540,6 @@ const CreateNoClient = () => {
                   values.contract_type_id && values.provider_id &&
                   <Grid item xs={12} sm={6} md={3}>
                     <Stack spacing={1}>
-                      <InputLabel>Tipo cliente</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <Select
-                          value={values.rate}
-                          displayEmpty
-                          name="client_type_id"
-                          onChange={handleChange}
-                          error={Boolean(errors.client_type_id && touched.client_type_id)}
-                        >
-                          <MenuItem disabled value="">
-                            Seleziona tipo cliente
-                          </MenuItem>
-                          {client_types.map((client) => (
-                            <MenuItem key={client.name} value={client.name}>
-                              {client.name}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Stack>
-                  </Grid>
-                }
-                {
-                  values.contract_type_id && values.provider_id && (values.client_type_id) &&
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
                       <InputLabel>Offerta</InputLabel>
                       <FormControl sx={{ width: '100%' }}>
                         <Select
@@ -490,10 +565,10 @@ const CreateNoClient = () => {
                   </Grid>
                 }
                 {
-                  values.contract_type_id && values.provider_id && (values.client_type_id) && values.rate_id &&
+                  values.contract_type_id && values.provider_id && values.rate_id &&
                   <>
 
-<Grid item xs={12} sm={6} md={3}>
+                    <Grid item xs={12} sm={6} md={3}>
                       <Stack spacing={1}>
                         <InputLabel>Data di sottoscrizione</InputLabel>
                         <FormControl sx={{ width: '100%' }} error={Boolean(touched.date && errors.date)}>
@@ -529,126 +604,6 @@ const CreateNoClient = () => {
                       {touched.type && errors.type && <FormHelperText error={true}>{errors.type}</FormHelperText>}
                     </Grid>
 
-                    <Grid item xs={12} sm={6} md={client?.id ? 6 : 3}>
-                      {
-                        client && client.id ?
-                          <MainCard sx={{ minHeight: 168 }}>
-                            <Grid container spacing={2}>
-                              <Grid item xs={12} sm={8}>
-                                <Stack spacing={2}>
-                                  <Typography variant="h5">Cliente:</Typography>
-                                  <Stack sx={{ width: '100%' }}>
-                                    <Typography variant="subtitle1">{client?.first_name}</Typography>
-                                    <Typography variant="subtitle1">{client?.last_name}</Typography>
-                                    <Typography color="secondary">{client?.address}</Typography>
-                                    <Typography color="secondary">{client?.phone}</Typography>
-                                    <Typography color="secondary">{client?.email}</Typography>
-                                  </Stack>
-                                </Stack>
-                              </Grid>
-                              <Grid item xs={12} sm={4}>
-                                <Box textAlign={{ xs: 'left', sm: 'right' }} color="secondary.200">
-                                  <AddressModal
-                                    open={open}
-                                    setOpen={(value) =>
-                                      dispatch(
-                                        toggleCustomerPopup({
-                                          open: value
-                                        })
-                                      )
-                                    }
-                                    handlerAddress={(address) => setFieldValue('cashierInfo', address)}
-                                  />
-                                </Box>
-                              </Grid>
-                            </Grid>
-                          </MainCard>
-                          :
-                          <Stack spacing={1}>
-                            <InputLabel>Cliente</InputLabel>
-                            <FormControl sx={{ width: '100%' }}>
-                              <Select
-                                value={values.client_id}
-                                displayEmpty
-                                name="client_id"
-                                onChange={handleChange}
-                                error={Boolean(errors.client_id && touched.client_id)}
-                              >
-                                <MenuItem disabled value="">
-                                  Seleziona cliente
-                                </MenuItem>
-                                {clients?.map((client) => (
-                                  <MenuItem key={client.id} value={client.id}>
-                                    {client.first_name + ' ' + client.last_name}
-                                  </MenuItem>
-                                ))}
-                              </Select>
-                            </FormControl>
-                          </Stack>
-                      }
-
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={agent?.id ? 6 : 3}>
-                      {
-                        agent && agent.id ?
-                          <MainCard sx={{ minHeight: 168 }}>
-                            <Grid container spacing={2}>
-                              <Grid item xs={12} sm={8}>
-                                <Stack spacing={2}>
-                                  <Typography variant="h5">Agente:</Typography>
-                                  <Stack sx={{ width: '100%' }}>
-                                    <Typography variant="subtitle1">{agent?.first_name}</Typography>
-                                    <Typography variant="subtitle1">{agent?.last_name}</Typography>
-                                    <Typography color="secondary">{agent?.address}</Typography>
-                                    <Typography color="secondary">{agent?.phone}</Typography>
-                                    <Typography color="secondary">{agent?.email}</Typography>
-                                  </Stack>
-                                </Stack>
-                              </Grid>
-                              <Grid item xs={12} sm={4}>
-                                <Box textAlign="right" color="secondary.200">
-                                  <AddressModal
-                                    open={isCustomerOpen}
-                                    setOpen={(value) =>
-                                      dispatch(
-                                        customerPopup({
-                                          isCustomerOpen: value
-                                        })
-                                      )
-                                    }
-                                    handlerAddress={(value) => setFieldValue('customerInfo', value)}
-                                  />
-                                </Box>
-                              </Grid>
-                            </Grid>
-                          </MainCard>
-                          :
-                          <Stack spacing={1}>
-                            <InputLabel>Agente</InputLabel>
-                            <FormControl sx={{ width: '100%' }}>
-                              <Select
-                                value={values.agent_id}
-                                displayEmpty
-                                name="agent_id"
-                                onChange={handleChange}
-                                error={Boolean(errors.agent_id && touched.agent_id)}
-                              >
-                                <MenuItem disabled value="">
-                                  Seleziona agente
-                                </MenuItem>
-                                {agents?.map((agent) => (
-                                  <MenuItem key={agent.id} value={agent.id}>
-                                    {agent.first_name + ' ' + agent.last_name}
-                                  </MenuItem>
-                                ))}
-                              </Select>
-                            </FormControl>
-                          </Stack>
-                      }
-                      {touched.customerInfo && errors.customerInfo && (
-                        <FormHelperText error={true}>{errors?.customerInfo?.name}</FormHelperText>
-                      )}
-                    </Grid>
                     <Grid item xs={12} sm={6} md={3}>
                       <Stack spacing={1}>
                         <InputLabel>Vecchio fornitore (Facoltativo)</InputLabel>

@@ -53,6 +53,7 @@ import snackbar, { openSnackbar } from 'store/reducers/snackbar';
 import { dispatch } from 'store';
 import { useNavigate } from 'react-router';
 import { updateAgent } from 'store/reducers/agent';
+import moment from 'moment/moment';
 
 const avatarImage = require.context('assets/images/users', true);
 
@@ -293,6 +294,20 @@ const ContractsListPage = () => {
             <Stack direction="row" spacing={1.5} alignItems="center">
               <Stack spacing={0}>
                 <Typography variant="subtitle1">{values.contract_type_name}</Typography>
+              </Stack>
+            </Stack>
+          );
+        }
+      },
+      {
+        Header: 'Data creazione',
+        accessor: 'created_at',
+        Cell: ({ row }) => {
+          const { values } = row;
+          return (
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <Stack spacing={0}>
+                <Typography variant="subtitle1">{moment(values.created_at).format('DD-MM-YYYY')}</Typography>
               </Stack>
             </Stack>
           );

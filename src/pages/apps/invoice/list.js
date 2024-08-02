@@ -303,7 +303,8 @@ const List = () => {
       {
         Header: 'Email',
         accessor: 'email',
-        disableFilters: true
+        disableFilters: false,
+        filter: "text"
       },
       {
         Header: 'Create Date',

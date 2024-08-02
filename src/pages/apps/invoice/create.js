@@ -103,6 +103,7 @@ const Create = () => {
   const [tipologies, setTipologies] = useState([{}]);
   const [status, setStatus] = useState([]);
   const [agents, setAgents] = useState([]);
+  const [selectedProviders, setSelectedProviders] = useState([]);
 
   const { open, isCustomerOpen } = useSelector((state) => state.invoice);
   const formRef = useRef();
@@ -226,6 +227,10 @@ const Create = () => {
     setFieldValue('contract_type_id', value);
     const filteredRates = rates.filter((rate) => rate.contract_type_id === Number(value));
     setSelectedRates(filteredRates);
+    // select providers where provider.id is in filteredRates.provider_id
+    const filteredProviders = providers.filter((provider) => filteredRates.map(rate => rate.provider_id).includes(provider.id));
+    setSelectedProviders(filteredProviders);
+
   }
   const getProvider = (rate_id) => {
     if (rate_id) {
@@ -332,18 +337,18 @@ const Create = () => {
     if (client) {
       setFieldValue('client_id', client.id);
     }
-  },[client])
+  }, [client])
 
   useEffect(() => {
     if (agent) {
       setFieldValue('agent_id', agent.id)
     }
-  },[agent])
+  }, [agent])
 
   return (
     <MainCard>
       {
-        client  ?
+        client ?
           <FormikProvider value={formik}>
             <Form>
               <Grid container spacing={2}>
@@ -387,7 +392,7 @@ const Create = () => {
                             Seleziona un fornitore
                           </MenuItem>
                           {
-                            providers.map((provider) => (
+                            selectedProviders?.map((provider) => (
                               <MenuItem key={provider.id} value={provider.id}>
                                 {provider.name}
                               </MenuItem>

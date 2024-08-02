@@ -501,6 +501,35 @@ const TabEdit = () => {
                   client.company_name && <>
                     <Grid item xs={12} sm={6}>
                       <Stack spacing={1.25}>
+                        <InputLabel htmlFor="referer">Nome amministratore</InputLabel>
+                        <TextField
+                          id="referer"
+                          onChange={(e) => handleChange('referer', e)}
+                          onBlur={handleBlur}
+                          onReset={handleReset}
+                          value={client.referer || ''}
+                          error={Boolean(touched.referer && errors.referer)}
+                          helperText={touched.referer && errors.referer}
+                        />
+                      </Stack>
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <Stack spacing={1.25}>
+                        <InputLabel htmlFor="referer">Contatto amministratore</InputLabel>
+                        <TextField
+                          id="referer_phone"
+                          onChange={(e) => handleChange('referer_phone', e)}
+                          onBlur={handleBlur}
+                          onReset={handleReset}
+                          value={client.referer_phone || ''}
+                          error={Boolean(touched.referer_phone && errors.referer_phone)}
+                          helperText={touched.referer_phone && errors.referer_phone}
+                        />
+                      </Stack>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <Stack spacing={1.25}>
                         <InputLabel htmlFor="referer">Nome referente</InputLabel>
                         <TextField
                           id="referer"
@@ -519,7 +548,7 @@ const TabEdit = () => {
                         <InputLabel htmlFor="referer">Contatto referente</InputLabel>
                         <TextField
                           id="referer_phone"
-                          onChange={(e) => handleChange('referer_phone', e)}
+                          onChange={(e) => handleChange('referer_phone_2', e)}
                           onBlur={handleBlur}
                           onReset={handleReset}
                           value={client.referer_phone || ''}
@@ -528,6 +557,7 @@ const TabEdit = () => {
                         />
                       </Stack>
                     </Grid>
+
                   </>
                 }
               </Grid>

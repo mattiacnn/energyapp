@@ -134,7 +134,7 @@ const TabContacts = () => {
                       <>
                         <Grid item xs={12} sm={6}>
                           <Stack spacing={1.25}>
-                            <InputLabel htmlFor="referer">Nome referente</InputLabel>
+                            <InputLabel htmlFor="referer">Nome Amministratore</InputLabel>
                             <TextField
                               id="referer"
                               onChange={(e) => handleChange('referer', e)}
@@ -149,7 +149,7 @@ const TabContacts = () => {
 
                         <Grid item xs={12} sm={6}>
                           <Stack spacing={1.25}>
-                            <InputLabel htmlFor="referer">Contatto referente</InputLabel>
+                            <InputLabel htmlFor="referer">Contatto Amministratore</InputLabel>
                             <TextField
                               id="referer_phone"
                               onChange={(e) => handleChange('referer_phone', e)}
@@ -161,6 +161,36 @@ const TabContacts = () => {
                             />
                           </Stack>
                         </Grid>
+                        <Grid item xs={12} sm={6}>
+                          <Stack spacing={1.25}>
+                            <InputLabel htmlFor="referer">Nome Referente</InputLabel>
+                            <TextField
+                              id="referer"
+                              onChange={(e) => handleChange('referer_2', e)}
+                              onBlur={handleBlur}
+                              onReset={handleReset}
+                              value={client.referer || ''}
+                              error={Boolean(touched.referer && errors.referer)}
+                              helperText={touched.referer && errors.referer}
+                            />
+                          </Stack>
+                        </Grid>
+
+                        <Grid item xs={12} sm={6}>
+                          <Stack spacing={1.25}>
+                            <InputLabel htmlFor="referer">Contatto referente</InputLabel>
+                            <TextField
+                              id="referer_phone"
+                              onChange={(e) => handleChange('referer_phone_2', e)}
+                              onBlur={handleBlur}
+                              onReset={handleReset}
+                              value={client.referer_phone || ''}
+                              error={Boolean(touched.referer_phone && errors.referer_phone)}
+                              helperText={touched.referer_phone && errors.referer_phone}
+                            />
+                          </Stack>
+                        </Grid>
+
                       </>
                     }
                   </>

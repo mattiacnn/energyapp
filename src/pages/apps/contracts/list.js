@@ -8,6 +8,10 @@ import {
   Chip,
   CircularProgress,
   Dialog,
+  FormControl,
+  FormLabel,
+  MenuItem,
+  Select,
   Stack,
   Table,
   TableBody,
@@ -16,9 +20,9 @@ import {
   TableRow,
   Tooltip,
   Typography,
-  useMediaQuery
-} from '@mui/material';
+  useMediaQuery,
 
+} from '@mui/material';
 // third-party
 import { PatternFormat } from 'react-number-format';
 import { useFilters, useExpanded, useGlobalFilter, useRowSelect, useSortBy, useTable, usePagination } from 'react-table';
@@ -42,7 +46,7 @@ import {
 import { renderFilterTypes, GlobalFilter } from 'utils/react-table';
 
 // assets
-import { Add, Edit, Eye, Trash } from 'iconsax-react';
+import { Add, ArrowDown, ArrowRight, Edit, Eye, Trash } from 'iconsax-react';
 import { ThemeMode } from 'config';
 import axios from 'utils/axios';
 import AddAgent from './AddAgent';
@@ -54,8 +58,54 @@ import { dispatch } from 'store';
 import { useNavigate } from 'react-router';
 import { updateAgent } from 'store/reducers/agent';
 import moment from 'moment/moment';
+import InputLabel from 'themes/overrides/InputLabel';
+import DateFilter from './DateFilter';
+import StatusChangeDialog from './StatusChangeDialog';
+import { values } from 'lodash';
 
 const avatarImage = require.context('assets/images/users', true);
+
+const SelectFilter = ({ column: { filterValue, setFilter, preFilteredRows, id } }) => {
+  // Crea un set di valori unici per il menu a tendina
+  const options = useMemo(() => {
+    const options = new Set();
+    preFilteredRows.forEach(row => {
+      options.add(row.values[id]);
+    });
+    return [...options.values()];
+  }, [id, preFilteredRows]);
+
+  return (
+    <FormControl fullWidth variant="outlined" size="small">
+      <Select
+        labelId={`${id}-select-label`}
+        value={filterValue || ''}
+        onChange={e => {
+          setFilter(e.target.value || undefined);
+        }}
+        label="Tipo"
+      >
+        <MenuItem value="">
+          <em>All</em>
+        </MenuItem>
+        {options.map((option, i) => (
+          <MenuItem key={i} value={option}>
+            {option}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  );
+};
+
+const dateRangeFilter = (rows, id, filterValue) => {
+  const { startDate, endDate } = filterValue || {};
+  return rows.filter(row => {
+    const rowDate = new Date(row.values[id]);
+    return (!startDate || rowDate >= new Date(startDate)) &&
+      (!endDate || rowDate <= new Date(endDate));
+  });
+};
 
 // ==============================|| REACT TABLE ||============================== //
 
@@ -87,8 +137,9 @@ function ReactTable({ columns, data, renderRowSubComponent, handleAdd, handleUpd
     {
       columns,
       data,
-      filterTypes,
-      initialState: { pageIndex: 0, pageSize: 10, sortBy: [sortBy] }
+      filterTypes: { dateRangeFilter },
+      initialState: { pageIndex: 0, pageSize: 10, sortBy: [sortBy] },
+      defaultColumn: { Filter: '' }, // Configurazione predefinita dei filtri
     },
     useGlobalFilter,
     useFilters,
@@ -133,6 +184,7 @@ function ReactTable({ columns, data, renderRowSubComponent, handleAdd, handleUpd
                 {headerGroup.headers.map((column) => (
                   <TableCell key={column} {...column.getHeaderProps([{ className: column.className }])}>
                     <HeaderSort column={column} sort />
+                    <div>{column.canFilter ? column.render('Filter') : null}</div>
                   </TableCell>
                 ))}
               </TableRow>
@@ -190,6 +242,10 @@ const ContractsListPage = () => {
   const [open, setOpen] = useState(false);
   const [customer, setCustomer] = useState(null);
   const [customerDeleteId, setCustomerDeleteId] = useState();
+  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
+  const [selectedContractId, setSelectedContractId] = useState(null);
+  const [refresh, setRefresh] = useState(false);
+
   const [add, setAdd] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigation = useNavigate();
@@ -200,6 +256,21 @@ const ContractsListPage = () => {
 
   const handleClose = () => {
     setOpen(!open);
+  };
+
+  const handleOpenStatusDialog = (id) => {
+    setSelectedContractId(id);
+    setStatusDialogOpen(true);
+  };
+
+  const handleCloseStatusDialog = () => {
+    setStatusDialogOpen(false);
+    setSelectedContractId(null);
+    fetchContracts();
+  };
+
+  const handleStatusChange = (newStatus) => {
+    setRefresh(prev => !prev);
   };
 
   const fetchContracts = async () => {
@@ -274,6 +345,8 @@ const ContractsListPage = () => {
       {
         Header: 'Tariffa',
         accessor: 'name',
+        Filter: SelectFilter, // Aggiungi il filtro personalizzato qui
+        filter: 'includes',
         Cell: ({ row }) => {
           const { values } = row;
           return (
@@ -286,8 +359,26 @@ const ContractsListPage = () => {
         }
       },
       {
+        Header: 'Operatore',
+        accessor: 'provider_name',
+        Filter: SelectFilter, // Aggiungi il filtro personalizzato qui
+        filter: 'includes',
+        Cell: ({ row }) => {
+          const { values } = row;
+          return (
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <Stack spacing={0}>
+                <Typography variant="subtitle1">{values.provider_name}</Typography>
+              </Stack>
+            </Stack>
+          );
+        }
+      },
+      {
         Header: 'Tipo',
         accessor: 'contract_type_name',
+        Filter: SelectFilter, // Aggiungi il filtro personalizzato qui
+        filter: 'includes',
         Cell: ({ row }) => {
           const { values } = row;
           return (
@@ -302,6 +393,8 @@ const ContractsListPage = () => {
       {
         Header: 'Data creazione',
         accessor: 'created_at',
+        Filter: DateFilter,
+        filter: 'dateRangeFilter',
         Cell: ({ row }) => {
           const { values } = row;
           return (
@@ -333,57 +426,45 @@ const ContractsListPage = () => {
         className: 'cell-center',
         disableSortBy: true,
         Cell: ({ row }) => {
+          const { original } = row;
           const collapseIcon = row.isExpanded ? <Add style={{ color: theme.palette.error.main, transform: 'rotate(45deg)' }} /> : <Eye />;
           return (
             <Stack direction="row" alignItems="center" justifyContent="center" spacing={0}>
               {
-              <Tooltip
-                componentsProps={{
-                  tooltip: {
-                    sx: {
-                      backgroundColor: mode === ThemeMode.DARK ? theme.palette.grey[50] : theme.palette.grey[700],
-                      opacity: 0.9
+                <Tooltip
+                  componentsProps={{
+                    tooltip: {
+                      sx: {
+                        backgroundColor: mode === ThemeMode.DARK ? theme.palette.grey[50] : theme.palette.grey[700],
+                        opacity: 0.9
+                      }
                     }
-                  }
-                }}
-                title="Edit"
-              >
-                <IconButton
-                  color="primary"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigation(`/apps/contratti/details/${row.values.id}`);
                   }}
+                  title="Edit"
                 >
-                  <Edit />
-                </IconButton>
+                  <IconButton
+                    color="primary"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigation(`/apps/contratti/details/${row.values.id}`);
+                    }}
+                  >
+                    <Edit />
+                  </IconButton>
+                </Tooltip>
+              }
+
+              <Tooltip title="Cambia Status">
+                <Button
+                  variant="text"
+                  color="primary"
+                  onClick={() => handleOpenStatusDialog(row.original.id)}
+                >
+                  {original.contract_status_name}
+                  <ArrowRight style={{marginLeft:2}}/>
+                </Button>
               </Tooltip>
 
-                /* 
-                              <Tooltip
-                componentsProps={{
-                  tooltip: {
-                    sx: {
-                      backgroundColor: mode === ThemeMode.DARK ? theme.palette.grey[50] : theme.palette.grey[700],
-                      opacity: 0.9
-                    }
-                  }
-                }}
-                title="Delete"
-              >
-                <IconButton
-                  color="error"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleClose();
-                    setCustomerDeleteId(row.values);
-                  }}
-                >
-                  <Trash />
-                </IconButton>
-              </Tooltip> 
-*/
-              }
             </Stack>
           );
         }
@@ -397,6 +478,7 @@ const ContractsListPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [theme]
   );
+
 
   const renderRowSubComponent = useCallback(({ row }) => <AgentView data={contracts[Number(row.id)]} />, [contracts]);
 
@@ -439,6 +521,12 @@ const ContractsListPage = () => {
             />
 
         }
+        <StatusChangeDialog
+          open={statusDialogOpen}
+          onClose={handleCloseStatusDialog}
+          contractId={selectedContractId}
+          onStatusChange={handleStatusChange}
+        />
       </Dialog>
     </MainCard>
   );

@@ -104,6 +104,8 @@ const CreateNoClient = () => {
   const [tipologies, setTipologies] = useState([{}]);
   const [is_business, setIsBusiness] = useState(false);
   const [status, setStatus] = useState([{}]);
+  const [selectedProviders, setSelectedProviders] = useState([]);
+
   // get client_id parameter from url
 
   const handlerCreate = async (values) => {
@@ -229,6 +231,9 @@ const CreateNoClient = () => {
     setFieldValue('contract_type_id', value);
     const filteredRates = rates.filter((rate) => rate.contract_type_id === Number(value));
     setSelectedRates(filteredRates);
+    // select providers where provider.id is in filteredRates.provider_id
+    const filteredProviders = providers.filter((provider) => filteredRates.map(rate => rate.provider_id).includes(provider.id));
+    setSelectedProviders(filteredProviders);
   }
   const fetchTiplogies = async () => {
     try {
@@ -524,7 +529,7 @@ const CreateNoClient = () => {
                             Seleziona un fornitore
                           </MenuItem>
                           {
-                            providers?.map((provider) => (
+                            selectedProviders?.map((provider) => (
                               <MenuItem key={provider.id} value={provider.id}>
                                 {provider.name}
                               </MenuItem>

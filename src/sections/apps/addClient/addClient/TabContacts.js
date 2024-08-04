@@ -178,15 +178,15 @@ const TabContacts = () => {
 
                         <Grid item xs={12} sm={6}>
                           <Stack spacing={1.25}>
-                            <InputLabel htmlFor="referer">Contatto referente</InputLabel>
+                            <InputLabel htmlFor="referer2_phone">Contatto referente</InputLabel>
                             <TextField
-                              id="referer_phone"
-                              onChange={(e) => handleChange('referer_phone_2', e)}
+                              id="referer2_phone"
+                              onChange={(e) => handleChange('referer2_phone', e)}
                               onBlur={handleBlur}
                               onReset={handleReset}
-                              value={client.referer_phone || ''}
-                              error={Boolean(touched.referer_phone && errors.referer_phone)}
-                              helperText={touched.referer_phone && errors.referer_phone}
+                              value={client.referer2_phone || ''}
+                              error={Boolean(touched.referer2_phone && errors.referer2_phone)}
+                              helperText={touched.referer2_phone && errors.referer2_phone}
                             />
                           </Stack>
                         </Grid>

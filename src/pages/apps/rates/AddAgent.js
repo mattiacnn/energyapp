@@ -308,7 +308,7 @@ const AddAgent = ({ customer, onCancel, fetchAgents }) => {
                     </Grid>
                     <Grid item xs={12}>
                       <Stack spacing={1.25}>
-                        <InputLabel htmlFor="agent_monthly_fee">Ricorenza</InputLabel>
+                        <InputLabel htmlFor="agent_monthly_fee">Ricorrenza</InputLabel>
                         <TextField
                           fullWidth
                           id="agent_monthly_fee"
@@ -321,7 +321,7 @@ const AddAgent = ({ customer, onCancel, fetchAgents }) => {
                     </Grid>
                     <Grid item xs={12}>
                       <Stack spacing={1.25}>
-                        <InputLabel htmlFor="agent_monthly_fee_2">Ricorenza 13 mese</InputLabel>
+                        <InputLabel htmlFor="agent_monthly_fee_2">Ricorrenza 13 mese</InputLabel>
                         <TextField
                           fullWidth
                           id="agent_monthly_fee_2"

@@ -220,6 +220,9 @@ const AddClient = () => {
       </Box>
       <Box sx={{ mt: 2.5 }}>
         <Outlet />
+        <Button color="primary" variant="outlined" onClick={() => navigation(-1)} sx={{mt:2,mr:2}}>
+          Torna indietro
+        </Button>
         {
           local_client.updating ?
             <Button variant="contained" sx={{ mt: 2.4 }} onClick={handleClientSubmit} >

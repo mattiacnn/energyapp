@@ -107,6 +107,7 @@ const Create = () => {
 
   const { open, isCustomerOpen } = useSelector((state) => state.invoice);
   const formRef = useRef();
+  const navigate = useNavigate();
   // get client_id parameter from url
   const { client_id } = useParams();
 
@@ -810,22 +811,12 @@ const Create = () => {
                         </form>
                       </Stack>
                     </Grid>
-
-                    {/* print errors */}
-                    <Grid item xs={12} sm={6}>
-                      <Stack spacing={1}>
-                        <Typography variant="h5">Errori</Typography>
-                        <Stack spacing={1}>
-                          {Object.keys(errors).map((key, index) => (
-                            <Typography key={index} color="error">
-                              {errors[key]}
-                            </Typography>
-                          ))}
-                        </Stack>
-                      </Stack>
-                    </Grid>
                     <Grid item xs={12} sm={6}>
                       <Stack direction="row" justifyContent="flex-end" alignItems="flex-end" spacing={2} sx={{ height: '100%' }}>
+                        <Button color="primary" variant="outlined" onClick={() => navigate(-1)}>
+                          Torna indietro
+                        </Button>
+
                         <Button color="primary" variant="contained" type="submit">
                           Crea contratto
                         </Button>

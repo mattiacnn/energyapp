@@ -105,6 +105,7 @@ const CreateNoClient = () => {
   const [is_business, setIsBusiness] = useState(false);
   const [status, setStatus] = useState([{}]);
   const [selectedProviders, setSelectedProviders] = useState([]);
+  const navigate = useNavigate();
 
   // get client_id parameter from url
 
@@ -872,7 +873,12 @@ const CreateNoClient = () => {
                   </Stack>
                 </Grid>
                 <Grid item xs={12} sm={6}>
+
                   <Stack direction="row" justifyContent="flex-start" alignItems="flex-end" spacing={2} sx={{ height: '100%' }}>
+                    <Button color="primary" variant="outlined" onClick={() => navigate(-1)}>
+                      Torna indietro
+                    </Button>
+
                     <Button color="primary" variant="contained" type="submit">
                       Crea contratto
                     </Button>

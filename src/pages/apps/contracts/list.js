@@ -114,7 +114,7 @@ function ReactTable({ columns, data, renderRowSubComponent, handleAdd, handleUpd
   const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
 
   const filterTypes = useMemo(() => renderFilterTypes, []);
-  const sortBy = { id: 'id', desc: false };
+  const sortBy = { id: 'created_at', desc: true };
 
   const {
     getTableProps,

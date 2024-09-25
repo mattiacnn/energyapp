@@ -151,9 +151,9 @@ function ReactTable({ columns, data, renderRowSubComponent, handleAdd, handleUpd
 
   useEffect(() => {
     if (matchDownSM) {
-      setHiddenColumns(['age', 'visits', 'email', 'status', 'avatar', 'phone', "notes"]);
+      setHiddenColumns(['age', 'visits', 'email', 'status', 'avatar', 'phone', "notes", "vat", "company_name", "cf"]);
     } else {
-      setHiddenColumns(['avatar', "notes"]);
+      setHiddenColumns(['avatar', "notes", "vat", "company_name", "cf"]);
     }
     // eslint-disable-next-line
   }, [matchDownSM]);
@@ -473,6 +473,21 @@ const ContractsListPage = () => {
         Header: 'Note',
         accessor: 'notes',
         disableSortBy: true,
+      },
+      {
+        Header: 'Partita IVA',
+        accessor: 'vat',
+        disableSortBy: false,
+      },
+      {
+        Header: 'Ragione sociale',
+        accessor: 'company_name',
+        disableSortBy: false,
+      },
+      {
+        Header: 'Codice fiscale',
+        accessor: 'cf',
+        disableSortBy: false,
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps

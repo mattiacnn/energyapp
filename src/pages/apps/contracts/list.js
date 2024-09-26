@@ -47,7 +47,7 @@ import {
 import { renderFilterTypes, GlobalFilter } from 'utils/react-table';
 
 // assets
-import { Add, ArrowDown, ArrowRight, Edit, Eye, Trash } from 'iconsax-react';
+import { Add, ArrowDown, ArrowRight, Edit, Eye, Trash, Receipt, Status, NotificationStatus } from 'iconsax-react';
 import { ThemeMode } from 'config';
 import axios from 'utils/axios';
 import AddAgent from './AddAgent';
@@ -63,6 +63,7 @@ import InputLabel from 'themes/overrides/InputLabel';
 import DateFilter from './DateFilter';
 import StatusChangeDialog from './StatusChangeDialog';
 import { values } from 'lodash';
+import AdvancesModal from './AdvancesModal';
 
 const avatarImage = require.context('assets/images/users', true);
 
@@ -250,6 +251,7 @@ const ContractsListPage = () => {
   const [add, setAdd] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigation = useNavigate();
+  const [advancesModalOpen, setAdvancesModalOpen] = useState(false);
 
   const handleAdd = () => {
     navigation('/apps/contratti/create/new/');
@@ -272,6 +274,16 @@ const ContractsListPage = () => {
 
   const handleStatusChange = (newStatus) => {
     setRefresh(prev => !prev);
+  };
+
+  const handleOpenAdvancesModal = (id) => {
+    setSelectedContractId(id);
+    setAdvancesModalOpen(true);
+  };
+
+  const handleCloseAdvancesModal = () => {
+    setAdvancesModalOpen(false);
+    setSelectedContractId(null);
   };
 
   const fetchContracts = async () => {
@@ -462,9 +474,21 @@ const ContractsListPage = () => {
                   color="primary"
                   onClick={() => handleOpenStatusDialog(row.original.id)}
                 >
-                  {original.contract_status_name}
-                  <ArrowRight style={{marginLeft:2}}/>
+                  {/*riginal.contract_status_name}*/}
+                  <NotificationStatus style={{marginLeft:2}}/>
                 </Button>
+              </Tooltip>
+
+              <Tooltip title="Visualizza Acconti">
+                <IconButton
+                  color="primary"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleOpenAdvancesModal(row.values.id);
+                  }}
+                >
+                  <Receipt />
+                </IconButton>
               </Tooltip>
 
             </Stack>
@@ -543,8 +567,14 @@ const ContractsListPage = () => {
           onClose={handleCloseStatusDialog}
           contractId={selectedContractId}
           onStatusChange={handleStatusChange}
+          currentStatus={contracts.find(contract => contract.id === selectedContractId)?.contract_status_id}
         />
       </Dialog>
+      <AdvancesModal
+        open={advancesModalOpen}
+        onClose={handleCloseAdvancesModal}
+        contractId={selectedContractId}
+      />
     </MainCard>
   );
 };

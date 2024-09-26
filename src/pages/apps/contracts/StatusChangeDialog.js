@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import axios from 'utils/axios';
 
-const StatusChangeDialog = ({ open, onClose, contractId, onStatusChange }) => {
+const StatusChangeDialog = ({ open, onClose, contractId, onStatusChange, currentStatus }) => {
   const [statuses, setStatuses] = useState([]);
-  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState(currentStatus || '');
 
   useEffect(() => {
     const fetchStatuses = async () => {
@@ -18,6 +18,10 @@ const StatusChangeDialog = ({ open, onClose, contractId, onStatusChange }) => {
 
     fetchStatuses();
   }, []);
+
+  useEffect(() => {
+    setSelectedStatus(currentStatus || '');
+  }, [currentStatus]);
 
   const handleChangeStatus = async () => {
     try {

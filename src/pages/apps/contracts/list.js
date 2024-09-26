@@ -18,6 +18,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  TextField,
   Tooltip,
   Typography,
   useMediaQuery,
@@ -406,21 +407,22 @@ const ContractsListPage = () => {
           );
         }
       },
-      /*{
+      {
         Header: 'Status',
-        accessor: 'status',
-        Cell: ({ value }) => {
-          switch (value) {
-            case 'Complicated':
-              return <Chip color="error" label="Complicated" size="small" variant="light" />;
-            case 'Relationship':
-              return <Chip color="success" label="Relationship" size="small" variant="light" />;
-            case 'Single':
-            default:
-              return <Chip color="info" label="Single" size="small" variant="light" />;
-          }
+        accessor: 'contract_status_name',
+        Filter: SelectFilter,
+        filter: 'includes',
+        Cell: ({ row }) => {
+          const { values } = row;
+          return (
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <Stack spacing={0}>
+                <Typography variant="subtitle1">{values.contract_status_name}</Typography>
+              </Stack>
+            </Stack>
+          );
         }
-      },*/
+      },
       {
         Header: 'Azioni',
         className: 'cell-center',

@@ -399,22 +399,43 @@ const CreateNoClient = () => {
                       <Stack spacing={1}>
                         <InputLabel>Cliente</InputLabel>
                         <FormControl sx={{ width: '100%' }}>
-                          <Select
+                          <Autocomplete
                             value={values.client_id}
-                            displayEmpty
-                            name="client_id"
-                            onChange={handleChange}
-                            error={Boolean(errors.client_id && touched.client_id)}
-                          >
-                            <MenuItem disabled value="">
-                              Seleziona cliente
-                            </MenuItem>
-                            {clients?.map((client) => (
-                              <MenuItem key={client.id} value={client.id}>
-                                {client.first_name + ' ' + client.last_name}
-                              </MenuItem>
-                            ))}
-                          </Select>
+                            onChange={(event, newValue) => {
+                              setFieldValue('client_id', newValue ? newValue.id : '');
+                            }}
+                            options={clients || []}
+                            getOptionLabel={(option) => 
+                              `${option ?
+                                option.first_name + ' ' + option.last_name + ' - ' + (option.vat || option.cf || option.company_name || '')
+                                : ''}`
+                            }
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                placeholder="Cerca cliente"
+                                error={Boolean(errors.client_id && touched.client_id)}
+                              />
+                            )}
+                            filterOptions={(options, { inputValue }) => {
+                              const searchTerms = inputValue.toLowerCase().split(' ');
+                              return options.filter((option) => 
+                                searchTerms.every((term) => 
+                                  option.vat?.toLowerCase().includes(term) ||
+                                  option.cf?.toLowerCase().includes(term) ||
+                                  option.company_name?.toLowerCase().includes(term) ||
+                                  option.first_name?.toLowerCase().includes(term) ||
+                                  option.last_name?.toLowerCase().includes(term)
+                                )
+                              );
+                            }}
+                            noOptionsText="Nessun cliente trovato"
+                            renderOption={(props, option) => (
+                              <li {...props}>
+                                {`${option.first_name} ${option.last_name} - ${option.vat || option.cf || option.company_name || ''}`}
+                              </li>
+                            )}
+                          />
                         </FormControl>
                       </Stack>
                   }

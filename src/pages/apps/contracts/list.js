@@ -153,9 +153,9 @@ function ReactTable({ columns, data, renderRowSubComponent, handleAdd, handleUpd
 
   useEffect(() => {
     if (matchDownSM) {
-      setHiddenColumns(['age', 'visits', 'email', 'status', 'avatar', 'phone', "notes", "vat", "company_name", "cf"]);
+      setHiddenColumns(['age', 'visits', 'email', 'status', 'avatar', 'phone', "notes", "vat", "cf","agent_last_name"]);
     } else {
-      setHiddenColumns(['avatar', "notes", "vat", "company_name", "cf"]);
+      setHiddenColumns(['avatar', "notes", "vat", "cf", "email","agent_last_name"]);
     }
     // eslint-disable-next-line
   }, [matchDownSM]);
@@ -311,7 +311,7 @@ const ContractsListPage = () => {
         disableSortBy: true
       },
       {
-        Header: '#',
+        Header: '#', 
         accessor: 'id',
         className: 'cell-center'
       },
@@ -337,6 +337,21 @@ const ContractsListPage = () => {
           return (
             <Stack spacing={0}>
               <Typography variant="subtitle1">{values.last_name}</Typography>
+            </Stack>
+          );
+        }
+      },
+      {
+        Header: 'Ragione sociale',
+        accessor: 'company_name',
+        disableSortBy: false,
+        Cell: ({ row }) => {
+          const { values } = row;
+          return (
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <Stack spacing={0}>
+                <Typography variant="subtitle1">{values.company_name}</Typography>
+              </Stack>
             </Stack>
           );
         }
@@ -436,6 +451,34 @@ const ContractsListPage = () => {
         }
       },
       {
+        Header: 'Agente',
+        accessor: 'agent_first_name',
+        Cell: ({ row }) => {
+          const { values } = row;
+          return (
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <Stack spacing={0}>
+                <Typography variant="subtitle1">{`${values.agent_first_name} ${values.agent_last_name}`}</Typography>
+              </Stack>
+            </Stack>
+          );
+        }
+      },
+      {
+        Header: 'Tipo cliente',
+        accessor: 'client_type',
+        Cell: ({ row }) => {
+          const { values } = row;
+          return (
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <Stack spacing={0}>
+                <Typography variant="subtitle1">{values.client_type}</Typography>
+              </Stack>
+            </Stack>
+          );
+        }
+      },
+      {
         Header: 'Azioni',
         className: 'cell-center',
         disableSortBy: true,
@@ -506,14 +549,14 @@ const ContractsListPage = () => {
         disableSortBy: false,
       },
       {
-        Header: 'Ragione sociale',
-        accessor: 'company_name',
-        disableSortBy: false,
-      },
-      {
         Header: 'Codice fiscale',
         accessor: 'cf',
         disableSortBy: false,
+      },
+      {
+        Header: 'Cognome agente',
+        accessor: 'agent_last_name',
+        disableSortBy: true,
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps

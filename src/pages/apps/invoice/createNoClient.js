@@ -80,9 +80,7 @@ const validationSchema = yup.object({
   cod: yup.string(),
   pod: yup.string(),
   power: yup.string(),
-  annual_consumption: yup.string(),
-  discount: yup.number().nullable().default(0),
-  discount2: yup.number().nullable().default(0),
+  annual_consumption: yup.string()
 });
 
 // ==============================|| INVOICE - CREATE ||============================== //
@@ -129,8 +127,8 @@ const CreateNoClient = () => {
       status_id: values.status_id,
       power: values.power,
       annual_consumption: values.annual_consumption,
-      discount: values.discount,
-      discount2: values.discount2,
+      discount: 0,
+      discount2: 0,
       notes: values.notes
     };
     try {
@@ -405,7 +403,7 @@ const CreateNoClient = () => {
                               setFieldValue('client_id', newValue ? newValue.id : '');
                             }}
                             options={clients || []}
-                            getOptionLabel={(option) => 
+                            getOptionLabel={(option) =>
                               `${option ?
                                 option.first_name + ' ' + option.last_name + ' - ' + (option.vat || option.cf || option.company_name || '')
                                 : ''}`
@@ -419,8 +417,8 @@ const CreateNoClient = () => {
                             )}
                             filterOptions={(options, { inputValue }) => {
                               const searchTerms = inputValue.toLowerCase().split(' ');
-                              return options.filter((option) => 
-                                searchTerms.every((term) => 
+                              return options.filter((option) =>
+                                searchTerms.every((term) =>
                                   option.vat?.toLowerCase().includes(term) ||
                                   option.cf?.toLowerCase().includes(term) ||
                                   option.company_name?.toLowerCase().includes(term) ||
@@ -785,24 +783,6 @@ const CreateNoClient = () => {
                     </Grid>
                     <Grid item xs={12} sm={6} md={3}>
                       <Stack spacing={1}>
-                        <InputLabel>Sconto</InputLabel>
-                        <FormControl sx={{ width: '100%' }}>
-                          <TextField
-                            fullWidth
-                            id="discount"
-                            name="discount"
-                            value={values.discount}
-                            onChange={handleChange}
-                            error={Boolean(touched.discount && errors.discount)}
-                            helperText={touched.discount && errors.discount}
-                          />
-
-                        </FormControl>
-                      </Stack>
-                      {touched.discount && errors.discount && <FormHelperText error={true}>{errors.discount}</FormHelperText>}
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={3}>
-                      <Stack spacing={1}>
                         <InputLabel>Metodo di pagamento (Facoltativo)</InputLabel>
                         <FormControl sx={{ width: '100%' }}>
                           <Select
@@ -826,24 +806,6 @@ const CreateNoClient = () => {
                     </Grid>
                     <Grid item xs={12} sm={6} md={3}>
                       <Stack spacing={1}>
-                        <InputLabel>Sconto 2</InputLabel>
-                        <FormControl sx={{ width: '100%' }}>
-                          <TextField
-                            fullWidth
-                            id="discount2"
-                            name="discount2"
-                            value={values.discount2}
-                            onChange={handleChange}
-                            error={Boolean(touched.discount2 && errors.discount2)}
-                            helperText={touched.discount2 && errors.discount2}
-                          />
-
-                        </FormControl>
-                      </Stack>
-                      {touched.discount2 && errors.discount2 && <FormHelperText error={true}>{errors.discount2}</FormHelperText>}
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={3}>
-                      <Stack spacing={1}>
                         <InputLabel>Note (Facoltativo)</InputLabel>
                         <FormControl sx={{ width: '100%' }}>
                           <TextareaAutosize
@@ -859,7 +821,6 @@ const CreateNoClient = () => {
 
                         </FormControl>
                       </Stack>
-                      {touched.discount2 && errors.discount2 && <FormHelperText error={true}>{errors.discount2}</FormHelperText>}
                     </Grid>
                     <Divider />
                     <Grid item xs={12} sm={12} md={12}>

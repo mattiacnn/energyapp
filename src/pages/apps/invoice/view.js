@@ -65,13 +65,10 @@ import DeleteDialogContract from 'sections/components-overview/dialogs/DeleteDia
 
 const client_types = [
   {
-    name: 'Privato'
+    name: 'privato'
   },
   {
-    name: 'Azienda'
-  },
-  {
-    name: 'Condominio'
+    name: 'azienda'
   }
 ];
 const validationSchema = yup.object({
@@ -88,9 +85,7 @@ const validationSchema = yup.object({
   pod: yup.string(),
   pdr: yup.string(),
   power: yup.string(),
-  annual_consumption: yup.string(),
-  discount: yup.number().nullable().default(0),
-  discount2: yup.number().nullable().default(0),
+  annual_consumption: yup.string()
 });
 
 // ==============================|| INVOICE - CREATE ||============================== //
@@ -134,8 +129,8 @@ const View = () => {
       pdr: values.pdr,
       power: values.power,
       annual_consumption: values.annual_consumption,
-      discount: values.discount,
-      discount2: values.discount2,
+      discount: 0,
+      discount2: 0,
       id: contract_id,
       calculate_fee: values.calculate_fee,
     };
@@ -461,8 +456,8 @@ const View = () => {
               pdr: contract.pdr,
               power: contract.power,
               annual_consumption: contract.annual_consumption,
-              discount: contract.discount,
-              discount2: contract.discount2,
+              discount: 0,
+              discount2: 0,
               notes: contract.notes,
             }
           }
@@ -810,13 +805,14 @@ const View = () => {
                       <InputLabel>Tipo cliente</InputLabel>
                       <FormControl sx={{ width: '100%' }}>
                         <Select
-                          value={values.client_type}
+                          value={values.client_type.toLowerCase()}
                           displayEmpty
+                          disabled={values.client_type ? true : false}
                           name="client_type_id"
                           onChange={handleChange}
                           error={Boolean(errors.client_type_id && touched.client_type_id)}
                         >
-                          <MenuItem disabled value="">
+                          <MenuItem value="">
                             Seleziona tipo cliente
                           </MenuItem>
                           {client_types.map((client) => (
@@ -827,42 +823,6 @@ const View = () => {
                         </Select>
                       </FormControl>
                     </Stack>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Sconto</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <TextField
-                          fullWidth
-                          id="discount"
-                          name="discount"
-                          value={values.discount}
-                          onChange={handleChange}
-                          error={Boolean(touched.discount && errors.discount)}
-                          helperText={touched.discount && errors.discount}
-                        />
-
-                      </FormControl>
-                    </Stack>
-                    {touched.discount && errors.discount && <FormHelperText error={true}>{errors.discount}</FormHelperText>}
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Stack spacing={1}>
-                      <InputLabel>Sconto 2</InputLabel>
-                      <FormControl sx={{ width: '100%' }}>
-                        <TextField
-                          fullWidth
-                          id="discount2"
-                          name="discount2"
-                          value={values.discount2}
-                          onChange={handleChange}
-                          error={Boolean(touched.discount2 && errors.discount2)}
-                          helperText={touched.discount2 && errors.discount2}
-                        />
-
-                      </FormControl>
-                    </Stack>
-                    {touched.discount2 && errors.discount2 && <FormHelperText error={true}>{errors.discount2}</FormHelperText>}
                   </Grid>
                   <Grid item xs={12} sm={6} md={3}>
                     <Stack spacing={1}>
@@ -881,7 +841,6 @@ const View = () => {
 
                       </FormControl>
                     </Stack>
-                    {touched.discount2 && errors.discount2 && <FormHelperText error={true}>{errors.discount2}</FormHelperText>}
                   </Grid>
                   <Grid item xs={12}>
                     <Stack spacing={1.25}>

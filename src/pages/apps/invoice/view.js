@@ -133,6 +133,7 @@ const View = () => {
       discount2: 0,
       id: contract_id,
       calculate_fee: values.calculate_fee,
+      fee_calculation_type: values.fee_calculation_type,
     };
     try {
       const response = await axios.put('/contract/update/', new_contract);
@@ -453,6 +454,7 @@ const View = () => {
               pod: contract.pod,
               status_id: contract.status_id,
               calculate_fee: contract.calculate_fee,
+              fee_calculation_type: contract.fee_calculation_type || '',
               pdr: contract.pdr,
               power: contract.power,
               annual_consumption: contract.annual_consumption,
@@ -824,6 +826,29 @@ const View = () => {
                       </FormControl>
                     </Stack>
                   </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Stack spacing={1}>
+                      <InputLabel>Tipo calcolo ricorrenza</InputLabel>
+                      <FormControl sx={{ width: '100%' }}>
+                        <Select
+                          value={values.fee_calculation_type || ''}
+                          displayEmpty
+                          name="fee_calculation_type"
+                          onChange={handleChange}
+                          error={Boolean(errors.fee_calculation_type && touched.fee_calculation_type)}
+                        >
+                          <MenuItem disabled value="">
+                            Seleziona tipo calcolo
+                          </MenuItem>
+                          <MenuItem value="annual">Annua</MenuItem>
+                          <MenuItem value="consumption">Consumo</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Stack>
+                    {touched.fee_calculation_type && errors.fee_calculation_type && (
+                      <FormHelperText error={true}>{errors.fee_calculation_type}</FormHelperText>
+                    )}
+                  </Grid>
                   <Grid item xs={12} sm={6} md={3}>
                     <Stack spacing={1}>
                       <InputLabel>Notes</InputLabel>
@@ -848,7 +873,7 @@ const View = () => {
                         <ListItemText
                           id="switch-list-label-sb"
                           primary="Abilita calcolo delle provvigioni"
-                          secondary="Disabilitando il calcolo delle provvigioni, le provvigioni non verrano più calcolate per questo contratto"
+                          secondary="Disabilitando il calcolo delle provvigioni, le provvigioni non verranno più calcolate per questo contratto"
                         />
                         <Switch
                           edge="end"

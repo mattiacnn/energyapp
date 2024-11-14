@@ -85,7 +85,8 @@ const validationSchema = yup.object({
         name: yup.string().required('Product name is required')
       })
     )
-    .min(1, 'Invoice must have at least 1 items')
+    .min(1, 'Invoice must have at least 1 items'),
+  fee_calculation_type: yup.string().required('Tipo calcolo ricorrenza è obbligatorio'),
 });
 
 // ==============================|| INVOICE - EDIT ||============================== //
@@ -132,7 +133,8 @@ const Create = () => {
       cashierInfo: values.cashierInfo,
       customerInfo: values.customerInfo,
       invoice_detail: values.invoice_detail,
-      notes: values.notes
+      notes: values.notes,
+      fee_calculation_type: values.fee_calculation_type,
     };
 
     dispatch(getInvoiceUpdate(NewList)).then(() => {
@@ -177,7 +179,8 @@ const Create = () => {
           invoice_detail: list?.invoice_detail || [],
           discount: list?.discount || 0,
           tax: list?.tax || 0,
-          notes: list?.notes || ''
+          notes: list?.notes || '',
+          fee_calculation_type: list?.fee_calculation_type || '',
         }}
         validationSchema={validationSchema}
         onSubmit={(values) => {
@@ -595,6 +598,29 @@ const Create = () => {
                       />
                     </FormControl>
                   </Stack>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Stack spacing={1}>
+                    <InputLabel>Tipo calcolo ricorrenza</InputLabel>
+                    <FormControl sx={{ width: '100%' }}>
+                      <Select
+                        value={values.fee_calculation_type}
+                        displayEmpty
+                        name="fee_calculation_type"
+                        onChange={handleChange}
+                        error={Boolean(errors.fee_calculation_type && touched.fee_calculation_type)}
+                      >
+                        <MenuItem disabled value="">
+                          Seleziona tipo calcolo
+                        </MenuItem>
+                        <MenuItem value="annual">Annua</MenuItem>
+                        <MenuItem value="consumption">Consumo</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Stack>
+                  {touched.fee_calculation_type && errors.fee_calculation_type && (
+                    <FormHelperText error={true}>{errors.fee_calculation_type}</FormHelperText>
+                  )}
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <Stack direction="row" justifyContent="flex-end" alignItems="flex-end" spacing={2} sx={{ height: '100%' }}>

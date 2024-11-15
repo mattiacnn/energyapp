@@ -599,6 +599,7 @@ const Create = () => {
                     </FormControl>
                   </Stack>
                 </Grid>
+         
                 <Grid item xs={12} sm={6}>
                   <Stack spacing={1}>
                     <InputLabel>Tipo calcolo ricorrenza</InputLabel>

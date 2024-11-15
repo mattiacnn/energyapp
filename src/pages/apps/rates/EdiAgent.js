@@ -64,7 +64,8 @@ const EditAgent = ({ customer, onCancel, fetchAgents }) => {
     agent_bonus: Yup.number().default(0).nullable(),
     agent_monthly_fee: Yup.number().default(0).nullable(),
     agent_monthly_fee_2: Yup.number().default(0).nullable(),
-    agent_bonus_2: Yup.number().default(0).nullable()
+    agent_bonus_2: Yup.number().default(0).nullable(),
+    is_recurring_consumption: Yup.boolean().default(false)
   });
 
   const [openAlert, setOpenAlert] = useState(false);
@@ -86,6 +87,7 @@ const EditAgent = ({ customer, onCancel, fetchAgents }) => {
           agent_monthly_fee_2: values.agent_monthly_fee_2,
           agent_bonus_2: values.agent_bonus_2,
           hidden: values.hidden,
+          is_recurring_consumption: values.is_recurring_consumption,
           id: customer.id
         }
         const response = await axios.put('/rate/update', new_agent);
@@ -152,11 +154,6 @@ const EditAgent = ({ customer, onCancel, fetchAgents }) => {
 
   }, [customer])
 
-  useEffect(() => {
-    console.log("provider is",provider);
-    console.log("service si", contractType);
-    console.log("customer is", customer);
-  },[provider, contractType])
   const { errors, touched, handleSubmit, isSubmitting, getFieldProps, setFieldValue, values } = formik;
 
   return (
@@ -238,11 +235,11 @@ const EditAgent = ({ customer, onCancel, fetchAgents }) => {
                     </Grid>
                     <Grid item xs={6}>
                       <Stack spacing={1.25}>
-                        <InputLabel htmlFor="agent_monthly_fee">Ricorrenza</InputLabel>
+                        <InputLabel htmlFor="agent_monthly_fee">ricorrente</InputLabel>
                         <TextField
                           fullWidth
                           id="agent_monthly_fee"
-                          placeholder="Inserisci ricorrenza"
+                          placeholder="Inserisci ricorrente"
                           {...getFieldProps('agent_monthly_fee')}
                           error={Boolean(touched.agent_monthly_fee && errors.agent_monthly_fee)}
                           helperText={touched.agent_monthly_fee && errors.agent_monthly_fee}
@@ -251,11 +248,11 @@ const EditAgent = ({ customer, onCancel, fetchAgents }) => {
                     </Grid>
                     <Grid item xs={6}>
                       <Stack spacing={1.25}>
-                        <InputLabel htmlFor="agent_monthly_fee_2">Ricorrenza 13 mese</InputLabel>
+                        <InputLabel htmlFor="agent_monthly_fee_2">ricorrente 13 mese</InputLabel>
                         <TextField
                           fullWidth
                           id="agent_monthly_fee_2"
-                          placeholder="Inserisci ricorrenza 13 mese"
+                          placeholder="Inserisci ricorrente 13 mese"
                           {...getFieldProps('agent_monthly_fee_2')}
                           error={Boolean(touched.agent_monthly_fee_2 && errors.agent_monthly_fee_2)}
                           helperText={touched.agent_monthly_fee_2 && errors.agent_monthly_fee_2}
@@ -273,6 +270,28 @@ const EditAgent = ({ customer, onCancel, fetchAgents }) => {
                           error={Boolean(touched.agent_bonus_2 && errors.agent_bonus_2)}
                           helperText={touched.agent_bonus_2 && errors.agent_bonus_2}
                         />
+                      </Stack>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Stack spacing={1.25}>
+                        <InputLabel htmlFor="is_recurring_consumption">Calcolo ricorrente a consumo</InputLabel>
+                        <Select
+                          displayEmpty
+                          name="is_recurring_consumption"
+                          value={values.is_recurring_consumption}
+                          {...getFieldProps('is_recurring_consumption')}
+                          error={Boolean(errors.is_recurring_consumption && touched.is_recurring_consumption)}
+                        >
+                          <MenuItem disabled value="">
+                            Seleziona calcolo ricorrente a consumo
+                          </MenuItem>
+                          <MenuItem value={true}>
+                            Sì
+                          </MenuItem>
+                          <MenuItem value={false}>
+                            No
+                          </MenuItem>
+                        </Select>
                       </Stack>
                     </Grid>
                     <Grid item xs={12}>

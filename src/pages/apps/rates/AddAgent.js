@@ -89,7 +89,8 @@ const AddAgent = ({ customer, onCancel, fetchAgents }) => {
     agent_bonus_2: Yup.number().default(0),
     contract_type_id: Yup.number().default(1).required('Servizio è un campo obbligatorio'),
     provider_id: Yup.number().required('Fornitore è un campo obbligatorio'),
-    is_business: Yup.boolean().default(false)
+    is_business: Yup.boolean().default(false),
+    is_recurring_consumption: Yup.boolean().default(false)
   });
 
   const [openAlert, setOpenAlert] = useState(false);
@@ -113,7 +114,8 @@ const AddAgent = ({ customer, onCancel, fetchAgents }) => {
           contract_type_id: values.contract_type_id,
           provider_id: values.provider_id,
           rate_type_id: values.rate_type_id,
-          is_business: values.is_business
+          is_business: values.is_business,
+          is_recurring_consumption: values.is_recurring_consumption
         }
         const response = await axios.post('/rate/create', new_agent);
         const { newRate } = response.data;
@@ -308,11 +310,11 @@ const AddAgent = ({ customer, onCancel, fetchAgents }) => {
                     </Grid>
                     <Grid item xs={12}>
                       <Stack spacing={1.25}>
-                        <InputLabel htmlFor="agent_monthly_fee">Ricorrenza</InputLabel>
+                        <InputLabel htmlFor="agent_monthly_fee">ricorrente</InputLabel>
                         <TextField
                           fullWidth
                           id="agent_monthly_fee"
-                          placeholder="Inserisci ricorrenza"
+                          placeholder="Inserisci ricorrente"
                           {...getFieldProps('agent_monthly_fee')}
                           error={Boolean(touched.agent_monthly_fee && errors.agent_monthly_fee)}
                           helperText={touched.agent_monthly_fee && errors.agent_monthly_fee}
@@ -321,17 +323,39 @@ const AddAgent = ({ customer, onCancel, fetchAgents }) => {
                     </Grid>
                     <Grid item xs={12}>
                       <Stack spacing={1.25}>
-                        <InputLabel htmlFor="agent_monthly_fee_2">Ricorrenza 13 mese</InputLabel>
+                        <InputLabel htmlFor="agent_monthly_fee_2">ricorrente 13 mese</InputLabel>
                         <TextField
                           fullWidth
                           id="agent_monthly_fee_2"
-                          placeholder="Inserisci ricorrenza 13 mese"
+                          placeholder="Inserisci ricorrente 13 mese"
                           {...getFieldProps('agent_monthly_fee_2')}
                           error={Boolean(touched.agent_monthly_fee_2 && errors.agent_monthly_fee_2)}
                           helperText={touched.agent_monthly_fee_2 && errors.agent_monthly_fee_2}
                         />
                       </Stack>
                     </Grid>
+                    <Grid item xs={12}>
+                      <Stack spacing={1.25}>
+                        <InputLabel htmlFor="is_recurring_consumption">Calcolo ricorrente a consumo</InputLabel>
+                        <Select
+                          displayEmpty
+                          name="is_recurring_consumption"
+                          {...getFieldProps('is_recurring_consumption')}
+                          error={Boolean(errors.is_recurring_consumption && touched.is_recurring_consumption)}
+                        >
+                          <MenuItem disabled value="">
+                            Seleziona calcolo ricorrente a consumo
+                          </MenuItem>
+                          <MenuItem value={true}>
+                            Sì
+                          </MenuItem>
+                          <MenuItem value={false}>
+                            No
+                          </MenuItem>
+                        </Select>
+                      </Stack>
+                    </Grid>
+
                     <Grid item xs={12}>
                       <Stack spacing={1.25}>
                         <InputLabel htmlFor="agent_bonus_2">Gettone 13 mese</InputLabel>

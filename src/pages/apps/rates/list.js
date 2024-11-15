@@ -97,9 +97,9 @@ function ReactTable({ columns, data, renderRowSubComponent, handleAdd, showHidde
 
   useEffect(() => {
     if (matchDownSM) {
-      setHiddenColumns(['agent_bonus_2', 'agent_monthly_fee_2', 'hidden', 'provider_id', 'contract_type_id', 'is_business', 'rate_type_id']);
+      setHiddenColumns(['agent_bonus_2', 'is_recurring_consumption','agent_monthly_fee_2', 'hidden', 'provider_id', 'contract_type_id', 'is_business', 'rate_type_id']);
     } else {
-      setHiddenColumns(['agent_bonus_2', 'agent_monthly_fee_2', 'hidden', 'provider_id', 'contract_type_id', 'is_business', 'rate_type_id']);
+      setHiddenColumns(['agent_bonus_2', 'is_recurring_consumption', 'agent_monthly_fee_2', 'hidden', 'provider_id', 'contract_type_id', 'is_business', 'rate_type_id']);
     }
     // eslint-disable-next-line
   }, [matchDownSM]);
@@ -337,7 +337,7 @@ const RatesListPage = () => {
         }
       },
       {
-        Header: 'Ricorrenza',
+        Header: 'ricorrente',
         accessor: 'agent_monthly_fee',
         Cell: ({ row }) => {
           const { values } = row;
@@ -352,8 +352,13 @@ const RatesListPage = () => {
       },
 
       {
-        Header: 'Ricorrenza 13 mese',
+        Header: 'ricorrente 13 mese',
         accessor: 'agent_monthly_fee_2',
+        disableSortBy: true
+      },
+      {
+        Header: 'Calcolo ricorrente a consumo',
+        accessor: 'is_recurring_consumption',
         disableSortBy: true
       },
       {

@@ -312,6 +312,20 @@ const CustomerListPage = () => {
         }
       },
       {
+        Header: 'Ragione sociale',
+        accessor: 'company_name',
+        Cell: ({ row }) => {
+          const { values } = row;
+          return (
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <Stack spacing={0}>
+                <Typography color="text.secondary">{values.company_name}</Typography>
+              </Stack>
+            </Stack>
+          );
+        }
+      },
+      {
         Header: 'Agente associato',
         accessor: 'agent_first_name',
         className: 'cell-right',

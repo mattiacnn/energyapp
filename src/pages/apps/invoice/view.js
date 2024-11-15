@@ -848,7 +848,7 @@ const View = () => {
                         <ListItemText
                           id="switch-list-label-sb"
                           primary="Abilita calcolo delle provvigioni"
-                          secondary="Disabilitando il calcolo delle provvigioni, le provvigioni non verrano più calcolate per questo contratto"
+                          secondary="Disabilitando il calcolo delle provvigioni, le provvigioni non verranno più calcolate per questo contratto"
                         />
                         <Switch
                           edge="end"

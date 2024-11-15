@@ -30,7 +30,7 @@ export default function AlertAgentDelete({ title, open, handleClose, handleDelet
           </Avatar>
           <Stack spacing={2}>
             <Typography variant="h4" align="center">
-              Sei sicuro di voler cancellare questo agente?
+              Sei sicuro di voler cancellare questa tariffa?
             </Typography>
             <Typography align="center">
               Cancellando
